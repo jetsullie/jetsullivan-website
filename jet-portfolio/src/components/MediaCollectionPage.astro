@@ -1,0 +1,717 @@
+---
+import SiteMenu from "./SiteMenu.astro";
+import PageMotion from "./PageMotion.astro";
+
+interface Props {
+	section: "featured" | "interviews" | "behind-the-scenes" | "press";
+	title: string;
+	eyebrow: string;
+	description: string;
+	ctaLabel: string;
+	emptyMessage: string;
+	accentTop: string;
+	accent: string;
+	accentBottom: string;
+	accentSolid: string;
+}
+
+const {
+	section,
+	title,
+	eyebrow,
+	description,
+	ctaLabel,
+	emptyMessage,
+	accentTop,
+	accent,
+	accentBottom,
+	accentSolid,
+} = Astro.props;
+
+const windows = Array.from({ length: 20 }, (_, index) => ({
+	x: (index * 17 + 3) % 94,
+	y: (index * 29 + 8) % 88,
+	w: 38 + (index % 7) * 10,
+	h: 31 + (index % 6) * 8,
+	symbol: ["+", "○", "✦", "×", "◇", "▶", "⌁", "●"][index % 8],
+}));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta
+			name="description"
+			content={`${description} Explore ${title.toLowerCase()} by Jet Sullivan.`}
+		/>
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title} — Jet Sullivan</title>
+	</head>
+	<body>
+		<main
+			class="collection-page"
+			data-motion-root
+			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--accent-solid:${accentSolid};`}
+		>
+			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
+			<div class="bottom-frame" data-motion-depth="counter" aria-hidden="true"></div>
+			<div class="accent-panel" data-motion-depth="counter" aria-hidden="true"></div>
+
+			<div class="background-windows" data-motion-bounds aria-hidden="true">
+				{
+					windows.map((item) => (
+						<span
+							class="mini-window"
+							data-motion-float
+							style={`--x:${item.x}%;--y:${item.y}%;--w:${item.w}px;--h:${item.h}px;`}
+						>
+							<span class="mini-dots"><i></i><i></i><i></i></span>
+							<span>{item.symbol}</span>
+						</span>
+					))
+				}
+			</div>
+
+			<SiteMenu showHomeButton />
+
+			<section
+				class="collection-content"
+				data-motion-depth="scene"
+				data-section={section}
+				aria-labelledby="collection-heading"
+			>
+				<p class="eyebrow">{eyebrow}</p>
+				<h1 id="collection-heading">
+					{
+						section === "behind-the-scenes" ? (
+							<>
+								<span>Behind the</span>
+								<span>Scenes</span>
+							</>
+						) : (
+							title
+						)
+					}
+				</h1>
+				<p class="introduction">{description}</p>
+				<p class="sr-only" data-media-status aria-live="polite">
+					Loading {title.toLowerCase()}…
+				</p>
+
+				<div
+					class="entry-grid"
+					data-media-collection
+					data-section={section}
+					data-cta-label={ctaLabel}
+					data-empty-message={emptyMessage}
+					aria-busy="true"
+				>
+					<article class="entry-card status-card">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+						<p>Loading {title.toLowerCase()}…</p>
+					</article>
+				</div>
+			</section>
+
+			<p class="location" data-motion-depth="deep">Austin, TX</p>
+		</main>
+		<PageMotion />
+	</body>
+</html>
+
+<script>
+	interface MediaEntry {
+		id?: string;
+		category?: string;
+		title?: string;
+		description?: string;
+		date?: string;
+		link?: string;
+		url?: string;
+		imageUrl?: string;
+		imageKey?: string;
+		imageAlt?: string;
+		alt?: string;
+		image?: { url?: string; alt?: string };
+	}
+
+	const createDots = () => {
+		const dots = document.createElement("span");
+		dots.className = "window-dots";
+		dots.setAttribute("aria-hidden", "true");
+		dots.append(document.createElement("i"), document.createElement("i"), document.createElement("i"));
+		return dots;
+	};
+
+	const safeWebUrl = (value: unknown) => {
+		if (typeof value !== "string" || !value.trim()) return null;
+
+		try {
+			const url = new URL(value, window.location.origin);
+			const isSameOrigin = url.origin === window.location.origin;
+			return url.protocol === "https:" || (isSameOrigin && url.protocol === "http:")
+				? url
+				: null;
+		} catch {
+			return null;
+		}
+	};
+
+	const formatDate = (value: unknown) => {
+		if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) {
+			return null;
+		}
+
+		const date = new Date(`${value}T12:00:00`);
+		if (Number.isNaN(date.getTime())) return null;
+
+		return new Intl.DateTimeFormat("en-US", {
+			year: "numeric",
+			month: "long",
+			day: "numeric",
+		}).format(date);
+	};
+
+	const createStatusCard = (message: string, isError = false) => {
+		const card = document.createElement("article");
+		const copy = document.createElement("p");
+		card.className = `entry-card status-card${isError ? " error-card" : ""}`;
+		copy.textContent = message;
+		card.append(createDots(), copy);
+		return card;
+	};
+
+	const createEntryCard = (
+		entry: MediaEntry,
+		section: string,
+		ctaLabel: string,
+	) => {
+		const card = document.createElement("article");
+		const copy = document.createElement("div");
+		const title = document.createElement("h2");
+		const description = document.createElement("p");
+		const formattedDate = formatDate(entry.date);
+
+		card.className = "entry-card";
+		copy.className = "entry-copy";
+		title.textContent =
+			typeof entry.title === "string" && entry.title.trim()
+				? entry.title.trim()
+				: "Untitled";
+		description.textContent =
+			typeof entry.description === "string" ? entry.description.trim() : "";
+
+		card.append(createDots());
+
+		if (section === "behind-the-scenes") {
+			const directImageUrl =
+				entry.imageUrl ??
+				entry.image?.url ??
+				(typeof entry.imageKey === "string"
+					? `/api/media/${encodeURIComponent(entry.imageKey)}`
+					: undefined);
+			const imageUrl = safeWebUrl(directImageUrl);
+
+			if (imageUrl) {
+				const imageFrame = document.createElement("div");
+				const image = document.createElement("img");
+				imageFrame.className = "entry-image";
+				image.src = imageUrl.href;
+				image.alt =
+					(typeof entry.imageAlt === "string" && entry.imageAlt.trim()) ||
+					(typeof entry.image?.alt === "string" && entry.image.alt.trim()) ||
+					(typeof entry.alt === "string" && entry.alt.trim()) ||
+					title.textContent;
+				image.loading = "lazy";
+				image.decoding = "async";
+				imageFrame.append(image);
+				card.append(imageFrame);
+			}
+		}
+
+		if (formattedDate && typeof entry.date === "string") {
+			const time = document.createElement("time");
+			time.dateTime = entry.date;
+			time.textContent = formattedDate;
+			copy.append(time);
+		}
+
+		copy.append(title);
+		if (description.textContent) copy.append(description);
+
+		const destination = safeWebUrl(entry.link ?? entry.url);
+		if (destination) {
+			const link = document.createElement("a");
+			link.href = destination.href;
+			link.textContent = ctaLabel;
+			if (destination.origin !== window.location.origin) {
+				link.target = "_blank";
+				link.rel = "noopener noreferrer";
+				link.setAttribute(
+					"aria-label",
+					`${ctaLabel} — opens in a new tab`,
+				);
+			}
+			copy.append(link);
+		}
+
+		card.append(copy);
+		return card;
+	};
+
+	document
+		.querySelectorAll<HTMLElement>("[data-media-collection]")
+		.forEach(async (collection) => {
+			const section = collection.dataset.section || "";
+			const ctaLabel = collection.dataset.ctaLabel || "View";
+			const emptyMessage =
+				collection.dataset.emptyMessage || "No updates have been added yet.";
+			const status = collection.parentElement?.querySelector<HTMLElement>(
+				"[data-media-status]",
+			);
+
+			try {
+				const response = await fetch(
+					`/api/media-entries/${encodeURIComponent(section)}`,
+				);
+				if (!response.ok && response.status !== 404) {
+					throw new Error("Request failed");
+				}
+
+				const result = response.ok ? await response.json() : { entries: [] };
+				const entries = (
+					Array.isArray(result.entries)
+						? result.entries
+						: Array.isArray(result.items)
+							? result.items
+							: Array.isArray(result.media)
+								? result.media
+								: []
+				) as MediaEntry[];
+
+				entries.sort((a, b) =>
+					String(b.date || "").localeCompare(String(a.date || "")),
+				);
+				collection.replaceChildren();
+
+				if (!entries.length) {
+					collection.append(createStatusCard(emptyMessage));
+					if (status) status.textContent = emptyMessage;
+				} else {
+					for (const entry of entries) {
+						collection.append(createEntryCard(entry, section, ctaLabel));
+					}
+					if (status) {
+						status.textContent = `${entries.length} ${
+							entries.length === 1 ? "update" : "updates"
+						} loaded.`;
+					}
+				}
+			} catch {
+				collection.replaceChildren(
+					createStatusCard(
+						"This collection is unavailable right now. Please try again soon.",
+						true,
+					),
+				);
+				if (status) {
+					status.textContent =
+						"This collection is unavailable right now. Please try again soon.";
+				}
+			} finally {
+				collection.setAttribute("aria-busy", "false");
+			}
+		});
+</script>
+
+<style is:global>
+	:root {
+		--yellow: #efda4a;
+		--white: #fff;
+		--black: #252525;
+		--pink: #fdbfbf;
+		--mint: #7cf5b5;
+		--display: "Arial Black", "Myriad Pro", Arial, sans-serif;
+		--body: "Myriad Pro", Myriad, Arial, sans-serif;
+	}
+
+	* { box-sizing: border-box; }
+	html {
+		background: var(--black);
+		color: var(--black);
+		font-family: var(--body);
+	}
+	body {
+		margin: 0;
+		min-width: 320px;
+		min-height: 100vh;
+	}
+
+	.collection-page {
+		position: relative;
+		display: grid;
+		width: 100%;
+		min-height: 100svh;
+		padding: clamp(110px, 12vh, 150px) clamp(28px, 6vw, 105px)
+			clamp(110px, 10vh, 150px);
+		overflow-x: hidden;
+		overflow-y: auto;
+		background: linear-gradient(
+			180deg,
+			#fff 0%,
+			#effcff 32%,
+			#d4f7fd 68%,
+			#c0f2fb 100%
+		);
+		isolation: isolate;
+	}
+
+	.top-frame,
+	.bottom-frame {
+		position: absolute;
+		z-index: 8;
+		left: -3%;
+		width: 106%;
+		height: 9vw;
+		min-height: 54px;
+		background: var(--black);
+		pointer-events: none;
+	}
+	.top-frame { top: -5vw; transform: rotate(-3deg); }
+	.bottom-frame { bottom: -5vw; transform: rotate(-3deg); }
+
+	.accent-panel {
+		position: absolute;
+		z-index: 1;
+		top: clamp(210px, 24svh, 310px);
+		bottom: -2%;
+		left: 50%;
+		width: min(76vw, 1050px);
+		border: 1px solid rgb(255 255 255 / 48%);
+		border-radius: 24px;
+		background: linear-gradient(
+			180deg,
+			var(--accent-top),
+			var(--accent) 42%,
+			var(--accent-bottom) 135%
+		);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 52%),
+			0 12px 36px rgb(37 37 37 / 7%);
+		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(8px);
+		transform: translateX(-50%);
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		margin: -1px;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+	}
+
+	.background-windows {
+		position: absolute;
+		z-index: 0;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+	.mini-window {
+		position: absolute;
+		top: var(--y);
+		left: var(--x);
+		display: grid;
+		width: var(--w);
+		height: var(--h);
+		border: 1px solid rgb(255 255 255 / 45%);
+		border-radius: clamp(5px, .7vw, 14px);
+		background: rgb(156 166 170 / 20%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 34%),
+			0 5px 14px rgb(37 37 37 / 5%);
+		color: rgb(37 37 37 / 25%);
+		font: 900 .7rem var(--display);
+		-webkit-backdrop-filter: blur(3px);
+		backdrop-filter: blur(3px);
+		place-items: center;
+	}
+	.mini-dots {
+		position: absolute;
+		top: 6px;
+		left: 7px;
+		display: flex;
+		gap: 3px;
+	}
+	.mini-dots i {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--pink);
+	}
+	.mini-dots i:nth-child(2),
+	.window-dots i:nth-child(2) { background: var(--yellow); }
+	.mini-dots i:nth-child(3),
+	.window-dots i:nth-child(3) { background: var(--mint); }
+
+	.collection-content {
+		position: relative;
+		z-index: 3;
+		align-self: center;
+		justify-self: center;
+		min-width: 0;
+		width: min(100%, 1100px);
+		max-width: 100%;
+		text-align: center;
+	}
+	.eyebrow {
+		margin: 0 auto clamp(12px, 2vh, 24px);
+		font-size: clamp(.78rem, 1.1vw, 1rem);
+		font-weight: 900;
+		letter-spacing: .16em;
+		text-transform: uppercase;
+	}
+	h1 {
+		margin: 0;
+		font: 950 clamp(4.5rem, 12vw, 12rem)/.78 var(--display);
+		letter-spacing: -.025em;
+		overflow-wrap: anywhere;
+		text-transform: uppercase;
+	}
+	h1 span { display: block; }
+	.collection-content[data-section="behind-the-scenes"] h1 {
+		font-size: clamp(3.1rem, 8vw, 8.2rem);
+		line-height: .86;
+	}
+	.introduction {
+		width: min(90%, 690px);
+		margin: clamp(24px, 3vh, 36px) auto 0;
+		font-size: clamp(1rem, 1.5vw, 1.3rem);
+		font-weight: 700;
+		line-height: 1.45;
+	}
+
+	.entry-grid {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: clamp(18px, 2.5vw, 32px);
+		min-width: 0;
+		width: min(94%, 920px);
+		max-width: 100%;
+		margin: clamp(42px, 6vh, 72px) auto 0;
+		text-align: left;
+	}
+	.entry-card {
+		position: relative;
+		display: flex;
+		min-width: 0;
+		width: 100%;
+		max-width: 100%;
+		min-height: 260px;
+		padding: 58px clamp(22px, 3vw, 36px) clamp(25px, 3vw, 34px);
+		overflow: hidden;
+		border: 1px solid rgb(255 255 255 / 48%);
+		border-radius: 28px;
+		outline: 1px solid rgb(255 255 255 / 12%);
+		outline-offset: -3px;
+		background:
+			linear-gradient(rgb(255 255 255 / 7%), rgb(255 255 255 / 2%)),
+			rgb(37 37 37 / 82%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 34%),
+			0 16px 38px rgb(37 37 37 / 14%);
+		color: var(--white);
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
+		animation: card-float 5.2s ease-in-out infinite;
+	}
+	.entry-card:nth-child(even) { animation-delay: -2.6s; }
+	.entry-card:hover { animation-play-state: paused; }
+	.window-dots {
+		position: absolute;
+		z-index: 2;
+		top: 20px;
+		left: 23px;
+		display: flex;
+		gap: 6px;
+	}
+	.window-dots i {
+		width: 10px;
+		height: 10px;
+		border: 1px solid rgb(37 37 37 / 18%);
+		border-radius: 50%;
+		background: var(--pink);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 48%),
+			0 1px 3px rgb(37 37 37 / 32%);
+	}
+	.entry-copy {
+		position: relative;
+		z-index: 1;
+		display: flex;
+		flex: 1;
+		flex-direction: column;
+		align-items: flex-start;
+		min-width: 0;
+	}
+	.entry-copy time {
+		margin-bottom: 12px;
+		color: var(--accent-solid);
+		font-size: .78rem;
+		font-weight: 900;
+		letter-spacing: .1em;
+		text-transform: uppercase;
+	}
+	.entry-copy h2 {
+		margin: 0;
+		font: 900 clamp(1.25rem, 2.4vw, 2rem)/1.08 var(--display);
+		overflow-wrap: anywhere;
+		text-transform: uppercase;
+	}
+	.entry-copy p {
+		margin: 15px 0 0;
+		color: rgb(255 255 255 / 82%);
+		font-size: clamp(.98rem, 1.3vw, 1.12rem);
+		font-weight: 600;
+		line-height: 1.5;
+	}
+	.entry-copy a {
+		margin-top: auto;
+		padding-top: 26px;
+		color: var(--accent-solid);
+		font: 900 .9rem var(--display);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 5px;
+		text-transform: uppercase;
+		transition: color 180ms ease, transform 260ms cubic-bezier(.34, 1.4, .64, 1);
+	}
+	.entry-copy a:hover { color: var(--white); transform: translateX(3px); }
+	.entry-copy a:focus-visible {
+		border-radius: 4px;
+		outline: 3px solid var(--accent-solid);
+		outline-offset: 4px;
+	}
+
+	.entry-image {
+		flex: 0 0 42%;
+		align-self: stretch;
+		min-width: 0;
+		margin: -58px 26px -34px -36px;
+		overflow: hidden;
+		background: rgb(255 255 255 / 10%);
+	}
+	.entry-image img {
+		display: block;
+		width: 100%;
+		height: 100%;
+		min-height: 260px;
+		object-fit: cover;
+	}
+	.status-card {
+		grid-column: 1 / -1;
+		align-items: center;
+		justify-content: center;
+		min-height: 190px;
+		text-align: center;
+	}
+	.status-card p {
+		min-width: 0;
+		width: 100%;
+		max-width: 100%;
+		margin: 0;
+		font-size: clamp(1rem, 1.6vw, 1.2rem);
+		font-weight: 800;
+		overflow-wrap: anywhere;
+		white-space: normal;
+	}
+	.error-card p { color: rgb(255 224 224 / 92%); }
+
+	.location {
+		position: absolute;
+		z-index: 5;
+		right: clamp(32px, 6vw, 110px);
+		bottom: clamp(54px, 7vh, 92px);
+		margin: 0;
+		font: 950 clamp(1.3rem, 2.2vw, 2.6rem)/1 var(--display);
+		letter-spacing: -.06em;
+	}
+
+	@keyframes card-float {
+		0%,
+		100% { translate: 0 0; }
+		50% { translate: 0 -4px; }
+	}
+
+	@media (max-width: 820px) {
+		.collection-page {
+			display: block;
+			min-height: 100svh;
+			padding: 178px 24px 120px;
+			overflow-y: auto;
+		}
+		.accent-panel {
+			top: clamp(245px, 31svh, 340px);
+			width: calc(100% - 28px);
+		}
+		h1 { font-size: clamp(3.5rem, 18vw, 7rem); }
+		.collection-content[data-section="interviews"] h1 {
+			font-size: clamp(2.7rem, 12vw, 5rem);
+			overflow-wrap: normal;
+			word-break: normal;
+		}
+		.collection-content[data-section="behind-the-scenes"] h1 {
+			font-size: clamp(1.9rem, 7.6vw, 3.8rem);
+		}
+		.entry-grid {
+			grid-template-columns: minmax(0, 1fr);
+			width: 100%;
+		}
+		.location {
+			right: 24px;
+			bottom: 46px;
+			font-size: 1.25rem;
+			white-space: nowrap;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.collection-page { padding: 166px 16px 110px; }
+		.eyebrow { max-width: 76%; font-size: .67rem; }
+		.introduction { width: 100%; font-size: .98rem; }
+		.entry-grid { gap: 15px; margin-top: 36px; }
+		.entry-card {
+			min-height: 230px;
+			padding: 52px 21px 25px;
+			border-radius: 22px;
+		}
+		.window-dots { top: 18px; left: 20px; gap: 4px; }
+		.window-dots i { width: 7px; height: 7px; }
+		.entry-image {
+			flex-basis: 40%;
+			margin: -52px 18px -25px -21px;
+		}
+		.entry-image img { min-height: 230px; }
+	}
+
+	@media (max-width: 390px) {
+		.entry-card:has(.entry-image) { display: block; }
+		.entry-image {
+			width: calc(100% + 42px);
+			height: 190px;
+			margin: -52px -21px 24px;
+		}
+		.entry-image img { min-height: 0; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.entry-card,
+		.entry-copy a { animation: none; transition: none; }
+	}
+</style>
