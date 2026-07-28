@@ -1,0 +1,512 @@
+---
+import SiteMenu from "../components/SiteMenu.astro";
+import PageMotion from "../components/PageMotion.astro";
+
+const backgroundWindows = Array.from({ length: 20 }, (_, index) => ({
+	x: (index * 17 + 4) % 94,
+	y: (index * 29 + 9) % 88,
+	w: 38 + (index % 7) * 10,
+	h: 31 + (index % 6) * 8,
+	symbol: ["+", "○", "✦", "×", "◇", "▶", "⌁", "●"][index % 8],
+}));
+
+const socialLinks = [
+	{
+		name: "Instagram",
+		type: "@jetsullie",
+		href: "https://www.instagram.com/jetsullie/?hl=en",
+		className: "instagram",
+		icon: "vertical-video",
+	},
+	{
+		name: "TikTok",
+		type: "@jetsullie",
+		href: "https://www.tiktok.com/@jetsullie",
+		className: "tiktok",
+		icon: "vertical-video",
+	},
+	{
+		name: "YouTube",
+		type: "@JetSullie",
+		href: "https://www.youtube.com/@JetSullie",
+		className: "youtube",
+		icon: "horizontal-video",
+	},
+	{
+		name: "IMDb",
+		type: "Profile",
+		href: "https://www.imdb.com/user/p.k3qpjpuypnjk7ykbwmg3ga7qau?ref_=tt_nv_profile",
+		className: "imdb",
+		icon: "film-frame",
+	},
+	{
+		name: "LinkedIn",
+		type: "Jet Sullivan",
+		href: "https://www.linkedin.com/in/jetsullivan/",
+		className: "linkedin",
+		icon: "briefcase",
+	},
+];
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="description" content="Find Jet Sullivan across social media." />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>Socials — Jet Sullivan</title>
+	</head>
+
+	<body>
+		<main class="social-page" data-motion-root>
+			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
+			<div class="bottom-frame" data-motion-depth="counter" aria-hidden="true"></div>
+			<div class="yellow-panel" data-motion-depth="counter" aria-hidden="true"></div>
+
+			<div class="background-windows" data-motion-bounds>
+				{
+					backgroundWindows.map((item, index) => (
+						<span
+							class="mini-window"
+							data-motion-float
+							aria-hidden="true"
+							style={`--x:${item.x}%;--y:${item.y}%;--w:${item.w}px;--h:${item.h}px;--delay:-${index * 0.31}s;`}
+						>
+							<span class="mini-dots"><i></i><i></i><i></i></span>
+							<span>{item.symbol}</span>
+						</span>
+					))
+				}
+			</div>
+
+			<SiteMenu showHomeButton />
+
+			<section class="hero" data-motion-depth="scene" aria-labelledby="social-heading">
+				<p class="eyebrow">Find Jet online</p>
+				<h1 id="social-heading">Socials</h1>
+
+				<div class="social-grid">
+					{
+						socialLinks.map((link) => (
+							<a
+								class={`social-tab ${link.className}`}
+								href={link.href}
+								target="_blank"
+								rel="noopener noreferrer"
+							>
+								<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
+								<span class={`social-icon icon-${link.icon}`} aria-hidden="true">
+									{
+										link.icon === "vertical-video" && (
+											<svg viewBox="0 0 96 96" focusable="false">
+												{
+													link.className === "instagram" && (
+														<defs>
+															<radialGradient
+																id="instagram-icon-gradient"
+																cx="28%"
+																cy="108%"
+																r="122%"
+															>
+																<stop offset="0%" stop-color="#ffd600" />
+																<stop offset="28%" stop-color="#ff7a00" />
+																<stop offset="52%" stop-color="#ff0169" />
+																<stop offset="76%" stop-color="#d300c5" />
+																<stop offset="100%" stop-color="#7638fa" />
+															</radialGradient>
+														</defs>
+													)
+												}
+												{
+													link.className === "tiktok" && (
+														<defs>
+															<linearGradient
+																id="tiktok-icon-gradient"
+																x1="0%"
+																y1="0%"
+																x2="100%"
+																y2="0%"
+															>
+																<stop offset="0%" stop-color="#25f4ee" />
+																<stop offset="49.9%" stop-color="#25f4ee" />
+																<stop offset="50%" stop-color="#fe2c55" />
+																<stop offset="100%" stop-color="#fe2c55" />
+															</linearGradient>
+														</defs>
+													)
+												}
+												<rect class="icon-surface" x="27" y="10" width="42" height="76" rx="7" />
+												{
+													link.className === "instagram" && (
+														<rect
+															class="instagram-gradient-surface"
+															x="27"
+															y="10"
+															width="42"
+															height="76"
+															rx="7"
+														/>
+													)
+												}
+												{
+													link.className === "tiktok" && (
+														<rect
+															class="tiktok-gradient-surface"
+															x="27"
+															y="10"
+															width="42"
+															height="76"
+															rx="7"
+														/>
+													)
+												}
+												<path class="icon-fill" d="M42 34 60 48 42 62Z" />
+											</svg>
+										)
+									}
+									{
+										link.icon === "horizontal-video" && (
+											<svg viewBox="0 0 96 96" focusable="false">
+												<rect class="icon-surface" x="8" y="26" width="80" height="45" rx="7" />
+												<path class="icon-fill" d="M42 35 60 48.5 42 62Z" />
+											</svg>
+										)
+									}
+									{
+										link.icon === "film-frame" && (
+											<svg viewBox="0 0 96 96" focusable="false">
+												<path
+													class="icon-surface"
+													fill-rule="evenodd"
+													d="M15 22h66a7 7 0 0 1 7 7v38a7 7 0 0 1-7 7H15a7 7 0 0 1-7-7V29a7 7 0 0 1 7-7Zm9 10h48v32H24Zm-11-3h6v7h-6Zm0 15h6v7h-6Zm0 15h6v7h-6Zm64-30h6v7h-6Zm0 15h6v7h-6Zm0 15h6v7h-6Z"
+												/>
+											</svg>
+										)
+									}
+									{
+										link.icon === "briefcase" && (
+											<svg viewBox="0 0 96 96" focusable="false">
+												<path
+													class="icon-surface"
+													fill-rule="evenodd"
+													d="M21 34h15v-7a7 7 0 0 1 7-7h10a7 7 0 0 1 7 7v7h15a7 7 0 0 1 7 7v35a7 7 0 0 1-7 7H21a7 7 0 0 1-7-7V41a7 7 0 0 1 7-7Zm21 0h12v-7a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2Z"
+												/>
+												<path class="briefcase-seam" d="M19 50H77" />
+											</svg>
+										)
+									}
+								</span>
+								<span class="social-copy">
+									<strong>{link.name}</strong>
+									<small>{link.type} ↗</small>
+								</span>
+							</a>
+						))
+					}
+				</div>
+			</section>
+		</main>
+		<PageMotion />
+	</body>
+</html>
+
+<style>
+	:root {
+		--yellow: #efda4a;
+		--white: #fff;
+		--black: #252525;
+		--pink: #fdbfbf;
+		--mint: #7cf5b5;
+		--blue: #93e9f9;
+		--display: "Arial Black", "Myriad Pro", Arial, sans-serif;
+		--body: "Myriad Pro", Myriad, Arial, sans-serif;
+	}
+
+	:global(*) { box-sizing: border-box; }
+	:global(html) { background: var(--black); color: var(--black); font-family: var(--body); }
+	:global(body) { margin: 0; min-width: 320px; min-height: 100vh; }
+
+	.social-page {
+		position: relative;
+		width: 100%;
+		min-height: 100svh;
+		padding: clamp(105px, 11vh, 145px) clamp(28px, 6vw, 105px) clamp(80px, 8vh, 110px);
+		overflow: hidden;
+		background: linear-gradient(180deg, #fff 0%, #effcff 32%, #d4f7fd 68%, #c0f2fb 100%);
+		isolation: isolate;
+	}
+
+	.top-frame, .bottom-frame {
+		position: absolute;
+		z-index: 8;
+		left: -3%;
+		width: 106%;
+		height: 9vw;
+		min-height: 54px;
+		background: var(--black);
+		pointer-events: none;
+	}
+	.top-frame { top: -5vw; transform: rotate(-3deg); }
+	.bottom-frame { bottom: -5vw; transform: rotate(-3deg); }
+
+	.yellow-panel {
+		position: absolute;
+		z-index: 1;
+		top: 23%;
+		bottom: -3%;
+		left: 4%;
+		width: 52%;
+		border: 1px solid rgb(255 255 255 / 48%);
+		border-radius: 24px;
+		background: linear-gradient(
+			180deg,
+			rgb(235 252 255 / 88%) 0%,
+			rgb(147 233 249 / 82%) 42%,
+			rgb(75 183 215 / 76%) 135%
+		);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 52%), 0 12px 36px rgb(37 37 37 / 7%);
+		backdrop-filter: blur(8px);
+	}
+
+	.background-windows { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
+	.mini-window {
+		position: absolute;
+		top: var(--y);
+		left: var(--x);
+		display: grid;
+		width: var(--w);
+		height: var(--h);
+		border: 1px solid rgb(255 255 255 / 44%);
+		border-radius: clamp(5px, .7vw, 14px);
+		background: rgb(156 166 170 / 20%);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 25%), 0 5px 14px rgb(37 37 37 / 5%);
+		color: rgb(37 37 37 / 28%);
+		font: 900 .7rem var(--display);
+		backdrop-filter: blur(3px);
+		place-items: center;
+	}
+	.mini-dots { position: absolute; top: 6px; left: 7px; display: flex; gap: 3px; }
+	.mini-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--pink); }
+	.mini-dots i:nth-child(2), .dots i:nth-child(2) { background: var(--yellow); }
+	.mini-dots i:nth-child(3), .dots i:nth-child(3) { background: var(--mint); }
+
+	.home-tab {
+		position: absolute;
+		z-index: 12;
+		top: clamp(70px, 8vh, 105px);
+		right: clamp(28px, 5vw, 82px);
+		display: grid;
+		grid-template: auto 1fr / auto 1fr;
+		gap: 8px 12px;
+		width: clamp(175px, 13vw, 220px);
+		height: clamp(88px, 7vw, 112px);
+		padding: 17px;
+		border: 1px solid rgb(255 255 255 / 52%);
+		border-radius: 28px;
+		outline: 1px solid rgb(255 255 255 / 14%);
+		outline-offset: -3px;
+		background: linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 1%)), rgb(37 37 37 / 82%);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%), 0 14px 34px rgb(37 37 37 / 12%);
+		color: var(--white);
+		font: 900 clamp(.9rem, 1.2vw, 1.2rem) var(--display);
+		text-decoration: none;
+		text-transform: uppercase;
+		backdrop-filter: blur(10px);
+		transition: transform 320ms cubic-bezier(.34, 1.56, .64, 1);
+	}
+	.home-tab:hover { transform: translateY(4px) scale(1.03); }
+	.home-tab .dots { grid-column: 1 / -1; }
+	.home-arrow, .home-tab > span:last-child { align-self: center; }
+	.home-arrow { font: 900 2.4rem/1 var(--display); }
+
+	.dots { display: flex; gap: 6px; }
+	.dots i {
+		width: 10px;
+		height: 10px;
+		border: 1px solid rgb(37 37 37 / 18%);
+		border-radius: 50%;
+		background: var(--pink);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%), 0 1px 3px rgb(37 37 37 / 32%);
+	}
+
+	.hero { position: relative; z-index: 3; width: min(100%, 1280px); margin: 0 auto; }
+	.eyebrow { margin: 0 0 18px; font-weight: 900; letter-spacing: .16em; text-transform: uppercase; }
+	h1 {
+		margin: 0;
+		font: 950 clamp(5rem, 15vw, 15rem)/.72 var(--display);
+		letter-spacing: -.035em;
+		text-transform: uppercase;
+	}
+
+	.social-grid {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: clamp(16px, 2.2vw, 32px);
+		width: min(88%, 980px);
+		margin-top: clamp(52px, 7vh, 84px);
+	}
+
+	.social-tab {
+		position: relative;
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		gap: clamp(13px, 1.5vw, 20px);
+		min-height: clamp(128px, 14vw, 185px);
+		padding: 46px 20px 24px;
+		border: 1px solid rgb(255 255 255 / 46%);
+		border-radius: 26px;
+		outline: 1px solid rgb(255 255 255 / 12%);
+		outline-offset: -3px;
+		background: linear-gradient(rgb(255 255 255 / 7%), rgb(255 255 255 / 2%)), rgb(37 37 37 / 78%);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 38%), 0 12px 30px rgb(37 37 37 / 10%);
+		color: var(--white);
+		text-decoration: none;
+		backdrop-filter: blur(9px);
+		animation: tab-float 4.8s ease-in-out infinite;
+		transition: transform 320ms cubic-bezier(.34, 1.56, .64, 1), box-shadow 180ms ease-out;
+		will-change: transform, translate;
+	}
+	.social-tab:nth-child(1) { animation-delay: -.4s; }
+	.social-tab:nth-child(2) { animation-delay: -1.4s; }
+	.social-tab:nth-child(3) { animation-delay: -2.4s; }
+	.social-tab:nth-child(4) { animation-delay: -3.4s; }
+	.social-tab:nth-child(5) { animation-delay: -4.4s; }
+	.social-tab.instagram { --social-accent: 253 191 191; }
+	.social-tab.tiktok { --social-accent: 147 233 249; }
+	.social-tab.youtube { --social-accent: 255 0 0; }
+	.social-tab.imdb { --social-accent: 245 197 24; }
+	.social-tab.linkedin { --social-accent: 10 102 194; }
+	.social-tab:hover,
+	.social-tab:focus-visible {
+		animation-play-state: paused;
+		transition-duration: 320ms, 1s;
+	}
+	.social-tab:hover { transform: translateY(4px) scale(.99); }
+	.social-tab.instagram:hover,
+	.social-tab.instagram:focus-visible {
+		box-shadow:
+			-13px -10px 30px rgb(118 56 250 / 30%),
+			14px -8px 30px rgb(255 1 105 / 33%),
+			-10px 14px 28px rgb(255 214 0 / 34%),
+			12px 14px 30px rgb(255 86 0 / 32%);
+	}
+	.social-tab.tiktok:hover,
+	.social-tab.tiktok:focus-visible {
+		box-shadow:
+			-15px 0 32px rgb(37 244 238 / 72%),
+			15px 0 32px rgb(254 44 85 / 72%);
+	}
+	.social-tab.linkedin:hover,
+	.social-tab.linkedin:focus-visible {
+		box-shadow: 0 0 34px rgb(10 102 194 / 82%);
+	}
+	.social-tab.imdb:hover,
+	.social-tab.imdb:focus-visible {
+		box-shadow: 0 0 34px rgb(245 197 24 / 84%);
+	}
+	.social-tab.youtube:hover,
+	.social-tab.youtube:focus-visible {
+		box-shadow: 0 0 34px rgb(255 0 0 / 84%);
+	}
+	.social-tab .dots { position: absolute; top: 17px; left: 17px; }
+	.social-icon {
+		display: grid;
+		flex: 0 0 auto;
+		width: clamp(58px, 5.2vw, 76px);
+		aspect-ratio: 1;
+		color: rgb(255 255 255 / 91%);
+		place-items: center;
+	}
+	.social-icon svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+		overflow: visible;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+	.social-icon .icon-surface {
+		fill: rgb(255 255 255 / 28%);
+		stroke: none;
+		transition: fill 220ms ease;
+	}
+	.social-tab:hover .icon-surface,
+	.social-tab:focus-visible .icon-surface {
+		fill: rgb(var(--social-accent));
+	}
+	.social-icon .icon-fill {
+		fill: currentColor;
+		stroke: none;
+	}
+	.social-icon .briefcase-seam {
+		fill: none;
+		stroke: rgb(255 255 255 / 72%);
+		stroke-width: 3;
+	}
+	.instagram-gradient-surface {
+		fill: url("#instagram-icon-gradient");
+		opacity: 0;
+		stroke: none;
+		transition: opacity 220ms ease;
+	}
+	.social-tab.instagram:hover .instagram-gradient-surface,
+	.social-tab.instagram:focus-visible .instagram-gradient-surface {
+		opacity: 1;
+	}
+	.tiktok-gradient-surface {
+		fill: url("#tiktok-icon-gradient");
+		opacity: 0;
+		stroke: none;
+		transition: opacity 220ms ease;
+	}
+	.social-tab.tiktok:hover .tiktok-gradient-surface,
+	.social-tab.tiktok:focus-visible .tiktok-gradient-surface {
+		opacity: 1;
+	}
+	.social-copy {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+	.social-tab strong { font: 900 clamp(1rem, 1.7vw, 1.45rem)/1.05 var(--display); text-transform: uppercase; }
+	.social-tab small { margin-top: 10px; color: rgb(255 255 255 / 68%); font-weight: 700; }
+
+	@keyframes tab-float {
+		0%,
+		100% { translate: 0 0; }
+		50% { translate: 0 -4px; }
+	}
+
+	@media (max-width: 760px) {
+		.social-page { padding: 128px 22px 90px; overflow-y: auto; }
+		.yellow-panel { top: 28%; left: 14px; width: calc(100% - 28px); }
+		.home-tab { top: 62px; right: 20px; width: 140px; height: 78px; padding: 12px; border-radius: 21px; }
+		.home-arrow { font-size: 1.8rem; }
+		.home-tab > span:last-child { font-size: .72rem; }
+		.eyebrow { text-align: center; }
+		h1 { font-size: clamp(3.8rem, 19vw, 7.5rem); text-align: center; }
+		.social-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; }
+		.social-tab { min-height: 125px; border-radius: 20px; }
+	}
+
+	@media (max-width: 430px) {
+		.social-grid { grid-template-columns: 1fr; }
+		.social-tab { min-height: 112px; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.home-tab,
+		.social-tab,
+		.social-icon .icon-surface,
+		.instagram-gradient-surface,
+		.tiktok-gradient-surface {
+			animation: none;
+			transition: none;
+		}
+	}
+</style>
