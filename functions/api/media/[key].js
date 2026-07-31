@@ -15,9 +15,11 @@ const INLINE_TYPES = new Set([
 	"application/pdf",
 ]);
 
-const contentDisposition = (object, key) => {
+const contentDisposition = (object, key, renamedFile) => {
 	const contentType = object.httpMetadata?.contentType || "";
-	const originalName = String(object.customMetadata?.originalName || key)
+	const originalName = String(
+		renamedFile || object.customMetadata?.originalName || key,
+	)
 		.replace(/[\r\n"]/g, "")
 		.slice(0, 180);
 	const fallbackName =
@@ -52,6 +54,15 @@ export const onRequestGet = async ({ request, env, params }) => {
 		});
 	}
 	if (!object) return new Response("Not found", { status: 404 });
+	let renamedFile = "";
+	if (env.CONTENT_KV) {
+		try {
+			const names = await env.CONTENT_KV.get("media-library:names", "json");
+			if (names && typeof names[key] === "string") renamedFile = names[key];
+		} catch (error) {
+			console.error("Could not load the media display name.", error);
+		}
+	}
 
 	const headers = new Headers();
 	object.writeHttpMetadata(headers);
@@ -59,7 +70,10 @@ export const onRequestGet = async ({ request, env, params }) => {
 	headers.set("Cache-Control", "public, max-age=86400");
 	headers.set("X-Content-Type-Options", "nosniff");
 	headers.set("Accept-Ranges", "bytes");
-	headers.set("Content-Disposition", contentDisposition(object, key));
+	headers.set(
+		"Content-Disposition",
+		contentDisposition(object, key, renamedFile),
+	);
 
 	let status = 200;
 	if (requestedRange && object.range) {

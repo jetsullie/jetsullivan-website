@@ -427,12 +427,25 @@ export const listMediaEntryKeys = async (kv, section) => {
 
 export const readMediaEntries = async (kv, section) => {
 	const keys = await listMediaEntryKeys(kv, section);
-	const storedEntries = await Promise.all(
-		keys.map((key) => kv.get(key.name, "json")),
-	);
+	const names = keys.map((key) => key.name);
+	const storedEntries = [];
+
+	for (let index = 0; index < names.length; index += 100) {
+		const chunk = names.slice(index, index + 100);
+		const bulkResult = await kv.get(chunk, "json");
+		if (bulkResult instanceof Map) {
+			for (const name of chunk) storedEntries.push(bulkResult.get(name));
+		} else {
+			// Keep compatibility with local and test KV implementations that do not
+			// expose Cloudflare's bulk-read overload yet.
+			storedEntries.push(
+				...(await Promise.all(chunk.map((name) => kv.get(name, "json")))),
+			);
+		}
+	}
 
 	return storedEntries
-		.filter((entry) => entry !== null)
+		.filter((entry) => entry !== null && entry !== undefined)
 		.map((entry) => validateStoredMediaEntry(entry, section));
 };
 

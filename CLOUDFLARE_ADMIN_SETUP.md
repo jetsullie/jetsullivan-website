@@ -92,7 +92,12 @@ After deployment:
   attachment limit.
 - Entry deletions require confirmation and permanently remove the public entry.
   Replaced and deleted managed entry files are retained for a later cleanup pass
-  so a cached page never points to a file that has already disappeared.
+  so a cached page never points to a file that has already disappeared. These
+  files appear as stored orphans in the Website Media Library and can be
+  permanently removed there.
+- The Website Media Library lists every R2 upload. Renaming changes its
+  user-facing/download name without changing the stable storage URL. Permanent
+  deletion clears any post references before removing the R2 object.
 - Export or copy the `media-entry:*` KV records regularly, and enable R2 object
   versioning or backups before storing irreplaceable media.
 - Keep the Cloudflare account recovery methods and MFA devices secure.
