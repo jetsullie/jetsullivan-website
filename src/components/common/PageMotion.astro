@@ -20,11 +20,39 @@
 		let animationFrame = 0;
 		let floatingState: Array<{
 			element: HTMLElement;
+			followers: HTMLElement[];
 			x: number;
 			y: number;
 			vx: number;
 			vy: number;
 		}> = [];
+
+		const getFollowers = (element: HTMLElement) => {
+			if (!element.id) return [];
+
+			return Array.from(
+				root.querySelectorAll<HTMLElement>(
+					`[data-motion-follow="${CSS.escape(element.id)}"]`,
+				),
+			);
+		};
+
+		const setFloatingPosition = (
+			element: HTMLElement,
+			followers: HTMLElement[],
+			x: number,
+			y: number,
+		) => {
+			const driftX = `${x}px`;
+			const driftY = `${y}px`;
+			element.style.setProperty("--drift-x", driftX);
+			element.style.setProperty("--drift-y", driftY);
+
+			for (const follower of followers) {
+				follower.style.setProperty("--drift-x", driftX);
+				follower.style.setProperty("--drift-y", driftY);
+			}
+		};
 
 		const renderParallax = () => {
 			currentX += (targetX - currentX) * 0.09;
@@ -51,6 +79,7 @@
 				const elementRect = element.getBoundingClientRect();
 				const angle = Math.random() * Math.PI * 2;
 				const speed = 0.08 + Math.random() * 0.14;
+				const followers = getFollowers(element);
 
 				if (!element.dataset.motionDepth) {
 					if (element.classList.contains("depth-b")) {
@@ -64,15 +93,20 @@
 					}
 				}
 
+				for (const follower of followers) {
+					follower.dataset.motionDepth = element.dataset.motionDepth;
+					follower.dataset.motionFollowReady = "true";
+				}
+
 				const x = elementRect.left - boundsRect.left;
 				const y = elementRect.top - boundsRect.top;
 				element.style.left = "0px";
 				element.style.top = "0px";
-				element.style.setProperty("--drift-x", `${x}px`);
-				element.style.setProperty("--drift-y", `${y}px`);
+				setFloatingPosition(element, followers, x, y);
 
 				return {
 					element,
+					followers,
 					x,
 					y,
 					vx: Math.cos(angle) * speed,
@@ -98,6 +132,13 @@
 				element.style.removeProperty("top");
 				element.style.removeProperty("--drift-x");
 				element.style.removeProperty("--drift-y");
+
+				for (const follower of getFollowers(element)) {
+					follower.style.removeProperty("--drift-x");
+					follower.style.removeProperty("--drift-y");
+					delete follower.dataset.motionDepth;
+					delete follower.dataset.motionFollowReady;
+				}
 			}
 			floatingState = [];
 		};
@@ -124,8 +165,7 @@
 					item.vy *= -1;
 				}
 
-				item.element.style.setProperty("--drift-x", `${item.x}px`);
-				item.element.style.setProperty("--drift-y", `${item.y}px`);
+				setFloatingPosition(item.element, item.followers, item.x, item.y);
 			}
 
 			animationFrame = window.requestAnimationFrame(animate);
@@ -246,9 +286,26 @@
 		will-change: translate;
 	}
 
+	[data-motion-follow][data-motion-follow-ready="true"] {
+		right: auto !important;
+		left: 0 !important;
+		top: 0 !important;
+		translate:
+			calc(
+				var(--motion-layer-x, 0px) + var(--drift-x, 0px) +
+					var(--motion-follow-x, 0px)
+			)
+			calc(
+				var(--motion-layer-y, 0px) + var(--drift-y, 0px) +
+					var(--motion-follow-y, 0px)
+			);
+		will-change: translate;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
 		[data-motion-depth],
-		[data-motion-float] {
+		[data-motion-float],
+		[data-motion-follow] {
 			translate: 0 0;
 			will-change: auto;
 		}

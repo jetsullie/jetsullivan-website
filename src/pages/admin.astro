@@ -1,7 +1,18 @@
 ---
-import SiteMenu from "../components/SiteMenu.astro";
+import SiteMenu from "../components/common/SiteMenu.astro";
+import PageMotion from "../components/common/PageMotion.astro";
 
 const pageTitle = "Jet Sullivan — Admin";
+
+const adminWindows = [
+	[3, 17, 42, 34, "✦"], [10, 48, 52, 40, "×"], [17, 8, 46, 38, "○"],
+	[23, 76, 62, 46, "△"], [30, 28, 70, 52, "+"], [37, 87, 58, 44, "◇"],
+	[44, 12, 76, 56, "≈"], [51, 64, 84, 61, "□"], [58, 35, 66, 49, "§"],
+	[65, 81, 94, 68, "∞"], [72, 7, 72, 53, "※"], [79, 50, 104, 74, "∴"],
+	[86, 20, 48, 37, "✦"], [93, 60, 60, 45, "◌"], [6, 90, 82, 59, "×"],
+	[20, 56, 90, 65, "○"], [69, 29, 106, 75, "△"], [89, 78, 116, 80, "+"],
+	[40, 42, 54, 41, "◇"], [82, 91, 68, 50, "≈"],
+];
 ---
 
 <!doctype html>
@@ -10,9 +21,26 @@ const pageTitle = "Jet Sullivan — Admin";
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="robots" content="noindex, nofollow, noarchive" />
+		<link rel="icon" type="image/png" href="/favicon-profile.png" />
 		<title>{pageTitle}</title>
 	</head>
-	<body>
+	<body data-motion-root>
+		<div class="admin-floaters" data-motion-bounds>
+			{
+				adminWindows.map((item) => (
+					<button
+						type="button"
+						class="admin-mini-window"
+						data-motion-float
+						aria-label="Dismiss background symbol"
+						style={`--x:${item[0]}%;--y:${item[1]}%;--w:${item[2]}px;--h:${item[3]}px;`}
+					>
+						<span class="admin-window-symbol" aria-hidden="true">{item[4]}</span>
+					</button>
+				))
+			}
+		</div>
+
 		<main>
 			<SiteMenu showHomeButton />
 			<header>
@@ -27,7 +55,6 @@ const pageTitle = "Jet Sullivan — Admin";
 			</div>
 
 			<section aria-labelledby="about-editor-title">
-				<div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
 				<h2 id="about-editor-title">About biography</h2>
 				<form id="about-form">
 					<label for="biography">Biography</label>
@@ -40,12 +67,11 @@ const pageTitle = "Jet Sullivan — Admin";
 			</section>
 
 			<section aria-labelledby="media-entry-editor-title">
-				<div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
-				<h2 id="media-entry-editor-title">Media updates</h2>
+				<h2 id="media-entry-editor-title">Site posts</h2>
 				<p class="section-intro">
 					Add a dated update to Featured, Interviews, Behind the Scenes, or
-					Press. Behind-the-scenes photos are stored privately and only appear
-					through the published update.
+					Press, plus Acting, Film, and Video. Portfolio attachments are stored
+					privately and only appear through their published post.
 				</p>
 				<form id="media-entry-form" enctype="multipart/form-data">
 					<input id="entry-id" name="id" type="hidden" />
@@ -57,6 +83,9 @@ const pageTitle = "Jet Sullivan — Admin";
 								<option value="interviews">Interviews</option>
 								<option value="behind-the-scenes">Behind the Scenes</option>
 								<option value="press">Press</option>
+								<option value="acting">Acting</option>
+								<option value="film">Film</option>
+								<option value="video">Video</option>
 							</select>
 						</label>
 
@@ -122,11 +151,51 @@ const pageTitle = "Jet Sullivan — Admin";
 								/>
 							</label>
 						</div>
+
+						<div
+							id="entry-attachment-fields"
+							class="image-fields field-wide"
+							hidden
+						>
+							<label class="field">
+								<span>Post attachment (optional)</span>
+								<input
+									id="entry-attachment"
+									name="attachment"
+									type="file"
+									accept="image/jpeg,image/png,image/webp,image/avif,image/gif,video/mp4,video/webm,video/ogg,video/quicktime,application/pdf,audio/mpeg,audio/mp4,audio/ogg,audio/wav,text/plain,application/zip,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+								/>
+								<small>
+									Images, videos, audio, PDFs, text, Office documents, or ZIP
+									files. Maximum 100 MB.
+								</small>
+							</label>
+							<div class="field">
+								<label for="entry-attachment-alt">Attachment description</label>
+								<input
+									id="entry-attachment-alt"
+									name="attachmentAlt"
+									type="text"
+									maxlength="180"
+									placeholder="Describe an image or identify the attached file"
+								/>
+								<small id="entry-attachment-current"></small>
+								<label class="checkbox-field">
+									<input
+										id="entry-remove-attachment"
+										name="removeAttachment"
+										type="checkbox"
+										value="true"
+									/>
+									Remove the current attachment
+								</label>
+							</div>
+						</div>
 					</div>
 
 					<p id="entry-guidance" class="form-guidance"></p>
 					<div class="actions">
-						<button id="entry-submit" type="submit">Add media update</button>
+						<button id="entry-submit" type="submit">Publish post</button>
 						<button id="entry-cancel" class="secondary-button" type="button" hidden>
 							Cancel edit
 						</button>
@@ -137,8 +206,27 @@ const pageTitle = "Jet Sullivan — Admin";
 				<div id="media-entry-list" class="entry-list"></div>
 			</section>
 
+			<section aria-labelledby="post-delete-title">
+				<h2 id="post-delete-title">Delete a post</h2>
+				<p class="section-intro">
+					Choose a published post by its title. You will be asked to confirm
+					before anything is removed.
+				</p>
+				<form id="post-delete-form">
+					<label class="field" for="post-delete-select">
+						<span>Post title</span>
+						<select id="post-delete-select" required>
+							<option value="">Select a post</option>
+						</select>
+					</label>
+					<div class="actions">
+						<button class="danger-button" type="submit">Delete selected post</button>
+						<output id="post-delete-status" aria-live="polite"></output>
+					</div>
+				</form>
+			</section>
+
 			<section aria-labelledby="media-editor-title">
-				<div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>
 				<h2 id="media-editor-title">Unassigned media library</h2>
 				<p class="section-intro">
 					This is the original file library. Uploads here do not automatically
@@ -161,6 +249,34 @@ const pageTitle = "Jet Sullivan — Admin";
 				<div id="media-list" class="media-list"></div>
 			</section>
 		</main>
+
+		<dialog id="delete-confirm-dialog" class="delete-confirm-dialog">
+			<form method="dialog">
+				<p class="dialog-eyebrow">Confirm deletion</p>
+				<h2>Delete this post?</h2>
+				<p id="delete-confirm-message"></p>
+				<div class="dialog-actions">
+					<button id="delete-confirm-cancel" class="secondary-button" value="cancel">
+						Keep post
+					</button>
+					<button id="delete-confirm-submit" class="danger-button" value="confirm">
+						Delete post
+					</button>
+				</div>
+			</form>
+		</dialog>
+
+		<div class="section-divider footer-divider" aria-hidden="true"></div>
+
+		<footer class="site-footer">
+			<div class="footer-content">
+				<p class="footer-name">Admin Jet Sullivan</p>
+				<span aria-hidden="true"></span>
+				<p class="footer-location">Austin, Texas</p>
+			</div>
+		</footer>
+
+		<PageMotion />
 	</body>
 </html>
 
@@ -194,18 +310,43 @@ const pageTitle = "Jet Sullivan — Admin";
 	const entryImage = document.querySelector<HTMLInputElement>("#entry-image");
 	const entryImageAlt =
 		document.querySelector<HTMLInputElement>("#entry-image-alt");
+	const entryAttachmentFields =
+		document.querySelector<HTMLElement>("#entry-attachment-fields");
+	const entryAttachment =
+		document.querySelector<HTMLInputElement>("#entry-attachment");
+	const entryAttachmentAlt =
+		document.querySelector<HTMLInputElement>("#entry-attachment-alt");
+	const entryAttachmentCurrent =
+		document.querySelector<HTMLElement>("#entry-attachment-current");
+	const entryRemoveAttachment =
+		document.querySelector<HTMLInputElement>("#entry-remove-attachment");
 	const entryGuidance =
 		document.querySelector<HTMLElement>("#entry-guidance");
 	const entrySubmit =
 		document.querySelector<HTMLButtonElement>("#entry-submit");
 	const entryCancel =
 		document.querySelector<HTMLButtonElement>("#entry-cancel");
+	const postDeleteForm =
+		document.querySelector<HTMLFormElement>("#post-delete-form");
+	const postDeleteSelect =
+		document.querySelector<HTMLSelectElement>("#post-delete-select");
+	const postDeleteStatus =
+		document.querySelector<HTMLOutputElement>("#post-delete-status");
+	const deleteConfirmDialog =
+		document.querySelector<HTMLDialogElement>("#delete-confirm-dialog");
+	const deleteConfirmMessage =
+		document.querySelector<HTMLElement>("#delete-confirm-message");
+	const deleteConfirmSubmit =
+		document.querySelector<HTMLButtonElement>("#delete-confirm-submit");
 
 	type MediaSection =
 		| "featured"
 		| "interviews"
 		| "behind-the-scenes"
-		| "press";
+		| "press"
+		| "acting"
+		| "film"
+		| "video";
 
 	type MediaEntry = {
 		id: string;
@@ -217,6 +358,10 @@ const pageTitle = "Jet Sullivan — Admin";
 		link?: string | null;
 		imageUrl?: string | null;
 		imageAlt?: string | null;
+		attachmentUrl?: string | null;
+		attachmentType?: string | null;
+		attachmentName?: string | null;
+		attachmentAlt?: string | null;
 		createdAt?: string;
 	};
 
@@ -228,9 +373,16 @@ const pageTitle = "Jet Sullivan — Admin";
 		{ value: "interviews", label: "Interviews" },
 		{ value: "behind-the-scenes", label: "Behind the Scenes" },
 		{ value: "press", label: "Press" },
+		{ value: "acting", label: "Acting" },
+		{ value: "film", label: "Film" },
+		{ value: "video", label: "Video" },
 	];
 
 	let editingHasImage = false;
+	let editingHasAttachment = false;
+	let editingAttachmentName = "";
+	let loadedMediaEntries: MediaEntry[] = [];
+	let pendingDeleteEntry: MediaEntry | null = null;
 
 	const readError = async (response: Response) => {
 		const contentType = response.headers.get("Content-Type") || "";
@@ -284,6 +436,40 @@ const pageTitle = "Jet Sullivan — Admin";
 	const getEntryEndpoint = (section: MediaSection) =>
 		`/admin/api/media-entries/${encodeURIComponent(section)}`;
 
+	const requestEntryDeletion = (entry: MediaEntry) => {
+		if (!deleteConfirmDialog || !deleteConfirmMessage) return;
+		pendingDeleteEntry = entry;
+		deleteConfirmMessage.textContent =
+			`Do you actually want to delete the post “${entry.title}”? This cannot be undone.`;
+		deleteConfirmDialog.showModal();
+	};
+
+	const deleteEntry = async (entry: MediaEntry) => {
+		const sectionValue = getEntrySection(entry);
+		if (mediaEntryStatus) mediaEntryStatus.textContent = "Deleting…";
+		if (postDeleteStatus) postDeleteStatus.textContent = "Deleting…";
+		if (deleteConfirmSubmit) deleteConfirmSubmit.disabled = true;
+
+		try {
+			const response = await fetch(
+				`${getEntryEndpoint(sectionValue)}?id=${encodeURIComponent(entry.id)}`,
+				{ method: "DELETE", credentials: "same-origin" },
+			);
+			if (!response.ok) throw new Error(await readError(response));
+			if (entryId?.value === entry.id) resetMediaEntryForm();
+			await loadMediaEntries("Entry deleted.");
+			if (postDeleteStatus) postDeleteStatus.textContent = "Post deleted.";
+		} catch (error) {
+			const message =
+				error instanceof Error ? error.message : "Could not delete entry.";
+			if (mediaEntryStatus) mediaEntryStatus.textContent = message;
+			if (postDeleteStatus) postDeleteStatus.textContent = message;
+		} finally {
+			if (deleteConfirmSubmit) deleteConfirmSubmit.disabled = false;
+			pendingDeleteEntry = null;
+		}
+	};
+
 	const syncEntryFields = () => {
 		if (
 			!entrySection ||
@@ -293,6 +479,11 @@ const pageTitle = "Jet Sullivan — Admin";
 			!entryImageFields ||
 			!entryImage ||
 			!entryImageAlt ||
+			!entryAttachmentFields ||
+			!entryAttachment ||
+			!entryAttachmentAlt ||
+			!entryAttachmentCurrent ||
+			!entryRemoveAttachment ||
 			!entryGuidance
 		) {
 			return;
@@ -300,19 +491,37 @@ const pageTitle = "Jet Sullivan — Admin";
 
 		const section = entrySection.value as MediaSection;
 		const isBehindScenes = section === "behind-the-scenes";
+		const isPortfolio =
+			section === "acting" || section === "film" || section === "video";
 		const needsLink = section === "interviews" || section === "press";
 
 		entryLinkField.hidden = isBehindScenes;
 		entryImageFields.hidden = !isBehindScenes;
+		entryAttachmentFields.hidden = !isPortfolio;
 		entryLink.required = needsLink;
 		entryImage.required = isBehindScenes && !editingHasImage;
 		entryImageAlt.required = isBehindScenes;
+		entryAttachment.required = false;
+		entryAttachmentAlt.required = false;
+		entryAttachmentCurrent.textContent =
+			isPortfolio && editingHasAttachment
+				? `Current attachment: ${editingAttachmentName || "uploaded file"}. It will remain unless replaced or removed.`
+				: "";
+		entryRemoveAttachment.parentElement?.toggleAttribute(
+			"hidden",
+			!isPortfolio || !editingHasAttachment,
+		);
 
 		if (isBehindScenes) {
 			entryLink.value = "";
 		} else {
 			entryImage.value = "";
 			entryImageAlt.value = "";
+		}
+		if (!isPortfolio) {
+			entryAttachment.value = "";
+			entryAttachmentAlt.value = "";
+			entryRemoveAttachment.checked = false;
 		}
 
 		if (section === "interviews") {
@@ -327,6 +536,11 @@ const pageTitle = "Jet Sullivan — Admin";
 			entryGuidance.textContent = editingHasImage
 				? "The existing photo will stay unless you choose a replacement."
 				: "Upload one photo for this tab. Add another update for each additional photo.";
+		} else if (isPortfolio) {
+			entryLinkLabel.textContent = `${section[0].toUpperCase()}${section.slice(1)} link (optional)`;
+			entryGuidance.textContent = editingHasAttachment
+				? "The current file will remain unless you choose a replacement or select Remove."
+				: "Optionally attach one image, video, PDF, audio file, document, or ZIP file to this post.";
 		} else {
 			entryLinkLabel.textContent = "Featured work link (optional)";
 			entryGuidance.textContent =
@@ -338,10 +552,12 @@ const pageTitle = "Jet Sullivan — Admin";
 		if (!mediaEntryForm) return;
 		mediaEntryForm.reset();
 		editingHasImage = false;
+		editingHasAttachment = false;
+		editingAttachmentName = "";
 		if (entryId) entryId.value = "";
 		if (entryDate) entryDate.value = getLocalDate();
 		if (entrySection) entrySection.disabled = false;
-		if (entrySubmit) entrySubmit.textContent = "Add media update";
+		if (entrySubmit) entrySubmit.textContent = "Publish post";
 		if (entryCancel) entryCancel.hidden = true;
 		syncEntryFields();
 	};
@@ -355,13 +571,16 @@ const pageTitle = "Jet Sullivan — Admin";
 			!entryTitle ||
 			!entryDescription ||
 			!entryLink ||
-			!entryImageAlt
+			!entryImageAlt ||
+			!entryAttachmentAlt ||
+			!entryRemoveAttachment
 		) {
 			return;
 		}
 
 		mediaEntryForm.reset();
 		if (entryImage) entryImage.value = "";
+		if (entryAttachment) entryAttachment.value = "";
 		entryId.value = entry.id;
 		entrySection.value = getEntrySection(entry);
 		entrySection.disabled = true;
@@ -370,8 +589,12 @@ const pageTitle = "Jet Sullivan — Admin";
 		entryDescription.value = entry.description;
 		entryLink.value = entry.link || "";
 		entryImageAlt.value = entry.imageAlt || "";
+		entryAttachmentAlt.value = entry.attachmentAlt || "";
+		entryRemoveAttachment.checked = false;
 		editingHasImage = Boolean(entry.imageUrl);
-		if (entrySubmit) entrySubmit.textContent = "Update media entry";
+		editingHasAttachment = Boolean(entry.attachmentUrl);
+		editingAttachmentName = entry.attachmentName || "";
+		if (entrySubmit) entrySubmit.textContent = "Update post";
 		if (entryCancel) entryCancel.hidden = false;
 		if (mediaEntryStatus) {
 			mediaEntryStatus.textContent = `Editing “${entry.title}”.`;
@@ -384,6 +607,23 @@ const pageTitle = "Jet Sullivan — Admin";
 	const renderMediaEntries = (entries: MediaEntry[]) => {
 		if (!mediaEntryList) return;
 		mediaEntryList.replaceChildren();
+		loadedMediaEntries = entries;
+
+		if (postDeleteSelect) {
+			postDeleteSelect.replaceChildren(new Option("Select a post", ""));
+			const sortedEntries = [...entries].sort((left, right) =>
+				left.title.localeCompare(right.title),
+			);
+			for (const entry of sortedEntries) {
+				const sectionLabel =
+					mediaSections.find(
+						(section) => section.value === getEntrySection(entry),
+					)?.label || getEntrySection(entry);
+				postDeleteSelect.add(
+					new Option(`${entry.title} — ${sectionLabel}`, entry.id),
+				);
+			}
+		}
 
 		for (const section of mediaSections) {
 			const group = document.createElement("div");
@@ -435,6 +675,35 @@ const pageTitle = "Jet Sullivan — Admin";
 					image.loading = "lazy";
 					card.append(image);
 				}
+				if (entry.attachmentUrl) {
+					const type = entry.attachmentType || "";
+					if (type.startsWith("image/")) {
+						const image = document.createElement("img");
+						image.src = entry.attachmentUrl;
+						image.alt = entry.attachmentAlt || entry.title;
+						image.loading = "lazy";
+						card.append(image);
+					} else if (type.startsWith("video/")) {
+						const video = document.createElement("video");
+						video.src = entry.attachmentUrl;
+						video.controls = true;
+						video.preload = "metadata";
+						video.playsInline = true;
+						card.append(video);
+					} else if (type.startsWith("audio/")) {
+						const audio = document.createElement("audio");
+						audio.src = entry.attachmentUrl;
+						audio.controls = true;
+						audio.preload = "metadata";
+						card.append(audio);
+					} else if (type === "application/pdf") {
+						const frame = document.createElement("iframe");
+						frame.src = entry.attachmentUrl;
+						frame.title = `${entry.title} PDF preview`;
+						frame.loading = "lazy";
+						card.append(frame);
+					}
+				}
 
 				header.append(date, title);
 				card.append(header, description);
@@ -447,6 +716,14 @@ const pageTitle = "Jet Sullivan — Admin";
 					preview.textContent = "Open link ↗";
 					actions.append(preview);
 				}
+				if (entry.attachmentUrl) {
+					const attachmentLink = document.createElement("a");
+					attachmentLink.href = entry.attachmentUrl;
+					attachmentLink.target = "_blank";
+					attachmentLink.rel = "noopener noreferrer";
+					attachmentLink.textContent = `Open ${entry.attachmentName || "attachment"} ↗`;
+					actions.append(attachmentLink);
+				}
 
 				edit.type = "button";
 				edit.className = "secondary-button";
@@ -456,31 +733,7 @@ const pageTitle = "Jet Sullivan — Admin";
 				remove.type = "button";
 				remove.className = "danger-button";
 				remove.textContent = "Delete";
-				remove.addEventListener("click", async () => {
-					const sectionValue = getEntrySection(entry);
-					const deleteMessage =
-						`Delete “${entry.title}”? This removes its published tab from the site.`;
-					if (
-						!window.confirm(deleteMessage)
-					) {
-						return;
-					}
-					if (mediaEntryStatus) mediaEntryStatus.textContent = "Deleting…";
-					try {
-						const response = await fetch(
-							`${getEntryEndpoint(sectionValue)}?id=${encodeURIComponent(entry.id)}`,
-							{ method: "DELETE", credentials: "same-origin" },
-						);
-						if (!response.ok) throw new Error(await readError(response));
-						if (entryId?.value === entry.id) resetMediaEntryForm();
-						await loadMediaEntries("Entry deleted.");
-					} catch (error) {
-						if (mediaEntryStatus) {
-							mediaEntryStatus.textContent =
-								error instanceof Error ? error.message : "Could not delete entry.";
-						}
-					}
-				});
+				remove.addEventListener("click", () => requestEntryDeletion(entry));
 
 				actions.append(edit, remove);
 				card.append(actions);
@@ -493,7 +746,7 @@ const pageTitle = "Jet Sullivan — Admin";
 
 	const loadMediaEntries = async (successMessage = "") => {
 		if (!mediaEntryStatus) return;
-		mediaEntryStatus.textContent = "Loading media updates…";
+		mediaEntryStatus.textContent = "Loading posts…";
 		try {
 			const results = await Promise.all(
 				mediaSections.map(async (section) => {
@@ -513,14 +766,44 @@ const pageTitle = "Jet Sullivan — Admin";
 			mediaEntryStatus.textContent = successMessage;
 		} catch (error) {
 			mediaEntryStatus.textContent =
-				error instanceof Error ? error.message : "Could not load media updates.";
+				error instanceof Error ? error.message : "Could not load posts.";
 		}
 	};
 
 	entrySection?.addEventListener("change", syncEntryFields);
+	entryAttachment?.addEventListener("change", () => {
+		if (entryAttachment.files?.length && entryRemoveAttachment) {
+			entryRemoveAttachment.checked = false;
+		}
+	});
+	entryRemoveAttachment?.addEventListener("change", () => {
+		if (entryRemoveAttachment.checked && entryAttachment) {
+			entryAttachment.value = "";
+		}
+	});
 	entryCancel?.addEventListener("click", () => {
 		resetMediaEntryForm();
 		if (mediaEntryStatus) mediaEntryStatus.textContent = "Edit cancelled.";
+	});
+
+	postDeleteForm?.addEventListener("submit", (event) => {
+		event.preventDefault();
+		const selectedEntry = loadedMediaEntries.find(
+			(entry) => entry.id === postDeleteSelect?.value,
+		);
+		if (!selectedEntry) {
+			if (postDeleteStatus) postDeleteStatus.textContent = "Choose a post first.";
+			return;
+		}
+		requestEntryDeletion(selectedEntry);
+	});
+
+	deleteConfirmDialog?.addEventListener("close", () => {
+		if (deleteConfirmDialog.returnValue === "confirm" && pendingDeleteEntry) {
+			void deleteEntry(pendingDeleteEntry);
+		} else {
+			pendingDeleteEntry = null;
+		}
 	});
 
 	mediaEntryForm?.addEventListener("submit", async (event) => {
@@ -549,12 +832,12 @@ const pageTitle = "Jet Sullivan — Admin";
 			if (!response.ok) throw new Error(await readError(response));
 			resetMediaEntryForm();
 			const successMessage = isEditing
-				? "Media entry updated."
-				: "Media entry published.";
+				? "Post updated."
+				: "Post published.";
 			await loadMediaEntries(successMessage);
 		} catch (error) {
 			mediaEntryStatus.textContent =
-				error instanceof Error ? error.message : "Could not save media entry.";
+				error instanceof Error ? error.message : "Could not save post.";
 		} finally {
 			if (entrySubmit) entrySubmit.disabled = false;
 			if (entryCancel) entryCancel.disabled = false;
@@ -669,9 +952,108 @@ const pageTitle = "Jet Sullivan — Admin";
 	void loadBiography();
 	void loadMediaEntries();
 	void loadMedia();
+
+	const adminSymbolPool = [
+		"✦", "×", "○", "△", "+", "◇", "≈", "□", "§", "∞", "※", "∴",
+		"◌", "≡", "⌁", "∷",
+	];
+	const reducedAdminMotion = window.matchMedia(
+		"(prefers-reduced-motion: reduce)",
+	);
+	const randomBetween = (minimum: number, maximum: number) =>
+		minimum + Math.random() * (maximum - minimum);
+
+	document
+		.querySelectorAll<HTMLButtonElement>(".admin-mini-window")
+		.forEach((windowButton) => {
+			windowButton.addEventListener("click", () => {
+				if (windowButton.dataset.falling === "true") return;
+				windowButton.dataset.falling = "true";
+
+				const bounds = windowButton.getBoundingClientRect();
+				const fallingWindow = windowButton.cloneNode(true) as HTMLButtonElement;
+				fallingWindow.classList.add("is-falling-copy");
+				fallingWindow.removeAttribute("data-motion-float");
+				fallingWindow.removeAttribute("style");
+				fallingWindow.tabIndex = -1;
+				fallingWindow.setAttribute("aria-hidden", "true");
+				Object.assign(fallingWindow.style, {
+					left: `${bounds.left}px`,
+					top: `${bounds.top}px`,
+					width: `${bounds.width}px`,
+					height: `${bounds.height}px`,
+				});
+				document.body.append(fallingWindow);
+				windowButton.classList.add("is-respawning");
+
+				const finishRespawn = () => {
+					fallingWindow.remove();
+					const symbol = windowButton.querySelector<HTMLElement>(
+						".admin-window-symbol",
+					);
+					const nextSymbol =
+						adminSymbolPool[Math.floor(Math.random() * adminSymbolPool.length)];
+					if (symbol) symbol.textContent = nextSymbol;
+					windowButton.classList.remove("is-respawning");
+					windowButton.classList.add("has-respawned");
+					delete windowButton.dataset.falling;
+					window.setTimeout(
+						() => windowButton.classList.remove("has-respawned"),
+						360,
+					);
+				};
+
+				if (reducedAdminMotion.matches) {
+					fallingWindow.animate(
+						[
+							{ opacity: 1, transform: "scale(1)" },
+							{ opacity: 0, transform: "scale(.72)" },
+						],
+						{ duration: 240, easing: "ease-out", fill: "forwards" },
+					).addEventListener("finish", finishRespawn, { once: true });
+					return;
+				}
+
+				const horizontalVelocity = randomBetween(-65, 65);
+				const verticalVelocity = randomBetween(20, 90);
+				const gravity = randomBetween(920, 1180);
+				const spinVelocity = randomBetween(-45, 45);
+				const targetDrop = window.innerHeight - bounds.top + bounds.height * 2;
+				const flightTime = Math.min(
+					3,
+					Math.max(
+						1.5,
+						(-verticalVelocity +
+							Math.sqrt(verticalVelocity ** 2 + 2 * gravity * targetDrop)) /
+							gravity,
+					),
+				);
+				const keyframes: Keyframe[] = [];
+
+				for (let frame = 0; frame <= 18; frame += 1) {
+					const progress = frame / 18;
+					const elapsed = progress * flightTime;
+					const x = horizontalVelocity * elapsed;
+					const y = verticalVelocity * elapsed + .5 * gravity * elapsed ** 2;
+					keyframes.push({
+						offset: progress,
+						opacity: progress > .92 ? 1 - (progress - .92) / .08 : 1,
+						transform: `translate(${x}px, ${y}px) rotate(${spinVelocity * elapsed}deg)`,
+					});
+				}
+
+				fallingWindow
+					.animate(keyframes, {
+						duration: flightTime * 1000,
+						easing: "linear",
+						fill: "forwards",
+					})
+					.addEventListener("finish", finishRespawn, { once: true });
+			});
+		});
 </script>
 
-<style>
+<style is:global>
 	:root {
 		--yellow: #efda4a;
 		--white: #fff;
@@ -679,65 +1061,232 @@ const pageTitle = "Jet Sullivan — Admin";
 		--pink: #fdbfbf;
 		--mint: #7cf5b5;
 		--blue: #93e9f9;
+		--admin-gray: #252525;
 		--display: "Arial Black", Arial, sans-serif;
 		--body: "Myriad Pro", Myriad, Arial, sans-serif;
+		--admin-footer-gap: clamp(105px, 10vw, 150px);
 	}
 
-	:global(*) { box-sizing: border-box; }
-	:global(body) {
+	* { box-sizing: border-box; }
+	html {
+		background: var(--black);
+	}
+	body {
+		position: relative;
+		isolation: isolate;
 		margin: 0;
 		min-width: 320px;
 		min-height: 100vh;
-		background: linear-gradient(180deg, #fff, #d4f7fd 70%, #c0f2fb);
-		color: var(--black);
+		overflow-x: clip;
+		background-color: #f3f3f3;
+		background-image: radial-gradient(
+			circle,
+			rgb(68 73 74 / 22%) 1.5px,
+			transparent 1.7px
+		);
+		background-size: 28px 28px;
+		color: var(--admin-gray);
 		font-family: var(--body);
 	}
 
-	main { width: min(1080px, calc(100% - 40px)); margin: 0 auto; padding: 64px 0 90px; }
-	header { display: flex; align-items: center; justify-content: space-between; gap: 28px; margin-bottom: 24px; }
-	.eyebrow { margin: 0 0 8px; font-weight: 900; letter-spacing: .15em; text-transform: uppercase; }
-	h1 { margin: 0; font: 950 clamp(4rem, 11vw, 8rem)/.8 var(--display); text-transform: uppercase; }
+	body::before {
+		position: absolute;
+		z-index: 1;
+		top: -5vw;
+		left: -3%;
+		width: 106%;
+		height: 9vw;
+		min-height: 54px;
+		background: var(--black);
+		content: "";
+		pointer-events: none;
+		transform: rotate(-3deg);
+	}
+
+	.admin-floaters {
+		position: absolute;
+		z-index: 0;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.admin-mini-window {
+		position: absolute;
+		top: var(--y);
+		left: var(--x);
+		display: grid;
+		width: 54px;
+		height: 54px;
+		padding: 0;
+		border: 1px solid rgb(68 73 74 / 10%);
+		border-radius: clamp(8px, 1vw, 16px);
+		outline: 1px solid rgb(255 255 255 / 19%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 30%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 36%),
+			0 8px 22px rgb(37 37 37 / 4.5%);
+		color: var(--admin-gray);
+		font-size: 1.25rem;
+		line-height: 1;
+		-webkit-backdrop-filter: blur(9px);
+		backdrop-filter: blur(9px);
+		place-items: center;
+		pointer-events: auto;
+		transition:
+			opacity 140ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.admin-mini-window:hover {
+		background: rgb(255 255 255 / 38%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 41%),
+			0 8px 22px rgb(37 37 37 / 4.5%),
+			0 0 18px rgb(68 73 74 / 8%);
+	}
+
+	.admin-window-symbol {
+		display: grid;
+		width: 100%;
+		height: 100%;
+		font: 700 1.45rem/1 Arial, sans-serif;
+		place-items: center;
+	}
+
+	.admin-mini-window.is-respawning {
+		opacity: 0;
+		pointer-events: none;
+	}
+
+	.admin-mini-window.has-respawned {
+		animation: admin-window-respawn 340ms cubic-bezier(.2, .8, .2, 1);
+	}
+
+	.is-falling-copy {
+		position: fixed;
+		z-index: 0;
+		margin: 0;
+		pointer-events: none;
+		will-change: transform;
+	}
+
+	@keyframes admin-window-respawn {
+		0% { opacity: 0; scale: .72; }
+		65% { opacity: 1; scale: 1.06; }
+		100% { opacity: 1; scale: 1; }
+	}
+
+	main {
+		position: relative;
+		z-index: 2;
+		width: min(1180px, calc(100% - clamp(40px, 10vw, 160px)));
+		margin: 0 auto;
+		padding: clamp(118px, 14vh, 170px) 0 var(--admin-footer-gap);
+	}
+	header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 28px;
+		margin-bottom: clamp(24px, 4vh, 46px);
+	}
+	.eyebrow {
+		margin: 0 0 12px;
+		font-size: clamp(.72rem, 1vw, .92rem);
+		font-weight: 900;
+		letter-spacing: .18em;
+		text-transform: uppercase;
+	}
+	h1 {
+		margin: 0;
+		font: 950 clamp(5rem, 14vw, 12rem)/.72 var(--display);
+		letter-spacing: -.06em;
+		text-transform: uppercase;
+		color: var(--admin-gray);
+		text-shadow: 0 2px 0 rgb(255 255 255 / 72%);
+	}
 	header a, button {
-		border: 1px solid rgb(255 255 255 / 50%);
-		border-radius: 999px;
-		background: rgb(37 37 37 / 86%);
-		color: var(--white);
+		border: 1px solid rgb(68 73 74 / 20%);
+		border-radius: 16px;
+		outline: 1px solid rgb(255 255 255 / 46%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 64%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 78%),
+			0 8px 24px rgb(37 37 37 / 12%);
+		color: var(--admin-gray);
 		font-weight: 900;
 		text-decoration: none;
 		cursor: pointer;
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
+		transition:
+			background-color 180ms ease,
+			box-shadow 220ms ease,
+			color 180ms ease;
 	}
 	header a { padding: 14px 21px; white-space: nowrap; }
 	button { padding: 12px 18px; }
-	button:hover { background: rgb(37 37 37 / 100%); }
+	button:hover {
+		background: rgb(255 255 255 / 82%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 90%),
+			0 8px 24px rgb(37 37 37 / 12%),
+			0 0 20px rgb(68 73 74 / 20%);
+		color: var(--admin-gray);
+	}
+	button:focus-visible,
+	a:focus-visible,
+	input:focus-visible,
+	textarea:focus-visible,
+	select:focus-visible {
+		outline: 3px solid var(--admin-gray);
+		outline-offset: 4px;
+	}
 	button:disabled { opacity: .55; cursor: wait; }
 	.notice {
-		margin-bottom: 22px;
-		padding: 14px 18px;
-		border: 1px solid rgb(255 255 255 / 55%);
-		border-radius: 16px;
-		background: rgb(124 245 181 / 34%);
-		backdrop-filter: blur(8px);
+		width: fit-content;
+		max-width: 100%;
+		margin-bottom: 30px;
+		padding: 15px 20px;
+		border: 1px solid rgb(68 73 74 / 20%);
+		border-radius: 18px;
+		outline: 1px solid rgb(255 255 255 / 20%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 68%);
+		box-shadow: 0 10px 26px rgb(37 37 37 / 10%);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
 	}
 	section {
+		--section-glow: 68 73 74;
 		position: relative;
-		margin-top: 22px;
-		padding: 58px clamp(22px, 4vw, 48px) 36px;
-		border: 1px solid rgb(255 255 255 / 46%);
-		border-radius: 28px;
-		background: rgb(37 37 37 / 84%);
-		box-shadow: inset 0 1px 0 rgb(255 255 255 / 30%), 0 18px 44px rgb(37 37 37 / 13%);
-		color: var(--white);
-		backdrop-filter: blur(10px);
+		margin-top: clamp(24px, 4vh, 42px);
+		padding: 44px clamp(24px, 4vw, 52px) 42px;
+		border: 1px solid rgb(68 73 74 / 22%);
+		border-radius: clamp(28px, 4vw, 48px);
+		outline: 1px solid rgb(255 255 255 / 52%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 68%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 82%),
+			0 18px 44px rgb(37 37 37 / 12%);
+		color: var(--admin-gray);
+		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(14px);
 	}
-	.dots { position: absolute; top: 21px; left: 24px; display: flex; gap: 6px; }
-	.dots i { width: 10px; height: 10px; border-radius: 50%; background: var(--pink); }
-	.dots i:nth-child(2) { background: var(--yellow); }
-	.dots i:nth-child(3) { background: var(--mint); }
-	h2 { margin: 0 0 24px; font: 900 clamp(1.7rem, 4vw, 2.7rem) var(--display); text-transform: uppercase; }
+	h2 {
+		margin: 0 0 24px;
+		font: 950 clamp(1.9rem, 4.4vw, 3.4rem)/.95 var(--display);
+		letter-spacing: -.035em;
+		text-transform: uppercase;
+	}
 	.section-intro {
 		max-width: 780px;
 		margin: -10px 0 24px;
-		color: rgb(255 255 255 / 72%);
+		color: rgb(68 73 74 / 78%);
 		font-size: 1rem;
 		font-weight: 650;
 		line-height: 1.5;
@@ -751,11 +1300,29 @@ const pageTitle = "Jet Sullivan — Admin";
 	input[type="file"],
 	select {
 		width: 100%;
-		border: 1px solid rgb(255 255 255 / 32%);
-		border-radius: 14px;
-		background: rgb(255 255 255 / 94%);
-		color: var(--black);
+		border: 1px solid rgb(255 255 255 / 66%);
+		border-radius: 16px;
+		outline: 1px solid rgb(37 37 37 / 8%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 78%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 80%),
+			0 6px 16px rgb(37 37 37 / 8%);
+		color: var(--admin-gray);
 		font: 600 1rem/1.5 var(--body);
+		-webkit-backdrop-filter: blur(9px);
+		backdrop-filter: blur(9px);
+		transition:
+			background-color 180ms ease,
+			box-shadow 180ms ease;
+	}
+	textarea:hover,
+	input[type="text"]:hover,
+	input[type="url"]:hover,
+	input[type="date"]:hover,
+	input[type="file"]:hover,
+	select:hover {
+		background: rgb(255 255 255 / 92%);
 	}
 	input[type="text"],
 	input[type="url"],
@@ -775,7 +1342,7 @@ const pageTitle = "Jet Sullivan — Admin";
 	}
 	.field-wide { grid-column: 1 / -1; }
 	.field small {
-		color: rgb(255 255 255 / 66%);
+		color: rgb(68 73 74 / 72%);
 		font-size: .82rem;
 		font-weight: 650;
 	}
@@ -785,29 +1352,51 @@ const pageTitle = "Jet Sullivan — Admin";
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 16px;
 		padding: 18px;
-		border: 1px solid rgb(255 255 255 / 16%);
-		border-radius: 18px;
-		background: rgb(255 255 255 / 6%);
+		border: 1px solid rgb(68 73 74 / 18%);
+		border-radius: 22px;
+		background: rgb(255 255 255 / 42%);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 72%);
+	}
+	.checkbox-field {
+		display: flex;
+		gap: 9px;
+		align-items: center;
+		font-size: .88rem;
+	}
+	.checkbox-field input {
+		width: 18px;
+		height: 18px;
+		margin: 0;
+		accent-color: var(--pink);
 	}
 	.form-guidance {
 		min-height: 1.5em;
 		margin: 2px 0 0;
-		color: rgb(255 255 255 / 68%);
+		color: rgb(68 73 74 / 74%);
 		font-weight: 700;
 	}
 	[hidden] { display: none !important; }
 	.actions { display: flex; align-items: center; gap: 16px; min-height: 44px; }
-	output { color: var(--yellow); font-weight: 800; }
-	.secondary-button { background: rgb(255 255 255 / 14%); }
-	.danger-button { background: rgb(190 57 67 / 86%); }
+	output { color: var(--admin-gray); font-weight: 800; }
+	.secondary-button { background: rgb(255 255 255 / 50%); }
+	.danger-button {
+		background: rgb(253 191 191 / 62%);
+		color: var(--admin-gray);
+	}
+	.danger-button:hover {
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 38%),
+			0 0 20px rgb(253 191 191 / 58%);
+		color: var(--admin-gray);
+	}
 	.entry-list {
 		display: grid;
 		gap: 24px;
 		margin-top: 34px;
 	}
 	.entry-group {
-		padding-top: 22px;
-		border-top: 1px solid rgb(255 255 255 / 16%);
+		padding-top: 26px;
+		border-top: 1px solid rgb(68 73 74 / 18%);
 	}
 	.entry-group-heading {
 		margin: 0 0 14px;
@@ -823,30 +1412,59 @@ const pageTitle = "Jet Sullivan — Admin";
 		grid-column: 1 / -1;
 		margin: 0;
 		padding: 16px;
-		border-radius: 14px;
-		background: rgb(255 255 255 / 6%);
-		color: rgb(255 255 255 / 62%);
+		border: 1px solid rgb(68 73 74 / 14%);
+		border-radius: 18px;
+		background: rgb(255 255 255 / 44%);
+		color: rgb(68 73 74 / 70%);
 	}
 	.entry-admin-card {
 		display: flex;
 		flex-direction: column;
 		min-width: 0;
-		padding: 14px;
-		border: 1px solid rgb(255 255 255 / 15%);
-		border-radius: 18px;
-		background: rgb(255 255 255 / 8%);
+		padding: 18px;
+		border: 1px solid rgb(68 73 74 / 18%);
+		border-radius: 24px;
+		outline: 1px solid rgb(255 255 255 / 7%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 52%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 12%),
+			0 10px 26px rgb(0 0 0 / 10%);
+		transition:
+			border-color 180ms ease,
+			box-shadow 180ms ease;
+	}
+	.entry-admin-card:hover {
+		border-color: rgb(68 73 74 / 34%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 16%),
+			0 12px 28px rgb(0 0 0 / 12%),
+			0 0 22px rgb(68 73 74 / 12%);
 	}
 	.entry-admin-card img {
 		width: 100%;
 		aspect-ratio: 16 / 9;
 		margin-bottom: 14px;
-		border-radius: 12px;
+		border-radius: 16px;
 		object-fit: cover;
+	}
+	.entry-admin-card video,
+	.entry-admin-card iframe {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		margin-bottom: 14px;
+		border: 0;
+		border-radius: 16px;
+		background: var(--black);
+	}
+	.entry-admin-card audio {
+		width: 100%;
+		margin-bottom: 14px;
 	}
 	.entry-card-header time {
 		display: block;
 		margin-bottom: 6px;
-		color: var(--blue);
+		color: var(--admin-gray);
 		font-size: .8rem;
 		font-weight: 900;
 		letter-spacing: .06em;
@@ -859,7 +1477,7 @@ const pageTitle = "Jet Sullivan — Admin";
 	}
 	.entry-admin-card > p {
 		margin: 10px 0 16px;
-		color: rgb(255 255 255 / 72%);
+		color: rgb(68 73 74 / 78%);
 		line-height: 1.45;
 	}
 	.entry-card-actions {
@@ -876,12 +1494,19 @@ const pageTitle = "Jet Sullivan — Admin";
 		min-height: 36px;
 		padding: 8px 12px;
 		border-radius: 999px;
-		color: var(--white);
+		color: var(--admin-gray);
 		font-size: .82rem;
 		font-weight: 900;
 		text-decoration: none;
 	}
-	.entry-card-actions a { background: rgb(255 255 255 / 14%); }
+	.entry-card-actions a {
+		border: 1px solid rgb(68 73 74 / 16%);
+		background: rgb(255 255 255 / 52%);
+	}
+	.entry-card-actions a:hover {
+		background: rgb(255 255 255 / 82%);
+		color: var(--admin-gray);
+	}
 	.media-list { display: grid; gap: 9px; margin-top: 22px; }
 	.media-list article {
 		display: flex;
@@ -889,20 +1514,177 @@ const pageTitle = "Jet Sullivan — Admin";
 		justify-content: space-between;
 		gap: 12px;
 		padding: 10px 12px;
-		border-radius: 12px;
-		background: rgb(255 255 255 / 9%);
+		border: 1px solid rgb(68 73 74 / 14%);
+		border-radius: 16px;
+		background: rgb(255 255 255 / 48%);
 	}
-	.media-list a { overflow: hidden; color: var(--white); text-overflow: ellipsis; white-space: nowrap; }
-	.media-list button { padding: 8px 12px; background: rgb(190 57 67 / 86%); }
+	.media-list a { overflow: hidden; color: var(--admin-gray); text-overflow: ellipsis; white-space: nowrap; }
+	.media-list button { padding: 8px 12px; background: rgb(253 191 191 / 62%); }
+
+	.delete-confirm-dialog {
+		width: min(520px, calc(100% - 32px));
+		padding: 0;
+		border: 1px solid rgb(37 37 37 / 20%);
+		border-radius: 30px;
+		outline: 1px solid rgb(255 255 255 / 58%);
+		outline-offset: -4px;
+		background: rgb(255 255 255 / 82%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 90%),
+			0 28px 80px rgb(37 37 37 / 28%);
+		color: var(--admin-gray);
+		-webkit-backdrop-filter: blur(18px);
+		backdrop-filter: blur(18px);
+	}
+	.delete-confirm-dialog::backdrop {
+		background: rgb(37 37 37 / 46%);
+		-webkit-backdrop-filter: blur(5px);
+		backdrop-filter: blur(5px);
+	}
+	.delete-confirm-dialog form {
+		display: block;
+		padding: clamp(28px, 5vw, 48px);
+		text-align: center;
+	}
+	.delete-confirm-dialog h2 {
+		margin-bottom: 16px;
+	}
+	.delete-confirm-dialog #delete-confirm-message {
+		margin: 0 auto;
+		max-width: 390px;
+		font-size: 1.02rem;
+		font-weight: 700;
+		line-height: 1.5;
+	}
+	.dialog-eyebrow {
+		margin: 0 0 12px;
+		font-size: .72rem;
+		font-weight: 950;
+		letter-spacing: .16em;
+		text-transform: uppercase;
+	}
+	.dialog-actions {
+		display: flex;
+		justify-content: center;
+		gap: 12px;
+		margin-top: 28px;
+	}
+
+	.section-divider {
+		--divider-height: clamp(110px, 11vw, 190px);
+		position: relative;
+		z-index: 20;
+		width: 100%;
+		height: var(--divider-height);
+		margin-block: calc(var(--divider-height) / -2);
+		background: var(--black);
+		clip-path: polygon(0 28%, 100% 0, 100% 72%, 0 100%);
+		pointer-events: none;
+	}
+	.site-footer {
+		position: relative;
+		z-index: 2;
+		min-height: clamp(310px, 38vh, 480px);
+		padding: clamp(150px, 18vw, 240px) clamp(24px, 7vw, 120px) 64px;
+		background-color: #383838;
+		background-image: radial-gradient(circle, var(--black) 1.5px, transparent 1.6px);
+		background-size: 24px 24px;
+		color: var(--white);
+	}
+	.footer-content {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: end;
+		gap: 32px;
+		width: min(1180px, 100%);
+		margin: 0 auto;
+	}
+	.footer-name {
+		margin: 0;
+		font: 950 clamp(2rem, 4vw, 4.2rem)/.9 var(--display);
+		letter-spacing: -.045em;
+		text-transform: uppercase;
+	}
+	.site-footer nav {
+		display: flex;
+		gap: clamp(18px, 3vw, 42px);
+	}
+	.site-footer a {
+		color: inherit;
+		font-size: .86rem;
+		font-weight: 900;
+		letter-spacing: .12em;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+	.site-footer a:hover { color: var(--pink); }
+	.footer-location {
+		justify-self: end;
+		margin: 0;
+		font-size: .76rem;
+		font-weight: 900;
+		letter-spacing: .14em;
+		text-transform: uppercase;
+	}
+
+	@media (max-width: 820px) {
+		main {
+			width: min(100% - 36px, 1180px);
+			padding-top: 126px;
+		}
+		h1 {
+			font-size: clamp(4.8rem, 22vw, 9rem);
+		}
+		section {
+			padding: 36px 24px 34px;
+			border-radius: 30px;
+		}
+		.entry-admin-grid {
+			grid-template-columns: 1fr;
+		}
+		.footer-content { grid-template-columns: 1fr 1fr; }
+		.footer-name { grid-column: 1 / -1; }
+	}
 
 	@media (max-width: 600px) {
-		main { width: min(100% - 28px, 1080px); padding-top: 32px; }
+		main { width: min(100% - 28px, 1080px); padding-top: 116px; }
 		header { align-items: flex-start; }
 		header a { padding: 10px 14px; }
+		.notice {
+			width: 100%;
+		}
 		.field-grid,
 		.image-fields,
 		.entry-admin-grid { grid-template-columns: 1fr; }
 		.field-wide { grid-column: auto; }
 		.actions { align-items: flex-start; flex-direction: column; }
+		.dialog-actions {
+			align-items: stretch;
+			flex-direction: column;
+		}
+		.media-list article {
+			align-items: flex-start;
+			flex-direction: column;
+		}
+		.section-divider { --divider-height: 108px; }
+		.site-footer {
+			min-height: 380px;
+			padding: 138px 24px 54px;
+		}
+		.footer-content {
+			grid-template-columns: 1fr;
+			align-items: start;
+			gap: 28px;
+		}
+		.footer-name { grid-column: auto; }
+		.site-footer nav { flex-wrap: wrap; }
+		.footer-location { justify-self: start; }
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		* {
+			scroll-behavior: auto !important;
+			transition: none !important;
+		}
 	}
 </style>

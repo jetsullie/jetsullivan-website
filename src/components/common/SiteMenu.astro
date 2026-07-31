@@ -1,9 +1,15 @@
 ---
 interface Props {
 	showHomeButton?: boolean;
+	homeButtonHref?: string;
+	homeButtonLabel?: string;
 }
 
-const { showHomeButton = false } = Astro.props;
+const {
+	showHomeButton = false,
+	homeButtonHref = "/",
+	homeButtonLabel = "Return to homepage",
+} = Astro.props;
 ---
 
 <div class="menu-control">
@@ -28,7 +34,7 @@ const { showHomeButton = false } = Astro.props;
 
 {
 	showHomeButton && (
-		<a class="home-bubble" href="/" aria-label="Return to homepage">
+		<a class="home-bubble" href={homeButtonHref} aria-label={homeButtonLabel}>
 			<svg
 				class="home-arrow-icon"
 				viewBox="0 0 26 20"

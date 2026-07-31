@@ -3,13 +3,17 @@ import cloudflareAccessPlugin from "@cloudflare/pages-plugin-cloudflare-access";
 const AUTHORIZED_EMAIL = "jetsullivan1@gmail.com";
 
 export const requireOwner = async (context) => {
-	const domain = context.env.CF_ACCESS_DOMAIN;
-	const aud = context.env.CF_ACCESS_AUD;
+	const domain =
+		typeof context.env.CF_ACCESS_DOMAIN === "string"
+			? context.env.CF_ACCESS_DOMAIN.trim().replace(/\/+$/, "")
+			: "";
+	const aud =
+		typeof context.env.CF_ACCESS_AUD === "string"
+			? context.env.CF_ACCESS_AUD.trim()
+			: "";
 
 	if (
-		typeof domain !== "string" ||
 		!/^https:\/\/[a-z0-9-]+\.cloudflareaccess\.com$/i.test(domain) ||
-		typeof aud !== "string" ||
 		aud.length < 10
 	) {
 		return new Response("Admin authentication is not configured.", {

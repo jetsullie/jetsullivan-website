@@ -3,16 +3,57 @@ export const MEDIA_ENTRY_SECTIONS = new Set([
 	"interviews",
 	"behind-the-scenes",
 	"press",
+	"acting",
+	"film",
+	"video",
 ]);
 
 export const MAX_MEDIA_ENTRIES_PER_SECTION = 200;
 export const MAX_MEDIA_IMAGE_BYTES = 15 * 1024 * 1024;
+export const MAX_MEDIA_ATTACHMENT_BYTES = 100 * 1024 * 1024;
+
+export const PORTFOLIO_ENTRY_SECTIONS = new Set([
+	"acting",
+	"film",
+	"video",
+]);
 
 const IMAGE_TYPES = new Map([
 	["image/jpeg", "jpg"],
 	["image/png", "png"],
 	["image/webp", "webp"],
 	["image/avif", "avif"],
+]);
+
+const ATTACHMENT_TYPES = new Map([
+	...IMAGE_TYPES,
+	["image/gif", "gif"],
+	["video/mp4", "mp4"],
+	["video/webm", "webm"],
+	["video/ogg", "ogv"],
+	["video/quicktime", "mov"],
+	["application/pdf", "pdf"],
+	["audio/mpeg", "mp3"],
+	["audio/mp4", "m4a"],
+	["audio/ogg", "ogg"],
+	["audio/wav", "wav"],
+	["text/plain", "txt"],
+	["application/zip", "zip"],
+	["application/msword", "doc"],
+	[
+		"application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+		"docx",
+	],
+	["application/vnd.ms-excel", "xls"],
+	[
+		"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+		"xlsx",
+	],
+	["application/vnd.ms-powerpoint", "ppt"],
+	[
+		"application/vnd.openxmlformats-officedocument.presentationml.presentation",
+		"pptx",
+	],
 ]);
 
 export class MediaEntryRequestError extends Error {
@@ -85,6 +126,13 @@ export const readMediaEntryPayload = async (request) => {
 			isFileLike(imageField) && imageField.size === 0 && !imageField.name
 				? null
 				: imageField;
+		const attachmentField = form.get("attachment");
+		const attachment =
+			isFileLike(attachmentField) &&
+			attachmentField.size === 0 &&
+			!attachmentField.name
+				? null
+				: attachmentField;
 
 		return {
 			id: readTextField(form, "id"),
@@ -94,6 +142,11 @@ export const readMediaEntryPayload = async (request) => {
 			link: readTextField(form, "link"),
 			imageAlt: readTextField(form, "imageAlt"),
 			image,
+			attachmentAlt: readTextField(form, "attachmentAlt"),
+			attachment,
+			removeAttachment:
+				readTextField(form, "removeAttachment") === "true" ||
+				readTextField(form, "removeAttachment") === "on",
 		};
 	}
 
@@ -116,6 +169,9 @@ export const readMediaEntryPayload = async (request) => {
 			link: readTextField(body, "link"),
 			imageAlt: readTextField(body, "imageAlt"),
 			image: null,
+			attachmentAlt: readTextField(body, "attachmentAlt"),
+			attachment: null,
+			removeAttachment: Boolean(body.removeAttachment),
 		};
 	}
 
@@ -171,6 +227,7 @@ export const validateMediaEntryMetadata = (section, payload) => {
 	const description = payload.description.trim();
 	const date = payload.date.trim();
 	const imageAltInput = payload.imageAlt.trim();
+	const attachmentAltInput = payload.attachmentAlt.trim();
 	const linkInput = payload.link.trim();
 
 	if (!title || title.length > 120) {
@@ -189,6 +246,11 @@ export const validateMediaEntryMetadata = (section, payload) => {
 	if (imageAltInput.length > 180) {
 		throw new MediaEntryRequestError(
 			"Image description must be 180 characters or fewer.",
+		);
+	}
+	if (attachmentAltInput.length > 180) {
+		throw new MediaEntryRequestError(
+			"Attachment description must be 180 characters or fewer.",
 		);
 	}
 	if (section === "behind-the-scenes" && !imageAltInput) {
@@ -214,6 +276,9 @@ export const validateMediaEntryMetadata = (section, payload) => {
 						section === "interviews" || section === "press",
 					),
 		imageAlt: section === "behind-the-scenes" ? imageAltInput : null,
+		attachmentAlt: PORTFOLIO_ENTRY_SECTIONS.has(section)
+			? attachmentAltInput
+			: null,
 	};
 };
 
@@ -248,6 +313,35 @@ export const validateMediaImage = (file, { required = false } = {}) => {
 	return { file, contentType, extension };
 };
 
+export const validateMediaAttachment = (file) => {
+	if (file === null || file === undefined) return null;
+	if (!isFileLike(file)) {
+		throw new MediaEntryRequestError("The attachment upload is invalid.");
+	}
+
+	const contentType = file.type.toLowerCase();
+	const extension = ATTACHMENT_TYPES.get(contentType);
+	if (!extension) {
+		throw new MediaEntryRequestError(
+			"That attachment type is not supported. Use an image, browser-playable video or audio file, PDF, text document, Office document, or ZIP archive.",
+			415,
+		);
+	}
+	if (file.size <= 0 || file.size > MAX_MEDIA_ATTACHMENT_BYTES) {
+		throw new MediaEntryRequestError(
+			"Attachments must be no larger than 100 MB.",
+			413,
+		);
+	}
+
+	return {
+		file,
+		contentType,
+		extension,
+		originalName: file.name.slice(0, 180),
+	};
+};
+
 export const putMediaEntryImage = async ({
 	env,
 	section,
@@ -272,6 +366,37 @@ export const putMediaEntryImage = async ({
 		},
 	});
 	return { imageKey: key, imageType: contentType };
+};
+
+export const putMediaEntryAttachment = async ({
+	env,
+	section,
+	entryId,
+	validatedAttachment,
+}) => {
+	if (!env.MEDIA_BUCKET) {
+		throw new MediaEntryRequestError(
+			"MEDIA_BUCKET binding is missing.",
+			503,
+		);
+	}
+
+	const { file, contentType, extension, originalName } = validatedAttachment;
+	const key = `entry-${section}-${Date.now()}-${crypto.randomUUID()}.${extension}`;
+	await env.MEDIA_BUCKET.put(key, file.stream(), {
+		httpMetadata: { contentType },
+		customMetadata: {
+			entryId,
+			section,
+			originalName,
+			kind: "attachment",
+		},
+	});
+	return {
+		attachmentKey: key,
+		attachmentType: contentType,
+		attachmentName: originalName,
+	};
 };
 
 export const deleteMediaEntryImage = async (env, key) => {
@@ -355,6 +480,11 @@ export const toAdminMediaEntry = (entry) => ({
 	imageKey: stringOrNull(entry.imageKey),
 	imageType: stringOrNull(entry.imageType),
 	imageUrl: mediaImageUrl(entry.imageKey),
+	attachmentAlt: stringOrEmpty(entry.attachmentAlt),
+	attachmentKey: stringOrNull(entry.attachmentKey),
+	attachmentType: stringOrNull(entry.attachmentType),
+	attachmentName: stringOrNull(entry.attachmentName),
+	attachmentUrl: mediaImageUrl(entry.attachmentKey),
 	createdAt: stringOrEmpty(entry.createdAt),
 	updatedAt: stringOrEmpty(entry.updatedAt),
 });
@@ -367,4 +497,9 @@ export const toPublicMediaEntry = (entry) => ({
 	link: stringOrNull(entry.link),
 	imageAlt: stringOrEmpty(entry.imageAlt),
 	imageUrl: mediaImageUrl(entry.imageKey),
+	attachmentAlt: stringOrEmpty(entry.attachmentAlt),
+	attachmentType: stringOrNull(entry.attachmentType),
+	attachmentName: stringOrNull(entry.attachmentName),
+	attachmentUrl: mediaImageUrl(entry.attachmentKey),
+	createdAt: stringOrEmpty(entry.createdAt),
 });
