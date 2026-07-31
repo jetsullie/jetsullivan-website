@@ -48,11 +48,6 @@ const backgroundWindows = [
 
 			<SiteMenu />
 
-			<div class="welcome-banner" role="status">
-				<span aria-hidden="true">👋</span>
-				Welcome to the new website! Thanks for stopping by.
-			</div>
-
 			<div class="background-windows" data-motion-bounds aria-hidden="true">
 				{
 					backgroundWindows.map((item) => (
@@ -183,55 +178,6 @@ const backgroundWindows = [
 		--mint: #7cf5b5;
 		--font-body: "Myriad Pro", Myriad, Arial, sans-serif;
 		--font-display: "Arial Black", "Myriad Pro", Arial, sans-serif;
-	}
-
-
-	.welcome-banner {
-		position: fixed;
-		z-index: 999;
-		top: 24px;
-		left: 50%;
-		display: flex;
-		align-items: center;
-		gap: 9px;
-		max-width: min(560px, calc(100vw - 180px));
-		padding: 13px 22px;
-		border: 1px solid rgb(255 255 255 / 68%);
-		border-radius: 999px;
-		outline: 1px solid rgb(255 255 255 / 16%);
-		outline-offset: -3px;
-		background: rgb(255 255 255 / 78%);
-		box-shadow: 0 10px 30px rgb(37 37 37 / 14%);
-		color: var(--black);
-		font-size: clamp(0.82rem, 1.1vw, 0.98rem);
-		font-weight: 700;
-		line-height: 1.2;
-		text-align: center;
-		-webkit-backdrop-filter: blur(14px);
-		backdrop-filter: blur(14px);
-		transform: translateX(-50%);
-		animation: welcome-float 4s ease-in-out infinite;
-	}
-
-	@keyframes welcome-float {
-		0%,
-		100% {
-			transform: translateX(-50%) translateY(0);
-		}
-
-		50% {
-			transform: translateX(-50%) translateY(-5px);
-		}
-	}
-
-	@media (max-width: 650px) {
-		.welcome-banner {
-			top: 92px;
-			max-width: calc(100vw - 32px);
-			padding: 11px 16px;
-			border-radius: 18px;
-			font-size: 0.82rem;
-		}
 	}
 
 	:global(*) {
