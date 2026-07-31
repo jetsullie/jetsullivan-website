@@ -12,11 +12,7 @@ export const MAX_MEDIA_ENTRIES_PER_SECTION = 200;
 export const MAX_MEDIA_IMAGE_BYTES = 15 * 1024 * 1024;
 export const MAX_MEDIA_ATTACHMENT_BYTES = 100 * 1024 * 1024;
 
-export const PORTFOLIO_ENTRY_SECTIONS = new Set([
-	"acting",
-	"film",
-	"video",
-]);
+export const ATTACHMENT_ENTRY_SECTIONS = MEDIA_ENTRY_SECTIONS;
 
 const IMAGE_TYPES = new Map([
 	["image/jpeg", "jpg"],
@@ -280,7 +276,7 @@ export const validateMediaEntryMetadata = (section, payload) => {
 						section === "interviews" || section === "press",
 					),
 		imageAlt: section === "behind-the-scenes" ? imageAltInput : null,
-		attachmentAlt: PORTFOLIO_ENTRY_SECTIONS.has(section)
+		attachmentAlt: ATTACHMENT_ENTRY_SECTIONS.has(section)
 			? attachmentAltInput
 			: null,
 	};

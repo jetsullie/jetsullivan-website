@@ -83,9 +83,9 @@ After deployment:
 - Behind-the-scenes entry photos accept JPEG, PNG, WebP, or AVIF files up to
   15 MB. They are stored in the private R2 bucket and served through
   `/api/media/*`.
-- Acting, Film, and Video posts accept one optional attachment up to 100 MB.
-  Images, browser-playable video/audio, and PDFs display inside the post; text,
-  Office, and ZIP files are served as downloads.
+- Every post section accepts one optional attachment up to 100 MB. Images,
+  browser-playable video/audio, and PDFs display inside the post; text, Office,
+  and ZIP files are served as downloads.
 - Uploads use generated object names and a MIME-type allowlist. Executable web
   formats such as HTML, JavaScript, and SVG are not accepted.
 - Cloudflare account request limits may be lower than the application’s 100 MB

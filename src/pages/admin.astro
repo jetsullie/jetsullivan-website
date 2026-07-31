@@ -70,8 +70,8 @@ const adminWindows = [
 				<h2 id="media-entry-editor-title">Site posts</h2>
 				<p class="section-intro">
 					Add a dated update to Featured, Interviews, Behind the Scenes, or
-					Press, plus Acting, Film, and Video. Portfolio attachments are stored
-					privately and only appear through their published post.
+					Press, plus Acting, Film, and Video. Optional post attachments are
+					stored privately and only appear through their published post.
 				</p>
 				<form id="media-entry-form" enctype="multipart/form-data">
 					<input id="entry-id" name="id" type="hidden" />
@@ -206,26 +206,6 @@ const adminWindows = [
 				<div id="media-entry-list" class="entry-list"></div>
 			</section>
 
-			<section aria-labelledby="post-delete-title">
-				<h2 id="post-delete-title">Delete a post</h2>
-				<p class="section-intro">
-					Choose a published post by its title. You will be asked to confirm
-					before anything is removed.
-				</p>
-				<form id="post-delete-form">
-					<label class="field" for="post-delete-select">
-						<span>Post title</span>
-						<select id="post-delete-select" required>
-							<option value="">Select a post</option>
-						</select>
-					</label>
-					<div class="actions">
-						<button class="danger-button" type="submit">Delete selected post</button>
-						<output id="post-delete-status" aria-live="polite"></output>
-					</div>
-				</form>
-			</section>
-
 			<section aria-labelledby="media-editor-title">
 				<h2 id="media-editor-title">Unassigned media library</h2>
 				<p class="section-intro">
@@ -326,12 +306,6 @@ const adminWindows = [
 		document.querySelector<HTMLButtonElement>("#entry-submit");
 	const entryCancel =
 		document.querySelector<HTMLButtonElement>("#entry-cancel");
-	const postDeleteForm =
-		document.querySelector<HTMLFormElement>("#post-delete-form");
-	const postDeleteSelect =
-		document.querySelector<HTMLSelectElement>("#post-delete-select");
-	const postDeleteStatus =
-		document.querySelector<HTMLOutputElement>("#post-delete-status");
 	const deleteConfirmDialog =
 		document.querySelector<HTMLDialogElement>("#delete-confirm-dialog");
 	const deleteConfirmMessage =
@@ -381,7 +355,6 @@ const adminWindows = [
 	let editingHasImage = false;
 	let editingHasAttachment = false;
 	let editingAttachmentName = "";
-	let loadedMediaEntries: MediaEntry[] = [];
 	let pendingDeleteEntry: MediaEntry | null = null;
 
 	const readError = async (response: Response) => {
@@ -447,7 +420,6 @@ const adminWindows = [
 	const deleteEntry = async (entry: MediaEntry) => {
 		const sectionValue = getEntrySection(entry);
 		if (mediaEntryStatus) mediaEntryStatus.textContent = "Deleting…";
-		if (postDeleteStatus) postDeleteStatus.textContent = "Deleting…";
 		if (deleteConfirmSubmit) deleteConfirmSubmit.disabled = true;
 
 		try {
@@ -458,12 +430,10 @@ const adminWindows = [
 			if (!response.ok) throw new Error(await readError(response));
 			if (entryId?.value === entry.id) resetMediaEntryForm();
 			await loadMediaEntries("Entry deleted.");
-			if (postDeleteStatus) postDeleteStatus.textContent = "Post deleted.";
 		} catch (error) {
 			const message =
 				error instanceof Error ? error.message : "Could not delete entry.";
 			if (mediaEntryStatus) mediaEntryStatus.textContent = message;
-			if (postDeleteStatus) postDeleteStatus.textContent = message;
 		} finally {
 			if (deleteConfirmSubmit) deleteConfirmSubmit.disabled = false;
 			pendingDeleteEntry = null;
@@ -497,7 +467,7 @@ const adminWindows = [
 
 		entryLinkField.hidden = isBehindScenes;
 		entryImageFields.hidden = !isBehindScenes;
-		entryAttachmentFields.hidden = !isPortfolio;
+		entryAttachmentFields.hidden = false;
 		entryLink.required = needsLink;
 		entryImage.required = false;
 		entryImageAlt.required =
@@ -506,12 +476,12 @@ const adminWindows = [
 		entryAttachment.required = false;
 		entryAttachmentAlt.required = false;
 		entryAttachmentCurrent.textContent =
-			isPortfolio && editingHasAttachment
+			editingHasAttachment
 				? `Current attachment: ${editingAttachmentName || "uploaded file"}. It will remain unless replaced or removed.`
 				: "";
 		entryRemoveAttachment.parentElement?.toggleAttribute(
 			"hidden",
-			!isPortfolio || !editingHasAttachment,
+			!editingHasAttachment,
 		);
 
 		if (isBehindScenes) {
@@ -520,24 +490,18 @@ const adminWindows = [
 			entryImage.value = "";
 			entryImageAlt.value = "";
 		}
-		if (!isPortfolio) {
-			entryAttachment.value = "";
-			entryAttachmentAlt.value = "";
-			entryRemoveAttachment.checked = false;
-		}
-
 		if (section === "interviews") {
 			entryLinkLabel.textContent = "Interview video link";
 			entryGuidance.textContent =
-				"Add the secure link where visitors can watch the interview.";
+				"Add the secure link where visitors can watch the interview. You can also attach one optional media file.";
 		} else if (section === "press") {
 			entryLinkLabel.textContent = "Press article link";
 			entryGuidance.textContent =
-				"Add the secure link where visitors can read the article.";
+				"Add the secure link where visitors can read the article. You can also attach one optional media file.";
 		} else if (section === "behind-the-scenes") {
 			entryGuidance.textContent = editingHasImage
-				? "The existing photo will stay unless you choose a replacement. Photos are optional."
-				: "A photo is optional. If you add one, include a short photo description.";
+				? "The existing photo will stay unless replaced. You can also attach one optional media file."
+				: "The primary photo and the general media attachment are both optional. Add a description for any photo you upload.";
 		} else if (isPortfolio) {
 			entryLinkLabel.textContent = `${section[0].toUpperCase()}${section.slice(1)} link (optional)`;
 			entryGuidance.textContent = editingHasAttachment
@@ -546,7 +510,7 @@ const adminWindows = [
 		} else {
 			entryLinkLabel.textContent = "Featured work link (optional)";
 			entryGuidance.textContent =
-				"You can link this feature to a film, article, or another secure page.";
+				"You can add a link and attach one optional image, video, PDF, audio file, document, or ZIP file.";
 		}
 	};
 
@@ -609,23 +573,6 @@ const adminWindows = [
 	const renderMediaEntries = (entries: MediaEntry[]) => {
 		if (!mediaEntryList) return;
 		mediaEntryList.replaceChildren();
-		loadedMediaEntries = entries;
-
-		if (postDeleteSelect) {
-			postDeleteSelect.replaceChildren(new Option("Select a post", ""));
-			const sortedEntries = [...entries].sort((left, right) =>
-				left.title.localeCompare(right.title),
-			);
-			for (const entry of sortedEntries) {
-				const sectionLabel =
-					mediaSections.find(
-						(section) => section.value === getEntrySection(entry),
-					)?.label || getEntrySection(entry);
-				postDeleteSelect.add(
-					new Option(`${entry.title} — ${sectionLabel}`, entry.id),
-				);
-			}
-		}
 
 		for (const section of mediaSections) {
 			const group = document.createElement("div");
@@ -787,18 +734,6 @@ const adminWindows = [
 	entryCancel?.addEventListener("click", () => {
 		resetMediaEntryForm();
 		if (mediaEntryStatus) mediaEntryStatus.textContent = "Edit cancelled.";
-	});
-
-	postDeleteForm?.addEventListener("submit", (event) => {
-		event.preventDefault();
-		const selectedEntry = loadedMediaEntries.find(
-			(entry) => entry.id === postDeleteSelect?.value,
-		);
-		if (!selectedEntry) {
-			if (postDeleteStatus) postDeleteStatus.textContent = "Choose a post first.";
-			return;
-		}
-		requestEntryDeletion(selectedEntry);
 	});
 
 	deleteConfirmDialog?.addEventListener("close", () => {

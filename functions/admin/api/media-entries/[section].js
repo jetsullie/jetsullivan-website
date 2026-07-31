@@ -1,7 +1,7 @@
 import {
 	MAX_MEDIA_ENTRIES_PER_SECTION,
 	MediaEntryRequestError,
-	PORTFOLIO_ENTRY_SECTIONS,
+	ATTACHMENT_ENTRY_SECTIONS,
 	deleteMediaEntryImage,
 	listMediaEntryKeys,
 	noStoreJson,
@@ -84,16 +84,8 @@ export const onRequestPost = async ({ request, env, params }) => {
 				"Image uploads are only available for behind-the-scenes entries.",
 			);
 		}
-		if (
-			!PORTFOLIO_ENTRY_SECTIONS.has(section) &&
-			payload.attachment !== null
-		) {
-			throw new MediaEntryRequestError(
-				"File attachments are only available for Acting, Film, and Video entries.",
-			);
-		}
 		const validatedImage = validateMediaImage(payload.image);
-		const validatedAttachment = PORTFOLIO_ENTRY_SECTIONS.has(section)
+		const validatedAttachment = ATTACHMENT_ENTRY_SECTIONS.has(section)
 			? validateMediaAttachment(payload.attachment)
 			: null;
 		if (payload.removeAttachment && validatedAttachment) {
@@ -207,16 +199,8 @@ export const onRequestPut = async ({ request, env, params }) => {
 				"Image uploads are only available for behind-the-scenes entries.",
 			);
 		}
-		if (
-			!PORTFOLIO_ENTRY_SECTIONS.has(section) &&
-			payload.attachment !== null
-		) {
-			throw new MediaEntryRequestError(
-				"File attachments are only available for Acting, Film, and Video entries.",
-			);
-		}
 		const validatedImage = validateMediaImage(payload.image);
-		const validatedAttachment = PORTFOLIO_ENTRY_SECTIONS.has(section)
+		const validatedAttachment = ATTACHMENT_ENTRY_SECTIONS.has(section)
 			? validateMediaAttachment(payload.attachment)
 			: null;
 		if (payload.removeAttachment && validatedAttachment) {
