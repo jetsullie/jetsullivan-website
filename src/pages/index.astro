@@ -102,33 +102,6 @@ const backgroundWindows = [
 					</a>
 				</nav>
 
-				<a class="window contact-window" href="/contact" aria-label="Contact">
-					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-					<span class="contact-plane" aria-hidden="true"></span>
-					<span class="tab-hover-label" aria-hidden="true">Contact</span>
-				</a>
-
-				<a class="window about-window" href="/about">
-					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-					<strong>About Me</strong>
-					<span class="copy-line"></span>
-					<span class="copy-line"></span>
-					<span class="copy-line short"></span>
-					<span class="about-paper-icon" aria-hidden="true">
-						<span class="paper-back"></span>
-						<span class="paper-front">
-							<span class="paper-title"><span>About</span><span>Me</span></span>
-							<span class="paper-copy"><i></i><i></i><i></i></span>
-						</span>
-					</span>
-					<span class="tab-hover-label" aria-hidden="true">About Me</span>
-				</a>
-
-				<a class="play-window" href="/media" aria-label="Media">
-					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-					<span class="play"></span>
-					<span class="tab-hover-label" aria-hidden="true">Media</span>
-				</a>
 			</section>
 
 			<img
@@ -163,6 +136,68 @@ const backgroundWindows = [
 			</form>
 
 		</main>
+
+		<section class="home-section about-section" aria-labelledby="about-heading">
+			<div class="section-content">
+				<p class="section-kicker">About</p>
+				<h2 id="about-heading">Who is Jet?</h2>
+				<div class="section-layout">
+					<div class="glass-panel">
+						<p>
+							Jet Sullivan is a Texas filmmaker, actor, and storyteller based in Austin.
+							He creates character-driven work with a sharp visual point of view and a
+							love for the people and places that make every story feel real.
+						</p>
+					</div>
+					<a class="section-tab about-tab" href="/about/">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+						<span class="section-tab-label">About Me</span>
+						<span class="section-tab-action">Meet Jet <span aria-hidden="true">↗</span></span>
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="home-section media-section" aria-labelledby="media-heading">
+			<div class="section-content">
+				<p class="section-kicker">Updates</p>
+				<h2 id="media-heading">News and Media</h2>
+				<div class="section-layout section-layout-reverse">
+					<div class="glass-panel">
+						<p>
+							See what’s new with Jet—from featured projects and interviews to press
+							coverage and moments from behind the scenes.
+						</p>
+					</div>
+					<a class="section-tab media-tab" href="/media/">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+						<span class="play" aria-hidden="true"></span>
+						<span class="section-tab-action">View Media <span aria-hidden="true">↗</span></span>
+					</a>
+				</div>
+			</div>
+		</section>
+
+		<section class="home-section contact-section" aria-labelledby="contact-heading">
+			<div class="section-content">
+				<p class="section-kicker">Say Hello</p>
+				<h2 id="contact-heading">Contact Jet?</h2>
+				<div class="section-layout">
+					<div class="glass-panel">
+						<p>
+							Have a project, role, collaboration, or story in mind? Reach out to Jet
+							and start the conversation.
+						</p>
+					</div>
+					<a class="section-tab contact-tab" href="/contact/">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+						<span class="contact-plane" aria-hidden="true"></span>
+						<span class="section-tab-action">Contact Jet <span aria-hidden="true">↗</span></span>
+					</a>
+				</div>
+			</div>
+		</section>
+
 		<PageMotion />
 	</body>
 </html>
@@ -188,6 +223,7 @@ const backgroundWindows = [
 		background: var(--black);
 		color: var(--black);
 		font-family: var(--font-body);
+		scroll-behavior: smooth;
 	}
 
 	:global(body) {
@@ -693,22 +729,27 @@ const backgroundWindows = [
 		align-items: center;
 		justify-content: center;
 		height: 100%;
+		border: 1px solid rgb(255 255 255 / 58%);
 		border-radius: 26px;
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
 		background:
-			linear-gradient(
-				rgb(255 255 255 / 7%),
-				rgb(255 255 255 / 2%)
-			),
-			rgb(37 37 37 / 72%);
-		color: var(--white);
+			linear-gradient(rgb(var(--card-tint) / 14%), rgb(var(--card-tint) / 5%)),
+			rgb(255 255 255 / 64%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 48%),
+			0 8px 28px rgb(37 37 37 / 12%);
+		color: var(--black);
 		font-family: var(--font-display);
 		font-size: clamp(1.35rem, 2.6vw, 3.2rem);
 		font-weight: 950;
 		letter-spacing: -0.035em;
 		text-align: center;
-		text-shadow: 0 2px 5px rgb(37 37 37 / 24%);
+		text-shadow: 0 1px 0 rgb(255 255 255 / 55%);
 		text-decoration: none;
 		text-transform: uppercase;
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
 		transition:
 			transform 160ms ease,
 			background-color 160ms ease,
@@ -726,23 +767,20 @@ const backgroundWindows = [
 	.work-card-label {
 		position: relative;
 		z-index: 1;
-		color: rgb(255 255 255 / 72%);
-		text-shadow: 0 2px 5px rgb(37 37 37 / 24%);
+		color: rgb(37 37 37 / 78%);
+		text-shadow: 0 1px 0 rgb(255 255 255 / 55%);
 		transition: color 220ms ease;
 	}
 
 	.work-card:hover .work-card-label,
 	.work-card:focus-visible .work-card-label {
-		color: var(--white);
+		color: var(--black);
 	}
 
 	.work-card:hover {
 		background:
-			linear-gradient(
-				rgb(255 255 255 / 9%),
-				rgb(255 255 255 / 3%)
-			),
-			rgb(37 37 37 / 84%);
+			linear-gradient(rgb(var(--card-tint) / 22%), rgb(var(--card-tint) / 8%)),
+			rgb(255 255 255 / 72%);
 		transform: translateY(3px) scale(0.99);
 	}
 
@@ -1029,6 +1067,193 @@ const backgroundWindows = [
 		}
 	}
 
+	.home-section {
+		position: relative;
+		display: grid;
+		min-height: 100svh;
+		padding: clamp(88px, 12vh, 150px) clamp(24px, 7vw, 120px);
+		overflow: hidden;
+		isolation: isolate;
+		place-items: center;
+	}
+
+	.home-section::before,
+	.home-section::after {
+		position: absolute;
+		z-index: -1;
+		border: 1px solid rgb(255 255 255 / 42%);
+		background: rgb(255 255 255 / 14%);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 38%);
+		content: "";
+		transform: rotate(-7deg);
+	}
+
+	.home-section::before {
+		top: 8%;
+		right: -8%;
+		width: min(48vw, 700px);
+		aspect-ratio: 1.35;
+		border-radius: 54px;
+	}
+
+	.home-section::after {
+		bottom: -16%;
+		left: -10%;
+		width: min(44vw, 620px);
+		aspect-ratio: 1;
+		border-radius: 50%;
+	}
+
+	.about-section {
+		background: linear-gradient(145deg, #fff7f8 0%, #fbd9dc 48%, #e9a9b0 100%);
+	}
+
+	.media-section {
+		background: linear-gradient(145deg, #f4fff9 0%, #baf4d6 50%, #65d69d 100%);
+	}
+
+	.contact-section {
+		background: linear-gradient(145deg, #f3fdff 0%, #c2f2fa 48%, #7ed9e9 100%);
+	}
+
+	.section-content {
+		width: min(1180px, 100%);
+	}
+
+	.section-kicker {
+		margin: 0 0 12px;
+		font: 900 clamp(0.8rem, 1vw, 1rem) / 1 var(--font-display);
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+
+	.home-section h2 {
+		max-width: 950px;
+		margin: 0 0 clamp(42px, 8vh, 88px);
+		font: 950 clamp(3.5rem, 9vw, 9rem) / 0.83 var(--font-display);
+		letter-spacing: -0.075em;
+		text-transform: uppercase;
+	}
+
+	.section-layout {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(250px, 360px);
+		gap: clamp(28px, 6vw, 90px);
+		align-items: center;
+	}
+
+	.section-layout-reverse {
+		grid-template-columns: minmax(250px, 360px) minmax(0, 1fr);
+	}
+
+	.section-layout-reverse .glass-panel {
+		grid-column: 2;
+	}
+
+	.section-layout-reverse .section-tab {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.glass-panel {
+		padding: clamp(28px, 4vw, 58px);
+		border: 1px solid rgb(255 255 255 / 64%);
+		border-radius: clamp(26px, 3vw, 42px);
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 56%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 48%),
+			0 18px 48px rgb(37 37 37 / 12%);
+		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(14px);
+	}
+
+	.glass-panel p {
+		max-width: 720px;
+		margin: 0;
+		font-size: clamp(1.15rem, 2vw, 1.75rem);
+		font-weight: 700;
+		line-height: 1.45;
+	}
+
+	.section-tab {
+		position: relative;
+		display: flex;
+		flex-direction: column;
+		justify-content: flex-end;
+		width: 100%;
+		aspect-ratio: 1;
+		padding: clamp(24px, 3vw, 38px);
+		border: 1px solid rgb(255 255 255 / 58%);
+		border-radius: clamp(30px, 4vw, 52px);
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 50%),
+			0 20px 52px rgb(37 37 37 / 16%);
+		color: var(--black);
+		text-decoration: none;
+		-webkit-backdrop-filter: blur(14px);
+		backdrop-filter: blur(14px);
+		transition:
+			transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1),
+			box-shadow 220ms ease;
+	}
+
+	.section-tab:hover {
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 58%),
+			0 25px 60px rgb(37 37 37 / 22%);
+		transform: translateY(-7px) rotate(1deg);
+	}
+
+	.section-tab .window-dots {
+		position: absolute;
+		top: clamp(22px, 3vw, 34px);
+		left: clamp(22px, 3vw, 34px);
+	}
+
+	.about-tab {
+		background: rgb(253 191 191 / 66%);
+	}
+
+	.media-tab {
+		background: rgb(124 245 181 / 62%);
+	}
+
+	.contact-tab {
+		background: rgb(147 233 249 / 66%);
+	}
+
+	.section-tab-label {
+		margin: auto 0;
+		font: 950 clamp(2rem, 4vw, 3.7rem) / 0.9 var(--font-display);
+		letter-spacing: -0.06em;
+		text-align: center;
+		text-transform: uppercase;
+	}
+
+	.section-tab-action {
+		position: relative;
+		z-index: 3;
+		display: flex;
+		justify-content: space-between;
+		gap: 16px;
+		font: 900 clamp(0.9rem, 1.3vw, 1.1rem) / 1 var(--font-display);
+		text-transform: uppercase;
+	}
+
+	.section-tab .play {
+		width: 55%;
+		height: 35%;
+	}
+
+	.section-tab .contact-plane {
+		width: 46%;
+		height: 40%;
+	}
+
 	@media (min-width: 901px) and (min-aspect-ratio: 5 / 3) {
 		.contact-window,
 		.play-window {
@@ -1242,7 +1467,7 @@ const backgroundWindows = [
 		.hero {
 			top: -70px;
 			display: grid;
-			grid-template-columns: repeat(3, minmax(0, 1fr));
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 			grid-template-rows: auto auto auto auto;
 			align-content: start;
 			gap: 12px;
@@ -1557,6 +1782,62 @@ const backgroundWindows = [
 
 		.work-card {
 			border-radius: 18px;
+		}
+	}
+
+	@media (max-width: 700px) {
+		.home-section {
+			min-height: 100svh;
+			padding: 88px 20px 64px;
+			place-items: center stretch;
+		}
+
+		.home-section::before {
+			top: 12%;
+			right: -35%;
+			width: 95vw;
+		}
+
+		.home-section::after {
+			bottom: -8%;
+			left: -30%;
+			width: 85vw;
+		}
+
+		.home-section h2 {
+			margin-bottom: 36px;
+			font-size: clamp(3.2rem, 17vw, 5.4rem);
+		}
+
+		.section-layout,
+		.section-layout-reverse {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 24px;
+		}
+
+		.section-layout-reverse .glass-panel,
+		.section-layout-reverse .section-tab {
+			grid-column: auto;
+			grid-row: auto;
+		}
+
+		.glass-panel {
+			padding: 26px;
+			border-radius: 26px;
+		}
+
+		.glass-panel p {
+			font-size: 1.08rem;
+		}
+
+		.section-tab {
+			justify-self: center;
+			width: min(72vw, 300px);
+			border-radius: 32px;
+		}
+
+		.section-tab .window-dots {
+			display: flex;
 		}
 	}
 
