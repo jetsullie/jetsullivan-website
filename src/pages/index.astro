@@ -106,11 +106,18 @@ const backgroundWindows = [
 
 			</section>
 
+			<div class="portrait-emoji-layer" aria-hidden="true"></div>
+
 			<img
 				class="portrait"
 				data-motion-depth="deep"
+				data-portrait-trigger
 				src="/jet-portrait.jpg"
 				alt="Jet Sullivan"
+				aria-label="Release camera emojis from Jet's portrait"
+				draggable="false"
+				role="button"
+				tabindex="0"
 				width="605"
 				height="1816"
 			/>
@@ -374,13 +381,14 @@ const backgroundWindows = [
 		border-radius: 24px;
 			background: linear-gradient(
 				180deg,
-				rgb(255 252 219 / 24%) 0%,
-				rgb(255 243 143 / 38%) 38%,
-				rgb(248 225 91 / 80%) 100%
+				rgb(255 253 205 / 42%) 0%,
+				rgb(255 239 101 / 68%) 38%,
+				rgb(239 207 32 / 94%) 100%
 			);
-		box-shadow:
-			inset 0 1px 0 rgb(255 255 255 / 52%),
-			0 12px 36px rgb(37 37 37 / 7%);
+			box-shadow:
+				inset 0 1px 0 rgb(255 255 255 / 52%),
+				0 12px 36px rgb(37 37 37 / 7%),
+				0 0 42px rgb(239 218 74 / 22%);
 		-webkit-backdrop-filter: blur(8px);
 		backdrop-filter: blur(8px);
 		content: "";
@@ -669,8 +677,41 @@ const backgroundWindows = [
 		left: 68%;
 		width: auto;
 		height: min(74vh, 900px);
+		cursor: pointer;
 		filter: saturate(0.9) contrast(1.02);
+		-webkit-tap-highlight-color: transparent;
+		touch-action: manipulation;
 		translate: var(--deep-x) var(--deep-y);
+		user-select: none;
+	}
+
+	.portrait:focus-visible {
+		border-radius: 999px;
+		outline: 4px solid var(--pink);
+		outline-offset: 6px;
+	}
+
+	.portrait-emoji-layer {
+		position: absolute;
+		z-index: 3;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	:global(.portrait-emoji) {
+		position: absolute;
+		display: block;
+		margin: 0;
+		font-family:
+			"Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+		line-height: 1;
+		filter: drop-shadow(0 6px 8px rgb(37 37 37 / 20%));
+		opacity: 0;
+		pointer-events: none;
+		transform: translate(-50%, -50%);
+		transform-origin: center;
+		user-select: none;
+		will-change: transform, opacity;
 	}
 
 	.about-window {
@@ -828,11 +869,11 @@ const backgroundWindows = [
 		outline: 1px solid rgb(255 255 255 / 16%);
 		outline-offset: -3px;
 		background:
-			linear-gradient(rgb(var(--card-tint) / 14%), rgb(var(--card-tint) / 5%)),
-			rgb(255 255 255 / 64%);
+			linear-gradient(rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)),
+			var(--black);
 		box-shadow:
 			inset 0 1px 0 rgb(255 255 255 / 48%),
-			0 8px 28px rgb(37 37 37 / 12%);
+			0 8px 28px rgb(37 37 37 / 16%);
 		color: var(--black);
 		font-family: var(--font-display);
 		font-size: clamp(1.35rem, 2.6vw, 3.2rem);
@@ -861,7 +902,7 @@ const backgroundWindows = [
 	.work-card-label {
 		position: relative;
 		z-index: 1;
-		color: #5c6365;
+		color: #bfc4c5;
 		text-shadow: 0 1px 0 rgb(255 255 255 / 55%);
 		transition: color 220ms ease;
 	}
@@ -871,7 +912,7 @@ const backgroundWindows = [
 		z-index: 1;
 		display: grid;
 		width: clamp(42px, 4.8vw, 68px);
-		color: #5c6365;
+		color: #bfc4c5;
 		filter: drop-shadow(0 1px 0 rgb(255 255 255 / 55%));
 		place-items: center;
 		transition: color 220ms ease;
@@ -903,18 +944,18 @@ const backgroundWindows = [
 
 	.work-card:hover .work-card-label,
 	.work-card:focus-visible .work-card-label {
-		color: rgb(var(--card-ink));
+		color: rgb(var(--card-tint));
 	}
 
 	.work-card:hover .work-card-icon,
 	.work-card:focus-visible .work-card-icon {
-		color: rgb(var(--card-ink));
+		color: rgb(var(--card-tint));
 	}
 
 	.work-card:hover {
 		background:
-			linear-gradient(rgb(var(--card-tint) / 22%), rgb(var(--card-tint) / 8%)),
-			rgb(255 255 255 / 72%);
+			linear-gradient(rgb(var(--card-tint) / 14%), rgb(var(--card-tint) / 5%)),
+			var(--black);
 		transform: translateY(3px) scale(0.99);
 	}
 
@@ -1001,10 +1042,6 @@ const backgroundWindows = [
 		transition-duration: 300ms;
 	}
 
-	.search-bar.is-closing {
-		animation: search-close-bounce 360ms ease-out;
-	}
-
 	.search-toggle {
 		display: grid;
 		flex: 0 0 62px;
@@ -1088,25 +1125,6 @@ const backgroundWindows = [
 		background: inherit;
 		content: "";
 		transform: rotate(90deg);
-	}
-
-	@keyframes search-close-bounce {
-		0%,
-		58% {
-			transform: scale(1);
-		}
-
-		72% {
-			transform: scale(0.92);
-		}
-
-		86% {
-			transform: scale(1.06);
-		}
-
-		100% {
-			transform: scale(1);
-		}
 	}
 
 	@keyframes search-open-glow {
@@ -1284,6 +1302,26 @@ const backgroundWindows = [
 		transform: translateY(calc(48px - var(--hero-boundary-lift)));
 	}
 
+	.section-divider.hero-divider::after {
+		--secondary-divider-height: clamp(72px, 7.5vw, 128px);
+		position: absolute;
+		inset: 0;
+		background-color: #383838;
+		background-image: radial-gradient(
+			circle,
+			var(--black) 1.5px,
+			transparent 1.6px
+		);
+		background-size: 24px 24px;
+		clip-path: polygon(
+			0 calc(100% - var(--secondary-divider-height)),
+			100% calc(100% - var(--secondary-divider-height) - var(--divider-slant)),
+			100% calc(100% - var(--divider-slant)),
+			0 100%
+		);
+		content: "";
+	}
+
 	.footer-divider {
 		margin-bottom: calc(var(--divider-height) / -2 + 48px);
 		transform: translateY(48px);
@@ -1428,28 +1466,37 @@ const backgroundWindows = [
 		border-radius: clamp(30px, 4vw, 52px);
 		outline: 1px solid rgb(255 255 255 / 16%);
 		outline-offset: -3px;
+		background:
+			linear-gradient(rgb(255 255 255 / 8%), rgb(255 255 255 / 2%)),
+			var(--black);
 		box-shadow:
 			inset 0 1px 0 rgb(255 255 255 / 50%),
 			0 20px 52px rgb(37 37 37 / 16%);
-		color: var(--black);
+		color: #bfc4c5;
 		text-decoration: none;
 		-webkit-backdrop-filter: blur(14px);
 		backdrop-filter: blur(14px);
 		transition:
+			color 220ms ease,
 			transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1),
 			box-shadow 220ms ease;
 	}
 
 	.section-tab:hover {
+		background:
+			linear-gradient(rgb(var(--tab-glow) / 14%), rgb(var(--tab-glow) / 5%)),
+			var(--black);
 		box-shadow:
 			inset 0 1px 0 rgb(255 255 255 / 58%),
 			0 20px 42px rgb(37 37 37 / 16%),
 			0 0 34px rgb(var(--tab-glow) / 78%),
 			0 0 68px rgb(var(--tab-glow) / 28%);
+		color: rgb(var(--tab-glow));
 		transform: translateY(-7px) rotate(1deg);
 	}
 
 	.section-tab:focus-visible {
+		color: rgb(var(--tab-glow));
 		box-shadow:
 			inset 0 1px 0 rgb(255 255 255 / 58%),
 			0 20px 42px rgb(37 37 37 / 16%),
@@ -1464,23 +1511,17 @@ const backgroundWindows = [
 
 	.about-tab {
 		--tab-glow: 253 191 191;
-		background: rgb(253 191 191 / 66%);
 	}
 
 	.media-tab {
 		--tab-glow: 124 245 181;
-		background: rgb(124 245 181 / 62%);
 	}
 
 	.contact-tab {
 		--tab-glow: 147 233 249;
-		background: rgb(147 233 249 / 66%);
 	}
 
 	.about-tab .about-paper-icon {
-		--paper-back: #e5aab4;
-		--paper-front: #fff0f3;
-		--paper-ink: #b36573;
 		position: absolute;
 		top: 20%;
 		left: 50%;
@@ -1502,7 +1543,7 @@ const backgroundWindows = [
 	.about-tab .paper-back {
 		top: 0;
 		left: 0;
-		background: var(--paper-back);
+		background: currentColor;
 	}
 
 	.about-tab .paper-front {
@@ -1514,9 +1555,9 @@ const backgroundWindows = [
 		justify-content: flex-start;
 		gap: clamp(10px, 1.4vw, 17px);
 		padding: 18% 8% 9%;
-		border: 1px solid rgb(255 255 255 / 76%);
-		background: var(--paper-front);
-		color: var(--paper-ink);
+		border: 3px solid currentColor;
+		background: var(--black);
+		color: inherit;
 		font: 900 clamp(0.64rem, 1.1vw, 0.95rem) / 1 var(--font-display);
 		letter-spacing: -0.03em;
 		text-align: center;
@@ -1543,7 +1584,7 @@ const backgroundWindows = [
 		width: 100%;
 		height: clamp(3px, 0.32vw, 4px);
 		border-radius: 999px;
-		background: var(--paper-ink);
+		background: currentColor;
 	}
 
 	.about-tab .paper-copy i:nth-child(2) {
@@ -1574,14 +1615,14 @@ const backgroundWindows = [
 	.newspaper-fold,
 	.newspaper-page {
 		position: absolute;
-		border: 1px solid rgb(255 255 255 / 78%);
+		border: 3px solid currentColor;
 		border-radius: 6px;
 		box-shadow: 0 4px 10px rgb(37 37 37 / 9%);
 	}
 
 	.newspaper-fold {
 		inset: 9% 8% 0 0;
-		background: #b7eecf;
+		background: currentColor;
 	}
 
 	.newspaper-page {
@@ -1590,8 +1631,8 @@ const backgroundWindows = [
 		flex-direction: column;
 		gap: 7%;
 		padding: 13% 11%;
-		background: #f3fff8;
-		color: #388560;
+		background: var(--black);
+		color: inherit;
 	}
 
 	.newspaper-name {
@@ -1617,7 +1658,7 @@ const backgroundWindows = [
 
 	.newspaper-photo {
 		border-radius: 4px;
-		background: rgb(56 133 96 / 28%);
+		background: currentColor;
 	}
 
 	.newspaper-lines {
@@ -1664,6 +1705,10 @@ const backgroundWindows = [
 	.section-tab .contact-plane {
 		width: 46%;
 		height: 40%;
+	}
+
+	.contact-tab .contact-plane {
+		background: currentColor;
 	}
 
 	.site-footer {
@@ -2472,11 +2517,7 @@ const backgroundWindows = [
 		document.querySelector<HTMLInputElement>(".search-input");
 
 	if (searchBar && searchToggle && searchClose && searchInput) {
-		let closeBounceTimer: number | undefined;
-
 		const setSearchOpen = (isOpen: boolean) => {
-			window.clearTimeout(closeBounceTimer);
-			searchBar.classList.remove("is-closing");
 			searchBar.classList.toggle("is-open", isOpen);
 			searchToggle.setAttribute("aria-expanded", String(isOpen));
 			searchToggle.setAttribute(
@@ -2486,12 +2527,6 @@ const backgroundWindows = [
 
 			if (isOpen) {
 				window.setTimeout(() => searchInput.focus(), 180);
-			} else {
-				void searchBar.offsetWidth;
-				searchBar.classList.add("is-closing");
-				closeBounceTimer = window.setTimeout(() => {
-					searchBar.classList.remove("is-closing");
-				}, 380);
 			}
 		};
 
@@ -2514,6 +2549,206 @@ const backgroundWindows = [
 			if (event.key !== "Escape") return;
 			setSearchOpen(false);
 			searchToggle.focus();
+		});
+	}
+
+	const portraitTrigger =
+		document.querySelector<HTMLImageElement>("[data-portrait-trigger]");
+	const portraitEmojiLayer =
+		document.querySelector<HTMLElement>(".portrait-emoji-layer");
+
+	if (portraitTrigger && portraitEmojiLayer) {
+		const commonPortraitEmojis = ["📸", "🎥", "📷"];
+		const rarePortraitEmojis = ["🤘", "🎂", "😆", "❤️"];
+		const reducedPortraitMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		);
+		const activePortraitEmojis: HTMLElement[] = [];
+		const randomBetween = (minimum: number, maximum: number) =>
+			minimum + Math.random() * (maximum - minimum);
+
+		const removePortraitEmoji = (emoji: HTMLElement) => {
+			const emojiIndex = activePortraitEmojis.indexOf(emoji);
+			if (emojiIndex >= 0) activePortraitEmojis.splice(emojiIndex, 1);
+			emoji.remove();
+		};
+
+		const emitPortraitBurst = (clientX?: number, clientY?: number) => {
+			const portraitBounds = portraitTrigger.getBoundingClientRect();
+			const layerBounds = portraitEmojiLayer.getBoundingClientRect();
+			const originX =
+				(clientX ?? portraitBounds.left + portraitBounds.width / 2) -
+				layerBounds.left;
+			const originY =
+				(clientY ?? portraitBounds.top + portraitBounds.height / 2) -
+				layerBounds.top;
+			const isReducedMotion = reducedPortraitMotion.matches;
+			const burstSize = 1;
+
+			for (let index = 0; index < burstSize; index += 1) {
+				while (activePortraitEmojis.length >= 72) {
+					const oldestEmoji = activePortraitEmojis.shift();
+					oldestEmoji?.remove();
+				}
+
+				const emoji = document.createElement("span");
+				const emojiPool =
+					Math.random() < 0.01
+						? rarePortraitEmojis
+						: commonPortraitEmojis;
+				const fontSize =
+					Math.max(
+						26,
+						Math.min(
+							56,
+							Math.max(
+								window.innerWidth * 0.035,
+								portraitBounds.width * 0.16,
+							),
+						),
+					) *
+					randomBetween(0.82, 1.18) *
+					0.5;
+				const startX =
+					originX +
+					randomBetween(
+						-Math.min(20, portraitBounds.width * 0.05),
+						Math.min(20, portraitBounds.width * 0.05),
+					);
+				const startY =
+					originY +
+					randomBetween(
+						-Math.min(16, portraitBounds.height * 0.025),
+						Math.min(16, portraitBounds.height * 0.025),
+					);
+
+				emoji.className = "portrait-emoji";
+				emoji.textContent =
+					emojiPool[Math.floor(Math.random() * emojiPool.length)];
+				emoji.style.left = `${startX}px`;
+				emoji.style.top = `${startY}px`;
+				emoji.style.fontSize = `${fontSize}px`;
+				portraitEmojiLayer.append(emoji);
+				activePortraitEmojis.push(emoji);
+
+				if (isReducedMotion) {
+					const reducedAnimation = emoji.animate(
+						[
+							{
+								opacity: 0,
+								transform:
+									"translate(-50%, -50%) scale(0.72)",
+							},
+							{
+								opacity: 1,
+								transform:
+									"translate(-50%, -50%) scale(1)",
+								offset: 0.35,
+							},
+							{
+								opacity: 0,
+								transform:
+									"translate(-50%, -50%) scale(1)",
+							},
+						],
+						{ duration: 620, easing: "ease-out" },
+					);
+					reducedAnimation.addEventListener(
+						"finish",
+						() => removePortraitEmoji(emoji),
+						{ once: true },
+					);
+					window.setTimeout(
+						() => removePortraitEmoji(emoji),
+						750,
+					);
+					continue;
+				}
+
+				const launchAngle = randomBetween(
+					-Math.PI + 0.24,
+					-0.24,
+				);
+				const launchSpeed = randomBetween(430, 720);
+				const horizontalVelocity =
+					Math.cos(launchAngle) * launchSpeed;
+				const verticalVelocity =
+					Math.sin(launchAngle) * launchSpeed;
+				const horizontalDrift = randomBetween(-70, 70);
+				const gravity = randomBetween(1180, 1540);
+				const targetDrop = Math.max(
+					180,
+					layerBounds.height - startY + fontSize * 2,
+				);
+				const naturalFlightTime =
+					(-verticalVelocity +
+						Math.sqrt(
+							verticalVelocity ** 2 +
+								2 * gravity * targetDrop,
+						)) /
+					gravity;
+				const flightTime = Math.max(
+					1.6,
+					Math.min(3.2, naturalFlightTime),
+				);
+				const spinVelocity = randomBetween(-520, 520);
+				const frameCount = 18;
+				const keyframes: Keyframe[] = [];
+
+				for (let frame = 0; frame <= frameCount; frame += 1) {
+					const progress = frame / frameCount;
+					const elapsed = progress * flightTime;
+					const horizontalPosition =
+						horizontalVelocity * elapsed +
+						0.5 * horizontalDrift * elapsed ** 2;
+					const verticalPosition =
+						verticalVelocity * elapsed +
+						0.5 * gravity * elapsed ** 2;
+					const scale =
+						progress < 0.12
+							? 0.38 + (progress / 0.12) * 0.77
+							: 1.15 - ((progress - 0.12) / 0.88) * 0.18;
+
+					keyframes.push({
+						offset: progress,
+						opacity: progress === 0 ? 0 : 1,
+						transform: `translate(calc(-50% + ${horizontalPosition}px), calc(-50% + ${verticalPosition}px)) rotate(${spinVelocity * elapsed}deg) scale(${scale})`,
+					});
+				}
+
+				const duration = flightTime * 1000;
+				const animation = emoji.animate(keyframes, {
+					duration,
+					easing: "linear",
+					fill: "forwards",
+				});
+				animation.addEventListener(
+					"finish",
+					() => removePortraitEmoji(emoji),
+					{ once: true },
+				);
+				window.setTimeout(
+					() => removePortraitEmoji(emoji),
+					duration + 180,
+				);
+			}
+		};
+
+		portraitTrigger.addEventListener("click", (event) => {
+			const hasPointerCoordinates = event.detail > 0;
+			emitPortraitBurst(
+				hasPointerCoordinates ? event.clientX : undefined,
+				hasPointerCoordinates ? event.clientY : undefined,
+			);
+		});
+
+		portraitTrigger.addEventListener("keydown", (event) => {
+			if (event.repeat || (event.key !== "Enter" && event.key !== " ")) {
+				return;
+			}
+
+			event.preventDefault();
+			emitPortraitBurst();
 		});
 	}
 
