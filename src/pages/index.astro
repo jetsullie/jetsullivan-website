@@ -276,6 +276,7 @@ const backgroundWindows = [
 	}
 
 	.bottom-frame {
+		z-index: 5;
 		bottom: -5vw;
 		transform: rotate(-3deg);
 	}
@@ -1544,7 +1545,7 @@ const backgroundWindows = [
 		}
 	}
 
-	@media (max-height: 700px) {
+	@media (max-height: 700px) and (min-width: 651px) {
 		.about-window,
 		.play-window {
 			display: none;

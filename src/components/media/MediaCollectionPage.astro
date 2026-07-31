@@ -74,7 +74,11 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				}
 			</div>
 
-			<SiteMenu showHomeButton />
+			<SiteMenu
+				showHomeButton
+				homeButtonHref="/media/"
+				homeButtonLabel="Return to media"
+			/>
 
 			<section
 				class="collection-content"
