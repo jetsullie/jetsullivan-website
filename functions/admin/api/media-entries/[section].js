@@ -92,9 +92,7 @@ export const onRequestPost = async ({ request, env, params }) => {
 				"File attachments are only available for Acting, Film, and Video entries.",
 			);
 		}
-		const validatedImage = validateMediaImage(payload.image, {
-			required: section === "behind-the-scenes",
-		});
+		const validatedImage = validateMediaImage(payload.image);
 		const validatedAttachment = PORTFOLIO_ENTRY_SECTIONS.has(section)
 			? validateMediaAttachment(payload.attachment)
 			: null;
@@ -217,10 +215,7 @@ export const onRequestPut = async ({ request, env, params }) => {
 				"File attachments are only available for Acting, Film, and Video entries.",
 			);
 		}
-		const validatedImage = validateMediaImage(payload.image, {
-			required:
-				section === "behind-the-scenes" && !previousEntry.imageKey,
-		});
+		const validatedImage = validateMediaImage(payload.image);
 		const validatedAttachment = PORTFOLIO_ENTRY_SECTIONS.has(section)
 			? validateMediaAttachment(payload.attachment)
 			: null;

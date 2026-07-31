@@ -123,14 +123,14 @@ export const readMediaEntryPayload = async (request) => {
 
 		const imageField = form.get("image");
 		const image =
-			isFileLike(imageField) && imageField.size === 0 && !imageField.name
+			imageField === "" ||
+			(isFileLike(imageField) && imageField.size === 0)
 				? null
 				: imageField;
 		const attachmentField = form.get("attachment");
 		const attachment =
-			isFileLike(attachmentField) &&
-			attachmentField.size === 0 &&
-			!attachmentField.name
+			attachmentField === "" ||
+			(isFileLike(attachmentField) && attachmentField.size === 0)
 				? null
 				: attachmentField;
 
@@ -253,9 +253,13 @@ export const validateMediaEntryMetadata = (section, payload) => {
 			"Attachment description must be 180 characters or fewer.",
 		);
 	}
-	if (section === "behind-the-scenes" && !imageAltInput) {
+	if (
+		section === "behind-the-scenes" &&
+		payload.image !== null &&
+		!imageAltInput
+	) {
 		throw new MediaEntryRequestError(
-			"An image description is required for behind-the-scenes entries.",
+			"Add an image description when uploading a behind-the-scenes photo.",
 		);
 	}
 	if (section === "behind-the-scenes" && linkInput) {

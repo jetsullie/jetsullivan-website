@@ -499,8 +499,10 @@ const adminWindows = [
 		entryImageFields.hidden = !isBehindScenes;
 		entryAttachmentFields.hidden = !isPortfolio;
 		entryLink.required = needsLink;
-		entryImage.required = isBehindScenes && !editingHasImage;
-		entryImageAlt.required = isBehindScenes;
+		entryImage.required = false;
+		entryImageAlt.required =
+			isBehindScenes &&
+			(editingHasImage || Boolean(entryImage.files?.length));
 		entryAttachment.required = false;
 		entryAttachmentAlt.required = false;
 		entryAttachmentCurrent.textContent =
@@ -534,8 +536,8 @@ const adminWindows = [
 				"Add the secure link where visitors can read the article.";
 		} else if (section === "behind-the-scenes") {
 			entryGuidance.textContent = editingHasImage
-				? "The existing photo will stay unless you choose a replacement."
-				: "Upload one photo for this tab. Add another update for each additional photo.";
+				? "The existing photo will stay unless you choose a replacement. Photos are optional."
+				: "A photo is optional. If you add one, include a short photo description.";
 		} else if (isPortfolio) {
 			entryLinkLabel.textContent = `${section[0].toUpperCase()}${section.slice(1)} link (optional)`;
 			entryGuidance.textContent = editingHasAttachment
@@ -771,6 +773,7 @@ const adminWindows = [
 	};
 
 	entrySection?.addEventListener("change", syncEntryFields);
+	entryImage?.addEventListener("change", syncEntryFields);
 	entryAttachment?.addEventListener("change", () => {
 		if (entryAttachment.files?.length && entryRemoveAttachment) {
 			entryRemoveAttachment.checked = false;
