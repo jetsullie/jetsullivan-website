@@ -7,7 +7,7 @@ const allowedTypes = new Set([
 	"video/webm",
 ]);
 const maxUploadBytes = 100 * 1024 * 1024;
-const isManagedEntryImage = (key) =>
+const isManagedEntryFile = (key) =>
 	typeof key === "string" && key.startsWith("entry-");
 
 const noStoreJson = (body, init = {}) =>
@@ -29,7 +29,7 @@ export const onRequestGet = async ({ env }) => {
 			...(cursor ? { cursor } : {}),
 		});
 		for (const object of result.objects) {
-			if (isManagedEntryImage(object.key)) continue;
+			if (isManagedEntryFile(object.key)) continue;
 			media.push({
 				key: object.key,
 				size: object.size,
@@ -79,9 +79,9 @@ export const onRequestDelete = async ({ request, env }) => {
 	if (!key || key.includes("/") || key.length > 240) {
 		return noStoreJson({ error: "Invalid media key." }, { status: 400 });
 	}
-	if (isManagedEntryImage(key)) {
+	if (isManagedEntryFile(key)) {
 		return noStoreJson(
-			{ error: "Managed entry photos cannot be deleted from the unassigned library." },
+			{ error: "Managed post files cannot be deleted from the unassigned library." },
 			{ status: 403 },
 		);
 	}

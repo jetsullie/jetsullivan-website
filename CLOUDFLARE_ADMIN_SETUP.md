@@ -67,7 +67,10 @@ After deployment:
 6. Add a small Press test entry and refresh `/media/press/`.
 7. Add a Behind the Scenes test entry with a photo and refresh
    `/media/behind-the-scenes/`.
-8. Edit both entries, then delete the test entries from the dashboard.
+8. Add an Acting, Film, or Video test post with an attachment and confirm that
+   images, browser-playable video/audio, and PDFs display inside the post.
+9. Edit the entries, replace or remove an attachment, then delete the test
+   entries from the dashboard.
 
 ## Security notes
 
@@ -80,14 +83,16 @@ After deployment:
 - Behind-the-scenes entry photos accept JPEG, PNG, WebP, or AVIF files up to
   15 MB. They are stored in the private R2 bucket and served through
   `/api/media/*`.
-- Uploads use generated object names and an allowlist of image/video MIME types.
-- Uploads are limited to 100 MB by the application; Cloudflare account request
-  limits may be lower. This 100 MB limit applies to the separate unassigned media
-  library, not behind-the-scenes entry photos.
+- Acting, Film, and Video posts accept one optional attachment up to 100 MB.
+  Images, browser-playable video/audio, and PDFs display inside the post; text,
+  Office, and ZIP files are served as downloads.
+- Uploads use generated object names and a MIME-type allowlist. Executable web
+  formats such as HTML, JavaScript, and SVG are not accepted.
+- Cloudflare account request limits may be lower than the application’s 100 MB
+  attachment limit.
 - Entry deletions require confirmation and permanently remove the public entry.
-  Replaced and deleted behind-the-scenes image objects are retained for a later
-  cleanup pass so a cached page never points to an image that has already
-  disappeared.
+  Replaced and deleted managed entry files are retained for a later cleanup pass
+  so a cached page never points to a file that has already disappeared.
 - Export or copy the `media-entry:*` KV records regularly, and enable R2 object
   versioning or backups before storing irreplaceable media.
 - Keep the Cloudflare account recovery methods and MFA devices secure.

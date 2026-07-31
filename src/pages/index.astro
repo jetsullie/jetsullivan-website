@@ -39,9 +39,15 @@ const backgroundWindows = [
 		/>
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{name} — Director & Filmmaker</title>
+		<script is:inline>
+			window.addEventListener("load", () => {
+				document.body?.classList.remove("home-layout-pending");
+			}, { once: true });
+		</script>
+		<noscript><style>body.home-layout-pending { visibility: visible !important; }</style></noscript>
 	</head>
 
-	<body>
+	<body class="home-layout-pending">
 		<SiteMenu />
 
 		<form class="search-bar" action="/work" method="get" role="search">
@@ -101,7 +107,8 @@ const backgroundWindows = [
 					<span class="location-box" aria-hidden="true">
 						<span class="selection-cursor"></span>
 					</span>
-					Austin, TX
+					<span class="location-name">Austin, TX</span>
+					<span class="location-roles">Actor · Filmmaker · Videographer · Content Creator</span>
 				</div>
 
 			</section>
@@ -289,11 +296,7 @@ const backgroundWindows = [
 		<footer class="site-footer">
 			<div class="footer-content">
 				<p class="footer-name">Jet Sullivan</p>
-				<nav aria-label="Footer navigation">
-					<a href="/about/">About</a>
-					<a href="/media/">Media</a>
-					<a href="/contact/">Contact</a>
-				</nav>
+				<span aria-hidden="true"></span>
 				<p class="footer-location">Austin, Texas</p>
 			</div>
 		</footer>
@@ -314,6 +317,8 @@ const backgroundWindows = [
 		--font-body: "Myriad Pro", Myriad, Arial, sans-serif;
 		--font-display: "Arial Black", "Myriad Pro", Arial, sans-serif;
 		--hero-boundary-lift: calc(clamp(120px, 22vh, 210px) - 72px);
+		--home-gutter: clamp(42px, 7vw, 120px);
+		--home-section-gutter: clamp(42px, 9vw, 150px);
 	}
 
 	:global(*) {
@@ -331,6 +336,11 @@ const backgroundWindows = [
 		margin: 0;
 		min-width: 320px;
 		min-height: 100vh;
+		overflow-x: clip;
+	}
+
+	:global(body.home-layout-pending) {
+		visibility: hidden;
 	}
 
 	:global(a) {
@@ -358,7 +368,7 @@ const backgroundWindows = [
 		width: 100%;
 		height: 100svh;
 		min-height: 0;
-		padding: 7vh clamp(30px, 5vw, 86px) 2vh;
+		padding: 7vh var(--home-gutter) 2vh;
 		overflow: hidden;
 		background: linear-gradient(
 			180deg,
@@ -508,6 +518,27 @@ const backgroundWindows = [
 		line-height: 1;
 		text-decoration: none;
 		transform: translateX(96px);
+	}
+
+	.location-name {
+		position: relative;
+		z-index: 1;
+		display: block;
+		white-space: nowrap;
+	}
+
+	.location-roles {
+		position: absolute;
+		z-index: 1;
+		top: calc(100% + clamp(8px, 0.8vw, 13px) + 12px);
+		right: -140px;
+		font-size: clamp(0.64rem, 0.95vw, 1rem);
+		font-weight: 900;
+		letter-spacing: 0.01em;
+		line-height: 1;
+		clip-path: inset(0 100% 100% 0);
+		text-align: right;
+		white-space: nowrap;
 	}
 
 	.name-block {
@@ -839,12 +870,12 @@ const backgroundWindows = [
 	.work-grid {
 		position: absolute;
 		bottom: 0;
-		left: clamp(24px, 4vw, 72px);
+		left: var(--home-gutter);
 		display: grid;
 		grid-template-columns: repeat(4, minmax(0, 1fr));
 		gap: clamp(14px, 2vw, 34px);
 		align-items: center;
-		width: calc(100% - (2 * clamp(24px, 4vw, 72px)));
+		width: calc(100% - (2 * var(--home-gutter)));
 		height: auto;
 		margin: 0;
 		transform: translateY(calc(50% - 20px));
@@ -1024,8 +1055,8 @@ const backgroundWindows = [
 			transform 280ms cubic-bezier(0.34, 1.4, 0.64, 1);
 	}
 
-	.search-bar:hover,
-	.search-bar:focus-within {
+	.search-bar:not(.is-closing):not(.suppress-hover):hover,
+	.search-bar.is-open:focus-within {
 		background: rgb(255 255 255 / 78%);
 		box-shadow:
 			0 8px 28px rgb(37 37 37 / 14%),
@@ -1042,7 +1073,30 @@ const backgroundWindows = [
 		transition-duration: 300ms;
 	}
 
+	.search-bar.is-closing {
+		background: rgb(255 255 255 / 64%);
+		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+	}
+
+	.search-bar.is-closing::after {
+		position: absolute;
+		z-index: 0;
+		top: 50%;
+		left: 31px;
+		width: 46px;
+		height: 46px;
+		border: 2px solid rgb(147 233 249 / 48%);
+		border-radius: 50%;
+		box-shadow: 0 0 12px rgb(147 233 249 / 24%);
+		content: "";
+		pointer-events: none;
+		transform: translate(-50%, -50%) scale(0.12);
+		animation: search-close-ripple 390ms ease-out forwards;
+	}
+
 	.search-toggle {
+		position: relative;
+		z-index: 1;
 		display: grid;
 		flex: 0 0 62px;
 		height: 100%;
@@ -1148,6 +1202,22 @@ const backgroundWindows = [
 				0 8px 28px rgb(37 37 37 / 14%),
 				0 0 20px rgb(124 245 181 / 50%),
 				0 0 42px rgb(124 245 181 / 20%);
+		}
+	}
+
+	@keyframes search-close-ripple {
+		0% {
+			opacity: 0.8;
+			transform: translate(-50%, -50%) scale(0.12);
+		}
+
+		68% {
+			opacity: 0.32;
+		}
+
+		100% {
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(1.32);
 		}
 	}
 
@@ -1269,7 +1339,7 @@ const backgroundWindows = [
 		position: relative;
 		display: grid;
 		min-height: 100svh;
-		padding: clamp(88px, 12vh, 150px) clamp(24px, 7vw, 120px);
+		padding: clamp(88px, 12vh, 150px) var(--home-section-gutter);
 		overflow: hidden;
 		isolation: isolate;
 		place-items: center;
@@ -1323,6 +1393,8 @@ const backgroundWindows = [
 	}
 
 	.footer-divider {
+		left: -8%;
+		width: 116%;
 		margin-bottom: calc(var(--divider-height) / -2 + 48px);
 		transform: translateY(48px);
 	}
@@ -1455,6 +1527,7 @@ const backgroundWindows = [
 
 	.section-tab {
 		--tab-glow: 255 255 255;
+		--tab-idle-y: 0px;
 		position: relative;
 		display: flex;
 		flex-direction: column;
@@ -1476,10 +1549,17 @@ const backgroundWindows = [
 		text-decoration: none;
 		-webkit-backdrop-filter: blur(14px);
 		backdrop-filter: blur(14px);
+		animation: section-tab-idle 4.8s ease-in-out infinite;
 		transition:
 			color 220ms ease,
 			transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1),
 			box-shadow 220ms ease;
+	}
+
+	.section-tab[data-motion-depth] {
+		translate:
+			var(--motion-layer-x, 0px)
+			calc(var(--motion-layer-y, 0px) + var(--tab-idle-y));
 	}
 
 	.section-tab:hover {
@@ -1511,14 +1591,38 @@ const backgroundWindows = [
 
 	.about-tab {
 		--tab-glow: 253 191 191;
+		animation-delay: -0.8s;
 	}
 
 	.media-tab {
 		--tab-glow: 124 245 181;
+		animation-delay: -2.35s;
+	}
+
+	.media-tab:hover {
+		transform: translateY(-7px) rotate(-1deg);
 	}
 
 	.contact-tab {
 		--tab-glow: 147 233 249;
+		animation-delay: -3.7s;
+	}
+
+	@property --tab-idle-y {
+		syntax: "<length>";
+		inherits: false;
+		initial-value: 0px;
+	}
+
+	@keyframes section-tab-idle {
+		0%,
+		100% {
+			--tab-idle-y: 0px;
+		}
+
+		50% {
+			--tab-idle-y: -4px;
+		}
 	}
 
 	.about-tab .about-paper-icon {
@@ -1715,7 +1819,7 @@ const backgroundWindows = [
 		position: relative;
 		z-index: 1;
 		min-height: clamp(310px, 38vh, 480px);
-		padding: clamp(150px, 18vw, 240px) clamp(24px, 7vw, 120px) 64px;
+		padding: clamp(150px, 18vw, 240px) var(--home-section-gutter) 64px;
 		background-color: #383838;
 		background-image: radial-gradient(
 			circle,
@@ -1992,6 +2096,11 @@ const backgroundWindows = [
 			left: auto;
 			display: block;
 			font-size: clamp(1.35rem, 5.4vw, 1.8rem);
+		}
+
+		.location-roles {
+			top: calc(100% + 19px);
+			font-size: clamp(0.58rem, 2.45vw, 0.76rem);
 		}
 
 		.location-box {
@@ -2278,7 +2387,7 @@ const backgroundWindows = [
 		.work-grid {
 			grid-template-columns: repeat(4, minmax(0, 1fr));
 			grid-template-rows: 1fr;
-			width: calc(100% - (2 * clamp(24px, 4vw, 72px)));
+			width: calc(100% - (2 * var(--home-gutter)));
 			height: auto;
 			transform: translateY(calc(50% - 20px));
 		}
@@ -2435,6 +2544,7 @@ const backgroundWindows = [
 
 	const selectionBox = document.querySelector<HTMLElement>(".location-box");
 	const dragCursor = document.querySelector<HTMLElement>(".selection-cursor");
+	const locationRoles = document.querySelector<HTMLElement>(".location-roles");
 
 	if (selectionBox && dragCursor) {
 		let startPointerX = 0;
@@ -2443,6 +2553,54 @@ const backgroundWindows = [
 		let originalHeight = 0;
 		let returnTimer: number | undefined;
 		let isDragging = false;
+		let revealLocationRoles = false;
+
+		const updateLocationRolesReveal = () => {
+			if (!locationRoles || !revealLocationRoles) {
+				locationRoles?.style.setProperty(
+					"clip-path",
+					"inset(0 100% 100% 0)",
+				);
+				return;
+			}
+
+			const boxBounds = selectionBox.getBoundingClientRect();
+			const rolesBounds = locationRoles.getBoundingClientRect();
+			const intersectionTop = Math.max(
+				boxBounds.top,
+				rolesBounds.top,
+			);
+			const intersectionRight = Math.min(
+				boxBounds.right,
+				rolesBounds.right,
+			);
+			const intersectionBottom = Math.min(
+				boxBounds.bottom,
+				rolesBounds.bottom,
+			);
+			const intersectionLeft = Math.max(
+				boxBounds.left,
+				rolesBounds.left,
+			);
+
+			if (
+				intersectionRight <= intersectionLeft ||
+				intersectionBottom <= intersectionTop
+			) {
+				locationRoles.style.clipPath = "inset(0 100% 100% 0)";
+				return;
+			}
+
+			locationRoles.style.clipPath = `inset(${intersectionTop - rolesBounds.top}px ${rolesBounds.right - intersectionRight}px ${rolesBounds.bottom - intersectionBottom}px ${intersectionLeft - rolesBounds.left}px)`;
+		};
+
+		const selectionRevealObserver = new ResizeObserver(
+			updateLocationRolesReveal,
+		);
+		selectionRevealObserver.observe(selectionBox);
+		window.addEventListener("resize", updateLocationRolesReveal);
+		document.fonts.ready.then(updateLocationRolesReveal);
+		updateLocationRolesReveal();
 
 		dragCursor.addEventListener("click", (event) => {
 			event.preventDefault();
@@ -2483,6 +2641,10 @@ const backgroundWindows = [
 
 			selectionBox.style.width = `${nextWidth}px`;
 			selectionBox.style.height = `${nextHeight}px`;
+			revealLocationRoles =
+				nextWidth > originalWidth + 1 ||
+				nextHeight > originalHeight + 1;
+			window.requestAnimationFrame(updateLocationRolesReveal);
 		});
 
 		const returnSelection = (event: PointerEvent) => {
@@ -2501,6 +2663,8 @@ const backgroundWindows = [
 				selectionBox.style.removeProperty("transition");
 				selectionBox.style.removeProperty("width");
 				selectionBox.style.removeProperty("height");
+				revealLocationRoles = false;
+				updateLocationRolesReveal();
 			}, 720);
 		};
 
@@ -2517,8 +2681,30 @@ const backgroundWindows = [
 		document.querySelector<HTMLInputElement>(".search-input");
 
 	if (searchBar && searchToggle && searchClose && searchInput) {
+		let closeRippleTimer: number | undefined;
+
 		const setSearchOpen = (isOpen: boolean) => {
-			searchBar.classList.toggle("is-open", isOpen);
+			const wasOpen = searchBar.classList.contains("is-open");
+			window.clearTimeout(closeRippleTimer);
+
+			if (isOpen) {
+				searchBar.classList.remove("is-closing", "suppress-hover");
+				searchBar.classList.add("is-open");
+			} else {
+				searchBar.classList.remove("is-open", "is-closing");
+
+				if (wasOpen) {
+					void searchBar.offsetWidth;
+					searchBar.classList.add("is-closing", "suppress-hover");
+					closeRippleTimer = window.setTimeout(() => {
+						searchBar.classList.remove("is-closing");
+						if (!searchBar.matches(":hover")) {
+							searchBar.classList.remove("suppress-hover");
+						}
+					}, 410);
+				}
+			}
+
 			searchToggle.setAttribute("aria-expanded", String(isOpen));
 			searchToggle.setAttribute(
 				"aria-label",
@@ -2549,6 +2735,10 @@ const backgroundWindows = [
 			if (event.key !== "Escape") return;
 			setSearchOpen(false);
 			searchToggle.focus();
+		});
+
+		searchBar.addEventListener("pointerleave", () => {
+			searchBar.classList.remove("suppress-hover");
 		});
 	}
 
@@ -2853,6 +3043,10 @@ const backgroundWindows = [
 		reducedScrollMotion.addEventListener("change", requestScrollMotion);
 		requestScrollMotion();
 	}
+
+	window.requestAnimationFrame(() => {
+		document.body.classList.remove("home-layout-pending");
+	});
 
 </script>
 <!-- Trigger Cloudflare Preview deployment -->

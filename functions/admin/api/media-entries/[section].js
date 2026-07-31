@@ -1,10 +1,12 @@
 import {
 	MAX_MEDIA_ENTRIES_PER_SECTION,
 	MediaEntryRequestError,
+	PORTFOLIO_ENTRY_SECTIONS,
 	deleteMediaEntryImage,
 	listMediaEntryKeys,
 	noStoreJson,
 	normalizeMediaSection,
+	putMediaEntryAttachment,
 	putMediaEntryImage,
 	readMediaEntry,
 	readMediaEntries,
@@ -13,6 +15,7 @@ import {
 	sortMediaEntriesNewest,
 	toAdminMediaEntry,
 	validateMediaEntryMetadata,
+	validateMediaAttachment,
 	validateMediaImage,
 	writeMediaEntry,
 } from "../../../_shared/media-entries.js";
@@ -69,6 +72,7 @@ export const onRequestGet = async ({ env, params }) => {
 
 export const onRequestPost = async ({ request, env, params }) => {
 	let uploadedImage = null;
+	let uploadedAttachment = null;
 
 	try {
 		const section = requireSection(params);
@@ -80,9 +84,25 @@ export const onRequestPost = async ({ request, env, params }) => {
 				"Image uploads are only available for behind-the-scenes entries.",
 			);
 		}
+		if (
+			!PORTFOLIO_ENTRY_SECTIONS.has(section) &&
+			payload.attachment !== null
+		) {
+			throw new MediaEntryRequestError(
+				"File attachments are only available for Acting, Film, and Video entries.",
+			);
+		}
 		const validatedImage = validateMediaImage(payload.image, {
 			required: section === "behind-the-scenes",
 		});
+		const validatedAttachment = PORTFOLIO_ENTRY_SECTIONS.has(section)
+			? validateMediaAttachment(payload.attachment)
+			: null;
+		if (payload.removeAttachment && validatedAttachment) {
+			throw new MediaEntryRequestError(
+				"Choose either a replacement attachment or remove the current attachment.",
+			);
+		}
 		const existingKeys = await listMediaEntryKeys(kv, section);
 
 		if (existingKeys.length >= MAX_MEDIA_ENTRIES_PER_SECTION) {
@@ -102,6 +122,14 @@ export const onRequestPost = async ({ request, env, params }) => {
 				validatedImage,
 			});
 		}
+		if (validatedAttachment) {
+			uploadedAttachment = await putMediaEntryAttachment({
+				env,
+				section,
+				entryId: id,
+				validatedAttachment,
+			});
+		}
 
 		const entry = {
 			id,
@@ -109,6 +137,9 @@ export const onRequestPost = async ({ request, env, params }) => {
 			...metadata,
 			imageKey: uploadedImage?.imageKey || null,
 			imageType: uploadedImage?.imageType || null,
+			attachmentKey: uploadedAttachment?.attachmentKey || null,
+			attachmentType: uploadedAttachment?.attachmentType || null,
+			attachmentName: uploadedAttachment?.attachmentName || null,
 			createdAt: timestamp,
 			updatedAt: timestamp,
 		};
@@ -119,6 +150,9 @@ export const onRequestPost = async ({ request, env, params }) => {
 			if (uploadedImage?.imageKey) {
 				await deleteMediaEntryImage(env, uploadedImage.imageKey);
 			}
+			if (uploadedAttachment?.attachmentKey) {
+				await deleteMediaEntryImage(env, uploadedAttachment.attachmentKey);
+			}
 			throw error;
 		}
 
@@ -128,6 +162,12 @@ export const onRequestPost = async ({ request, env, params }) => {
 				await removeMediaEntry(kv, section, id);
 				if (uploadedImage?.imageKey) {
 					await deleteMediaEntryImage(env, uploadedImage.imageKey);
+				}
+				if (uploadedAttachment?.attachmentKey) {
+					await deleteMediaEntryImage(
+						env,
+						uploadedAttachment.attachmentKey,
+					);
 				}
 				throw new MediaEntryRequestError(
 					"This media section has reached its 200-entry limit.",
@@ -150,6 +190,7 @@ export const onRequestPost = async ({ request, env, params }) => {
 
 export const onRequestPut = async ({ request, env, params }) => {
 	let replacementImage = null;
+	let replacementAttachment = null;
 
 	try {
 		const section = requireSection(params);
@@ -168,10 +209,26 @@ export const onRequestPut = async ({ request, env, params }) => {
 				"Image uploads are only available for behind-the-scenes entries.",
 			);
 		}
+		if (
+			!PORTFOLIO_ENTRY_SECTIONS.has(section) &&
+			payload.attachment !== null
+		) {
+			throw new MediaEntryRequestError(
+				"File attachments are only available for Acting, Film, and Video entries.",
+			);
+		}
 		const validatedImage = validateMediaImage(payload.image, {
 			required:
 				section === "behind-the-scenes" && !previousEntry.imageKey,
 		});
+		const validatedAttachment = PORTFOLIO_ENTRY_SECTIONS.has(section)
+			? validateMediaAttachment(payload.attachment)
+			: null;
+		if (payload.removeAttachment && validatedAttachment) {
+			throw new MediaEntryRequestError(
+				"Choose either a replacement attachment or remove the current attachment.",
+			);
+		}
 
 		if (validatedImage) {
 			replacementImage = await putMediaEntryImage({
@@ -181,15 +238,38 @@ export const onRequestPut = async ({ request, env, params }) => {
 				validatedImage,
 			});
 		}
+		if (validatedAttachment) {
+			replacementAttachment = await putMediaEntryAttachment({
+				env,
+				section,
+				entryId: id,
+				validatedAttachment,
+			});
+		}
 
 		const entry = {
 			...previousEntry,
 			id,
 			section,
 			...metadata,
+			attachmentAlt: payload.removeAttachment
+				? null
+				: metadata.attachmentAlt,
 			imageKey: replacementImage?.imageKey || previousEntry.imageKey || null,
 			imageType:
 				replacementImage?.imageType || previousEntry.imageType || null,
+			attachmentKey:
+				replacementAttachment?.attachmentKey ||
+				(payload.removeAttachment ? null : previousEntry.attachmentKey) ||
+				null,
+			attachmentType:
+				replacementAttachment?.attachmentType ||
+				(payload.removeAttachment ? null : previousEntry.attachmentType) ||
+				null,
+			attachmentName:
+				replacementAttachment?.attachmentName ||
+				(payload.removeAttachment ? null : previousEntry.attachmentName) ||
+				null,
 			createdAt: previousEntry.createdAt || new Date().toISOString(),
 			updatedAt: new Date().toISOString(),
 		};
@@ -199,6 +279,12 @@ export const onRequestPut = async ({ request, env, params }) => {
 		} catch (error) {
 			if (replacementImage?.imageKey) {
 				await deleteMediaEntryImage(env, replacementImage.imageKey);
+			}
+			if (replacementAttachment?.attachmentKey) {
+				await deleteMediaEntryImage(
+					env,
+					replacementAttachment.attachmentKey,
+				);
 			}
 			throw error;
 		}
