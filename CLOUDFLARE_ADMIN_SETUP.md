@@ -41,7 +41,18 @@ In **Zero Trust → Access controls → Applications**:
 6. Use the Cloudflare identity provider restricted to your Cloudflare account,
    or a trusted Google identity provider.
 7. Require multi-factor authentication on the identity account.
-8. Use a short Access session duration, such as 8 hours.
+8. Under the application's authentication settings, turn off **Accept all
+   available identity providers** and select exactly one identity provider.
+9. Turn on **Apply instant authentication**. This skips Cloudflare's provider
+   selection page and sends the owner directly to the selected sign-in method.
+10. Set both the application session and the owner policy session to **1 month**
+    on a trusted personal device. Use 7 days instead if more frequent
+    reauthentication is preferred.
+
+The website's public `/login/` page is the branded entry screen. It links into
+the protected `/admin/` route, while Cloudflare Access continues to perform the
+actual identity and MFA checks behind it. Do not add `/login*` to the protected
+Access hostname; it must remain public so the branded page can render.
 
 ## 3. Configure server-side token validation
 
@@ -59,25 +70,36 @@ the token email to equal `jetsullivan1@gmail.com`.
 
 After deployment:
 
-1. Open `https://jetsullivan.com/admin/` in a private browser window.
-2. Confirm Cloudflare prompts for authentication.
+1. Open `https://jetsullivan.com/login/` in a private browser window and
+   confirm the branded login page
+   renders without an Access prompt.
+2. Select **Enter admin** and confirm that authentication goes directly to the
+   one configured identity provider instead of the Access provider chooser.
 3. Confirm a different email receives a denial.
 4. Confirm `jetsullivan1@gmail.com` can open the dashboard.
-5. Save the biography and refresh `/about/`.
-6. Add a small Press test entry and refresh `/media/press/`.
-7. Add a Behind the Scenes test entry with a photo and refresh
+5. Refresh `/admin/` and confirm the active Access session opens it directly.
+6. Use **Sign out** in the admin header and confirm the application session is
+   cleared.
+7. Save the biography and refresh `/about/`.
+8. Add a small Press test entry and refresh `/media/press/`.
+9. Add a Behind the Scenes test entry with a photo and refresh
    `/media/behind-the-scenes/`.
-8. Add an Acting, Film, or Video test post with an attachment and confirm that
+10. Add an Acting, Film, or Video test post with an attachment and confirm that
    images, browser-playable video/audio, and PDFs display inside the post.
-9. Star a Press, Interviews, or Behind the Scenes post and confirm the original
+11. Star a Press, Interviews, or Behind the Scenes post and confirm the original
    post also appears in `/media/featured/`; un-star it and confirm it disappears.
-10. Edit the entries, replace or remove an attachment, then delete the test
+12. Edit the entries, replace or remove an attachment, then delete the test
    entries from the dashboard.
 
 ## Security notes
 
 - `/admin/*` is protected both by Cloudflare Access and by server-side JWT
   validation.
+- `/login/` contains no credentials and grants no access by itself. It is a
+  branded entry point to the Access-protected dashboard.
+- The **Sign out** link uses Cloudflare's application-domain Access logout
+  endpoint. Access may take roughly 20–30 seconds to reject every previously
+  issued token after logout.
 - Write responses use `Cache-Control: no-store`.
 - The biography has a 5,000-character limit.
 - Media entries are stored as structured records in KV and appear publicly after

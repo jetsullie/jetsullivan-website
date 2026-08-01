@@ -377,7 +377,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		const isDetail = mode === "detail";
 		const sequence = ++postSequence;
 
-		card.className = `entry-card ${isDetail ? "post-detail" : "is-compact"}`;
+		card.className = isDetail ? "post-detail" : "entry-card is-compact";
 		copy.className = "entry-copy";
 		title.textContent =
 			typeof entry.title === "string" && entry.title.trim()
@@ -412,10 +412,12 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		if (description.textContent) copy.append(description);
 
 		const destination = safeWebUrl(entry.link ?? entry.url);
-		if (isDetail && destination) {
+		let previewLink: HTMLAnchorElement | null = null;
+		if (destination) {
 			const link = document.createElement("a");
 			link.href = destination.href;
-			link.textContent = resolvedCtaLabel;
+			link.className = "entry-link";
+			link.textContent = `${resolvedCtaLabel} ↗`;
 			if (destination.origin !== window.location.origin) {
 				link.target = "_blank";
 				link.rel = "noopener noreferrer";
@@ -424,17 +426,22 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 					`${resolvedCtaLabel} — opens in a new tab`,
 				);
 			}
-			copy.append(link);
+			if (isDetail) copy.append(link);
+			else previewLink = link;
 		}
 
 		card.append(copy);
 
 		if (!isDetail) {
+			const actions = document.createElement("div");
 			const hint = document.createElement("span");
 			const openButton = document.createElement("button");
+			actions.className = "entry-card-actions";
 			hint.className = "entry-open-hint";
 			hint.textContent = "View full post";
-			copy.append(hint);
+			if (previewLink) actions.append(previewLink);
+			actions.append(hint);
+			copy.append(actions);
 			openButton.type = "button";
 			openButton.className = "entry-open";
 			openButton.setAttribute("aria-haspopup", "dialog");
@@ -852,6 +859,10 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		cursor: pointer;
 	}
 
+	.collection-content[data-section="featured"] .entry-card.is-compact {
+		aspect-ratio: 5 / 6;
+	}
+
 	.entry-card.is-compact:hover {
 		border-color: color-mix(in srgb, var(--accent-solid) 46%, white);
 		box-shadow:
@@ -861,10 +872,13 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	}
 
 	.entry-card.is-compact .entry-copy {
+		position: relative;
+		z-index: 9;
 		flex: 1;
 		width: 100%;
 		min-height: 0;
 		overflow: hidden;
+		pointer-events: none;
 	}
 
 	.entry-card.is-compact .entry-source {
@@ -971,6 +985,40 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		font: 900 clamp(.64rem, .72vw, .76rem) var(--display);
 		letter-spacing: .07em;
 		text-transform: uppercase;
+	}
+
+	.entry-card-actions {
+		position: relative;
+		z-index: 10;
+		display: flex;
+		flex: 0 0 auto;
+		align-items: flex-end;
+		justify-content: space-between;
+		gap: 10px;
+		width: 100%;
+		margin-top: auto;
+		padding-top: 10px;
+		pointer-events: none;
+	}
+
+	.entry-card-actions > .entry-link {
+		position: relative;
+		z-index: 1;
+		min-width: 0;
+		margin: 0;
+		padding: 0;
+		overflow: hidden;
+		font-size: clamp(.62rem, .72vw, .76rem);
+		pointer-events: auto;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.entry-card-actions > .entry-open-hint {
+		flex: 0 0 auto;
+		margin: 0 0 0 auto;
+		padding: 0;
+		text-align: right;
 	}
 
 	.entry-open {
