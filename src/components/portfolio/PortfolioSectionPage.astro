@@ -511,6 +511,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		z-index: 30;
 		width: min(100%, 1280px);
 		margin: 0 auto;
+		padding-top: clamp(32px, 3vw, 64px);
 		text-align: center;
 	}
 	.eyebrow {
@@ -890,7 +891,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		.home-window { top: 64px; left: 22px; width: 142px; height: 78px; padding: 12px; border-radius: 22px; }
 		.dots { gap: 4px; } .dots i { width: 7px; height: 7px; }
 		.arrow { font-size: 1.8rem; } .home-window > span:last-child { font-size: .72rem; }
-		.content { padding-top: 0; } h1 { font-size: clamp(3.5rem, 18vw, 7rem); }
+		h1 { font-size: clamp(3.5rem, 18vw, 7rem); }
 		.entry-grid { width: 100%; }
 		.info-window { width: 100%; margin: 0; }
 	}
@@ -901,7 +902,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		.entry-grid { grid-template-columns: minmax(0, 1fr); }
 	}
 	@media (max-width: 480px) {
-		.page { padding-top: 128px; } .content { padding-top: 0; }
+		.page { padding-top: 128px; }
 		.eyebrow { max-width: 66%; font-size: .67rem; }
 		.info-window { border-radius: 24px; }
 		.info-window:not(.is-compact) { padding: 50px 22px 28px; }

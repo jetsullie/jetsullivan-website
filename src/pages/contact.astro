@@ -323,6 +323,7 @@ const backgroundWindows = [
 		z-index: 30;
 		width: min(100%, 1280px);
 		margin: 0 auto;
+		padding-top: clamp(32px, 3vw, 64px);
 	}
 
 	.eyebrow {
@@ -519,10 +520,6 @@ const backgroundWindows = [
 			font-size: 0.72rem;
 		}
 
-		.contact-content {
-			padding-top: 0;
-		}
-
 		.eyebrow {
 			text-align: center;
 		}
@@ -542,10 +539,6 @@ const backgroundWindows = [
 	@media (max-width: 480px) {
 		.contact-page {
 			padding-top: 128px;
-		}
-
-		.contact-content {
-			padding-top: 0;
 		}
 
 		.eyebrow {
