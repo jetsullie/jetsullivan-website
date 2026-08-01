@@ -1094,6 +1094,7 @@ const backgroundWindows = [
 	.search-bar.is-open {
 		width: min(50vw, 690px);
 		overflow: visible;
+		background: rgb(255 255 255 / 78%);
 		animation: search-open-glow 2.8s ease-in-out infinite;
 	}
 
@@ -1225,7 +1226,7 @@ const backgroundWindows = [
 		border-radius: 20px;
 		outline: 1px solid rgb(255 255 255 / 16%);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 64%);
+		background: rgb(255 255 255 / 78%);
 		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
 		color: var(--black);
 		text-decoration: none;
@@ -1233,7 +1234,7 @@ const backgroundWindows = [
 		backdrop-filter: blur(12px);
 		animation:
 			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
-			search-suggestion-glow 2.8s ease-in-out infinite;
+			search-open-glow 2.8s ease-in-out var(--search-glow-delay, 0ms) infinite;
 		transition:
 			background-color 150ms ease,
 			border-color 150ms ease;
@@ -1292,7 +1293,7 @@ const backgroundWindows = [
 		border-radius: 20px;
 		outline: 1px solid rgb(255 255 255 / 16%);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 64%);
+		background: rgb(255 255 255 / 78%);
 		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
 		color: rgb(37 37 37 / 68%);
 		font: 700 0.84rem/1.35 var(--font-body);
@@ -1301,7 +1302,7 @@ const backgroundWindows = [
 		backdrop-filter: blur(12px);
 		animation:
 			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
-			search-suggestion-glow 2.8s ease-in-out infinite;
+			search-open-glow 2.8s ease-in-out var(--search-glow-delay, 0ms) infinite;
 	}
 
 	.search-close span {
@@ -1356,30 +1357,6 @@ const backgroundWindows = [
 		100% {
 			opacity: 1;
 			transform: translateY(0);
-		}
-	}
-
-	@keyframes search-suggestion-glow {
-		0%,
-		100% {
-			box-shadow:
-				0 8px 28px rgb(37 37 37 / 14%),
-				0 0 18px rgb(147 233 249 / 48%),
-				0 0 38px rgb(147 233 249 / 20%);
-		}
-
-		33% {
-			box-shadow:
-				0 8px 28px rgb(37 37 37 / 14%),
-				0 0 20px rgb(253 191 191 / 52%),
-				0 0 42px rgb(253 191 191 / 22%);
-		}
-
-		66% {
-			box-shadow:
-				0 8px 28px rgb(37 37 37 / 14%),
-				0 0 20px rgb(124 245 181 / 50%),
-				0 0 42px rgb(124 245 181 / 20%);
 		}
 	}
 
@@ -2966,6 +2943,7 @@ const backgroundWindows = [
 		let activeResultIndex = -1;
 		let hasRenderedSuggestions = false;
 		let suggestionsReady = false;
+		let searchOpenedAt = 0;
 		const reducedSearchMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		);
@@ -3114,6 +3092,10 @@ const backgroundWindows = [
 			const suggestionDuration = useOpeningCascade ? 330 : 210;
 			const suggestionStartDelay = useOpeningCascade ? 55 : 12;
 			const suggestionDelayStep = useOpeningCascade ? 55 : 18;
+			const searchGlowDelay =
+				searchOpenedAt > 0
+					? -Math.max(0, performance.now() - searchOpenedAt)
+					: 0;
 			const rankedDestinations = publicDestinations
 				.map((destination, order) => ({
 					destination,
@@ -3139,6 +3121,10 @@ const backgroundWindows = [
 				emptyMessage.style.setProperty(
 					"--suggestion-delay",
 					`${suggestionStartDelay}ms`,
+				);
+				emptyMessage.style.setProperty(
+					"--search-glow-delay",
+					`${searchGlowDelay}ms`,
 				);
 				emptyMessage.textContent = "No matching page yet. Try another search.";
 				searchSuggestions.append(emptyMessage);
@@ -3175,6 +3161,10 @@ const backgroundWindows = [
 						"--suggestion-duration",
 						`${suggestionDuration}ms`,
 					);
+					result.style.setProperty(
+						"--search-glow-delay",
+						`${searchGlowDelay}ms`,
+					);
 					copy.className = "search-suggestion-copy";
 					title.textContent = destination.title;
 					description.textContent = destination.description;
@@ -3209,6 +3199,7 @@ const backgroundWindows = [
 
 			if (isOpen) {
 				suggestionsReady = false;
+				if (!wasOpen) searchOpenedAt = performance.now();
 				searchBar.classList.remove("is-closing", "suppress-hover");
 				searchBar.classList.add("is-open");
 				window.dispatchEvent(new CustomEvent("site-search:opened"));
@@ -3219,6 +3210,7 @@ const backgroundWindows = [
 				}, reducedSearchMotion.matches ? 0 : 420);
 			} else {
 				suggestionsReady = false;
+				searchOpenedAt = 0;
 				hideSuggestions();
 				searchBar.classList.remove("is-open", "is-closing");
 
