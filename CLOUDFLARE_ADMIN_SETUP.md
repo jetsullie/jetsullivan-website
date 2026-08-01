@@ -69,7 +69,9 @@ After deployment:
    `/media/behind-the-scenes/`.
 8. Add an Acting, Film, or Video test post with an attachment and confirm that
    images, browser-playable video/audio, and PDFs display inside the post.
-9. Edit the entries, replace or remove an attachment, then delete the test
+9. Star a Press, Interviews, or Behind the Scenes post and confirm the original
+   post also appears in `/media/featured/`; un-star it and confirm it disappears.
+10. Edit the entries, replace or remove an attachment, then delete the test
    entries from the dashboard.
 
 ## Security notes

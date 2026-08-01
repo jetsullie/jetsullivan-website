@@ -2,6 +2,7 @@ import {
 	MAX_MEDIA_ENTRIES_PER_SECTION,
 	MediaEntryRequestError,
 	ATTACHMENT_ENTRY_SECTIONS,
+	FEATURED_PROMOTION_SECTIONS,
 	deleteMediaEntryImage,
 	listMediaEntryKeys,
 	noStoreJson,
@@ -125,6 +126,7 @@ export const onRequestPost = async ({ request, env, params }) => {
 			id,
 			section,
 			...metadata,
+			featured: false,
 			imageKey: uploadedImage?.imageKey || null,
 			imageType: uploadedImage?.imageType || null,
 			attachmentKey: uploadedAttachment?.attachmentKey || null,
@@ -271,6 +273,44 @@ export const onRequestPut = async ({ request, env, params }) => {
 		// Keep the replaced object until a separate cleanup pass. Public entry JSON
 		// can be cached for 60 seconds and may still reference the previous image.
 
+		return noStoreJson({ entry: toAdminMediaEntry(entry) });
+	} catch (error) {
+		return errorResponse(error);
+	}
+};
+
+export const onRequestPatch = async ({ request, env, params }) => {
+	try {
+		const section = requireSection(params);
+		if (!FEATURED_PROMOTION_SECTIONS.has(section)) {
+			throw new MediaEntryRequestError(
+				"Only Interviews, Behind the Scenes, and Press posts can be starred for Featured.",
+			);
+		}
+		const kv = requireContentKv(env);
+		let body;
+		try {
+			body = await request.json();
+		} catch {
+			throw new MediaEntryRequestError("Invalid JSON.");
+		}
+		const id = requireEntryId(body?.id);
+		if (typeof body?.featured !== "boolean") {
+			throw new MediaEntryRequestError("Featured status must be true or false.");
+		}
+		const previousEntry = await readMediaEntry(kv, section, id);
+		if (!previousEntry) {
+			throw new MediaEntryRequestError("Media entry not found.", 404);
+		}
+
+		const entry = {
+			...previousEntry,
+			id,
+			section,
+			featured: body.featured,
+			updatedAt: new Date().toISOString(),
+		};
+		await writeMediaEntry(kv, section, entry);
 		return noStoreJson({ entry: toAdminMediaEntry(entry) });
 	} catch (error) {
 		return errorResponse(error);

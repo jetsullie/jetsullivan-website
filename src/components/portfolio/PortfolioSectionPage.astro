@@ -1,6 +1,7 @@
 ---
 import SiteMenu from "../common/SiteMenu.astro";
 import PageMotion from "../common/PageMotion.astro";
+import PostDialog from "../common/PostDialog.astro";
 
 interface Props {
 	section: "acting" | "film" | "video";
@@ -96,6 +97,13 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			</section>
 		</main>
 
+		<PostDialog
+			accentTop={accentTop}
+			accent={accent}
+			accentBottom={accentBottom}
+			accentSolid={accentBottom}
+		/>
+
 		<div class="section-divider footer-divider" aria-hidden="true"></div>
 
 		<footer class="site-footer">
@@ -111,6 +119,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 </html>
 
 <script>
+	import { setupPostDialog } from "../../scripts/post-dialog";
+
 	interface PortfolioEntry {
 		id?: string;
 		title?: string;
@@ -123,6 +133,11 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		attachmentAlt?: string | null;
 		createdAt?: string;
 	}
+
+	type EntryMode = "preview" | "detail";
+
+	const postDialog = setupPostDialog();
+	let postSequence = 0;
 
 	const safeWebUrl = (value: unknown) => {
 		if (typeof value !== "string" || !value.trim()) return null;
@@ -161,7 +176,11 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		return card;
 	};
 
-	const createAttachment = (entry: PortfolioEntry, title: string) => {
+	const createAttachment = (
+		entry: PortfolioEntry,
+		title: string,
+		mode: EntryMode,
+	) => {
 		const attachmentUrl = safeWebUrl(entry.attachmentUrl);
 		if (!attachmentUrl) return null;
 
@@ -172,7 +191,9 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				entry.attachmentName.trim()) ||
 			"Attached file";
 		const frame = document.createElement("div");
-		frame.className = "entry-attachment";
+		frame.className = `entry-attachment${
+			mode === "preview" ? " attachment-preview" : ""
+		}`;
 
 		if (type.startsWith("image/")) {
 			const image = document.createElement("img");
@@ -190,11 +211,34 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		if (type.startsWith("video/")) {
 			const video = document.createElement("video");
 			video.src = attachmentUrl.href;
-			video.controls = true;
 			video.preload = "metadata";
 			video.playsInline = true;
-			video.setAttribute("aria-label", entry.attachmentAlt || title);
+			if (mode === "detail") {
+				video.controls = true;
+				video.setAttribute("aria-label", entry.attachmentAlt || title);
+			} else {
+				video.muted = true;
+				video.tabIndex = -1;
+				video.setAttribute("aria-hidden", "true");
+			}
 			frame.append(video);
+			return frame;
+		}
+
+		if (mode === "preview") {
+			const symbol = document.createElement("span");
+			const kind = document.createElement("span");
+			const filename = document.createElement("span");
+			const isAudio = type.startsWith("audio/");
+			const isPdf = type === "application/pdf";
+			frame.classList.add("file-preview");
+			symbol.className = "file-preview-symbol";
+			kind.className = "file-preview-kind";
+			filename.className = "file-preview-name";
+			symbol.textContent = isAudio ? "♪" : isPdf ? "PDF" : "↗";
+			kind.textContent = isAudio ? "Audio" : isPdf ? "PDF" : "File";
+			filename.textContent = name;
+			frame.append(symbol, kind, filename);
 			return frame;
 		}
 
@@ -235,14 +279,21 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		return frame;
 	};
 
-	const createEntryCard = (entry: PortfolioEntry) => {
+	const createEntryCard = (
+		entry: PortfolioEntry,
+		mode: EntryMode = "preview",
+	) => {
 		const card = document.createElement("article");
 		const copy = document.createElement("div");
 		const title = document.createElement("h2");
 		const description = document.createElement("p");
 		const formattedDate = formatDate(entry.date);
+		const isDetail = mode === "detail";
+		const sequence = ++postSequence;
 
-		card.className = "info-window entry-card";
+		card.className = `info-window entry-card ${
+			isDetail ? "post-detail" : "is-compact"
+		}`;
 		copy.className = "entry-copy";
 		title.textContent =
 			typeof entry.title === "string" && entry.title.trim()
@@ -251,7 +302,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		description.textContent =
 			typeof entry.description === "string" ? entry.description.trim() : "";
 
-		const attachment = createAttachment(entry, title.textContent);
+		const attachment = createAttachment(entry, title.textContent, mode);
 		if (attachment) card.append(attachment);
 
 		if (formattedDate && typeof entry.date === "string") {
@@ -265,7 +316,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		if (description.textContent) copy.append(description);
 
 		const destination = safeWebUrl(entry.link);
-		if (destination) {
+		if (isDetail && destination) {
 			const link = document.createElement("a");
 			link.href = destination.href;
 			link.textContent = "Open linked project ↗";
@@ -277,6 +328,39 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		}
 
 		card.append(copy);
+
+		if (!isDetail) {
+			const hint = document.createElement("span");
+			const openButton = document.createElement("button");
+			hint.className = "entry-open-hint";
+			hint.textContent = "View full post";
+			copy.append(hint);
+			openButton.type = "button";
+			openButton.className = "entry-open";
+			openButton.setAttribute("aria-haspopup", "dialog");
+			openButton.setAttribute(
+				"aria-label",
+				`Open full post: ${title.textContent}`,
+			);
+			openButton.addEventListener("click", () => {
+				const detail = createEntryCard(entry, "detail");
+				const detailTitle = detail.querySelector<HTMLHeadingElement>("h2");
+				const detailDescription =
+					detail.querySelector<HTMLParagraphElement>(".entry-copy > p");
+				if (!detailTitle) return;
+				const titleId = `portfolio-dialog-title-${sequence}`;
+				const descriptionId = detailDescription
+					? `portfolio-dialog-description-${sequence}`
+					: undefined;
+				detailTitle.id = titleId;
+				if (detailDescription && descriptionId) {
+					detailDescription.id = descriptionId;
+				}
+				postDialog.open(detail, openButton, titleId, descriptionId);
+			});
+			card.append(openButton);
+		}
+
 		return card;
 	};
 
@@ -446,8 +530,10 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	}
 	.entry-grid {
 		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		grid-auto-flow: row;
 		gap: clamp(18px, 2.5vw, 32px);
-		width: min(92%, 820px);
+		width: min(100%, 1180px);
 		margin: clamp(48px, 6vh, 84px) auto 0;
 		text-align: left;
 	}
@@ -535,8 +621,133 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		display: inline-flex;
 		margin: 0;
 	}
+	.entry-card.is-compact {
+		position: relative;
+		gap: clamp(13px, 1.6vw, 20px);
+		aspect-ratio: 1;
+		min-width: 0;
+		min-height: 0;
+		padding: clamp(17px, 1.8vw, 25px);
+		overflow: hidden;
+		cursor: pointer;
+	}
+	.entry-card.is-compact:hover {
+		border-color: color-mix(in srgb, var(--accent-bottom) 42%, white);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 22%),
+			0 12px 34px rgb(37 37 37 / 17%),
+			0 0 28px color-mix(in srgb, var(--accent-bottom) 22%, transparent);
+	}
+	.entry-card.is-compact .entry-copy {
+		flex: 1;
+		width: 100%;
+		min-width: 0;
+		min-height: 0;
+		overflow: hidden;
+	}
+	.entry-card.is-compact .entry-copy time {
+		margin-bottom: 8px;
+		font-size: clamp(.61rem, .75vw, .72rem);
+		letter-spacing: .07em;
+	}
+	.entry-card.is-compact h2 {
+		display: -webkit-box;
+		font-size: clamp(1.02rem, 1.65vw, 1.55rem);
+		line-height: 1.04;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
+	}
+	.entry-card.is-compact .entry-copy > p {
+		display: -webkit-box;
+		margin-top: 9px;
+		font-size: clamp(.78rem, .92vw, .94rem);
+		line-height: 1.35;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		overflow: hidden;
+	}
+	.entry-card.is-compact > .attachment-preview {
+		flex: 0 0 43%;
+		width: 100%;
+		height: auto;
+		min-height: 0;
+		margin: 0;
+		padding: 0;
+		border-radius: 16px;
+	}
+	.entry-card.is-compact > .attachment-preview img,
+	.entry-card.is-compact > .attachment-preview video {
+		display: block;
+		width: 100%;
+		height: 100%;
+		min-height: 0;
+		max-height: none;
+		object-fit: cover;
+		pointer-events: none;
+	}
+	.file-preview {
+		display: grid;
+		grid-template-columns: auto 1fr;
+		grid-template-rows: 1fr auto;
+		gap: 4px 11px;
+		align-items: end;
+		padding: 17px !important;
+		background:
+			linear-gradient(rgb(255 255 255 / 28%), rgb(255 255 255 / 8%)),
+			color-mix(in srgb, var(--accent) 26%, rgb(37 37 37 / 8%));
+	}
+	.file-preview-symbol {
+		grid-row: 1 / -1;
+		align-self: center;
+		color: color-mix(in srgb, var(--accent-bottom) 76%, var(--black));
+		font: 900 clamp(1.35rem, 2.6vw, 2.4rem)/1 var(--display);
+	}
+	.file-preview-kind {
+		font: 900 .72rem var(--display);
+		letter-spacing: .08em;
+		text-transform: uppercase;
+	}
+	.file-preview-name {
+		min-width: 0;
+		overflow: hidden;
+		color: rgb(37 37 37 / 66%);
+		font-size: .72rem;
+		font-weight: 700;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+	.entry-open-hint {
+		display: inline-flex;
+		margin-top: auto;
+		padding-top: 10px;
+		color: color-mix(in srgb, var(--accent-bottom) 74%, var(--black));
+		font: 900 clamp(.64rem, .72vw, .76rem) var(--display);
+		letter-spacing: .07em;
+		text-transform: uppercase;
+	}
+	.entry-open {
+		position: absolute;
+		z-index: 8;
+		inset: 0;
+		width: 100%;
+		height: 100%;
+		padding: 0;
+		border: 0;
+		border-radius: inherit;
+		background: transparent;
+		color: transparent;
+		cursor: pointer;
+	}
+	.entry-open:focus-visible {
+		outline: 4px solid var(--accent-bottom);
+		outline-offset: -6px;
+	}
 	.status-card {
 		display: grid;
+		grid-column: 1 / -1;
 		min-height: 190px;
 		text-align: center;
 		place-items: center;
@@ -638,10 +849,18 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		.entry-grid { width: 100%; }
 		.info-window { width: 100%; margin: 0; }
 	}
+	@media (max-width: 960px) {
+		.entry-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	}
+	@media (max-width: 620px) {
+		.entry-grid { grid-template-columns: minmax(0, 1fr); }
+	}
 	@media (max-width: 480px) {
 		.page { padding-top: 128px; } .content { padding-top: 0; }
 		.eyebrow { max-width: 66%; font-size: .67rem; }
-		.info-window { padding: 50px 22px 28px; border-radius: 24px; }
+		.info-window { border-radius: 24px; }
+		.info-window:not(.is-compact) { padding: 50px 22px 28px; }
+		.info-window.is-compact { padding: 18px; }
 		.info-window p { font-size: 1rem; }
 	}
 

@@ -72,7 +72,9 @@ const adminWindows = [
 				<p class="section-intro">
 					Add a dated update to Featured, Interviews, Behind the Scenes, or
 					Press, plus Acting, Film, and Video. Optional post attachments are
-					stored privately and only appear through their published post.
+					stored privately and only appear through their published post. Use
+					the star on an Interview, Behind the Scenes, or Press post to show
+					that same post in Featured without creating it twice.
 				</p>
 				<form id="media-entry-form" enctype="multipart/form-data">
 					<input id="entry-id" name="id" type="hidden" />
@@ -363,6 +365,7 @@ const adminWindows = [
 		attachmentType?: string | null;
 		attachmentName?: string | null;
 		attachmentAlt?: string | null;
+		featured?: boolean;
 		createdAt?: string;
 	};
 
@@ -653,6 +656,7 @@ const adminWindows = [
 				const title = document.createElement("h4");
 				const description = document.createElement("p");
 				const actions = document.createElement("div");
+				const star = document.createElement("button");
 				const edit = document.createElement("button");
 				const remove = document.createElement("button");
 
@@ -719,6 +723,59 @@ const adminWindows = [
 					attachmentLink.rel = "noopener noreferrer";
 					attachmentLink.textContent = `Open ${entry.attachmentName || "attachment"} ↗`;
 					actions.append(attachmentLink);
+				}
+
+				if (
+					section.value === "interviews" ||
+					section.value === "behind-the-scenes" ||
+					section.value === "press"
+				) {
+					const isFeatured = entry.featured === true;
+					star.type = "button";
+					star.className = `secondary-button feature-star${
+						isFeatured ? " is-featured" : ""
+					}`;
+					star.setAttribute("aria-pressed", String(isFeatured));
+					star.textContent = isFeatured ? "★ In Featured" : "☆ Add to Featured";
+					star.addEventListener("click", async () => {
+						star.disabled = true;
+						star.textContent = isFeatured ? "Removing…" : "Adding…";
+						if (mediaEntryStatus) {
+							mediaEntryStatus.textContent = isFeatured
+								? `Removing “${entry.title}” from Featured…`
+								: `Adding “${entry.title}” to Featured…`;
+						}
+
+						try {
+							const response = await fetch(getEntryEndpoint(section.value), {
+								method: "PATCH",
+								credentials: "same-origin",
+								headers: { "Content-Type": "application/json" },
+								body: JSON.stringify({
+									id: entry.id,
+									featured: !isFeatured,
+								}),
+							});
+							if (!response.ok) throw new Error(await readError(response));
+							await loadMediaEntries(
+								isFeatured
+									? `“${entry.title}” removed from Featured.`
+									: `“${entry.title}” added to Featured.`,
+							);
+						} catch (error) {
+							star.disabled = false;
+							star.textContent = isFeatured
+								? "★ In Featured"
+								: "☆ Add to Featured";
+							if (mediaEntryStatus) {
+								mediaEntryStatus.textContent =
+									error instanceof Error
+										? error.message
+										: "Could not update Featured.";
+							}
+						}
+					});
+					actions.append(star);
 				}
 
 				edit.type = "button";
@@ -1689,6 +1746,19 @@ const adminWindows = [
 	.entry-card-actions a:hover {
 		background: rgb(255 255 255 / 82%);
 		color: var(--admin-gray);
+	}
+	.feature-star.is-featured {
+		border-color: rgb(239 218 74 / 58%);
+		background: rgb(239 218 74 / 46%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 60%),
+			0 0 18px rgb(239 218 74 / 38%);
+	}
+	.feature-star.is-featured:hover {
+		background: rgb(239 218 74 / 62%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 72%),
+			0 0 24px rgb(239 218 74 / 50%);
 	}
 	.media-list {
 		display: grid;

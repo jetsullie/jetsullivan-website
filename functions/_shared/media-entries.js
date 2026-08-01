@@ -14,6 +14,12 @@ export const MAX_MEDIA_ATTACHMENT_BYTES = 100 * 1024 * 1024;
 
 export const ATTACHMENT_ENTRY_SECTIONS = MEDIA_ENTRY_SECTIONS;
 
+export const FEATURED_PROMOTION_SECTIONS = new Set([
+	"interviews",
+	"behind-the-scenes",
+	"press",
+]);
+
 const IMAGE_TYPES = new Map([
 	["image/jpeg", "jpg"],
 	["image/png", "png"],
@@ -498,12 +504,14 @@ export const toAdminMediaEntry = (entry) => ({
 	attachmentType: stringOrNull(entry.attachmentType),
 	attachmentName: stringOrNull(entry.attachmentName),
 	attachmentUrl: mediaImageUrl(entry.attachmentKey),
+	featured: entry.featured === true,
 	createdAt: stringOrEmpty(entry.createdAt),
 	updatedAt: stringOrEmpty(entry.updatedAt),
 });
 
 export const toPublicMediaEntry = (entry) => ({
 	id: stringOrEmpty(entry.id),
+	section: stringOrEmpty(entry.section),
 	title: stringOrEmpty(entry.title),
 	description: stringOrEmpty(entry.description),
 	date: stringOrEmpty(entry.date),
@@ -514,5 +522,6 @@ export const toPublicMediaEntry = (entry) => ({
 	attachmentType: stringOrNull(entry.attachmentType),
 	attachmentName: stringOrNull(entry.attachmentName),
 	attachmentUrl: mediaImageUrl(entry.attachmentKey),
+	featured: entry.featured === true,
 	createdAt: stringOrEmpty(entry.createdAt),
 });
