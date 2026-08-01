@@ -1054,6 +1054,11 @@ const backgroundWindows = [
 	}
 
 	.search-bar {
+		--control-glass-surface: rgb(255 255 255 / 64%);
+		--control-glass-surface-active: rgb(255 255 255 / 78%);
+		--control-glass-border: rgb(255 255 255 / 58%);
+		--control-glass-outline: rgb(255 255 255 / 16%);
+		--control-glass-shadow: 0 8px 28px rgb(37 37 37 / 14%);
 		position: fixed;
 		z-index: 99;
 		top: clamp(18px, 3vh, 32px);
@@ -1066,12 +1071,12 @@ const backgroundWindows = [
 		min-height: 64px;
 		margin: 0;
 		padding: 0;
-		border: 1px solid rgb(255 255 255 / 58%);
+		border: 1px solid var(--control-glass-border);
 		border-radius: 999px;
-		outline: 1px solid rgb(255 255 255 / 16%);
+		outline: 1px solid var(--control-glass-outline);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 64%);
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		background: var(--control-glass-surface);
+		box-shadow: var(--control-glass-shadow);
 		overflow: hidden;
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
@@ -1082,19 +1087,26 @@ const backgroundWindows = [
 			transform 280ms cubic-bezier(0.34, 1.4, 0.64, 1);
 	}
 
-	.search-bar:not(.is-closing):not(.suppress-hover):hover,
+	.search-bar:not(.is-open):not(.is-closing):not(.suppress-hover):hover,
 	.search-bar.is-open:focus-within {
-		background: rgb(255 255 255 / 78%);
 		box-shadow:
 			0 8px 28px rgb(37 37 37 / 14%),
 			0 0 18px rgb(255 255 255 / 38%);
 		transform: translateY(3px);
 	}
 
+	.search-bar:not(.is-open):not(.is-closing):not(.suppress-hover):hover {
+		background: var(--control-glass-surface-active);
+	}
+
+	.search-bar.is-open:focus-within {
+		background: var(--control-glass-surface);
+	}
+
 	.search-bar.is-open {
 		width: min(50vw, 690px);
 		overflow: visible;
-		background: rgb(255 255 255 / 78%);
+		background: var(--control-glass-surface);
 		animation: search-open-glow 2.8s ease-in-out infinite;
 	}
 
@@ -1103,8 +1115,8 @@ const backgroundWindows = [
 	}
 
 	.search-bar.is-closing {
-		background: rgb(255 255 255 / 64%);
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		background: var(--control-glass-surface);
+		box-shadow: var(--control-glass-shadow);
 	}
 
 	.search-bar.is-closing::after {
@@ -1197,18 +1209,14 @@ const backgroundWindows = [
 		left: -16px;
 		display: grid;
 		width: calc(100% + 32px);
-		max-height: min(430px, calc(100dvh - 102px));
 		margin: 0;
 		padding: 12px 16px 24px;
 		gap: 8px;
-		overflow-x: hidden;
-		overflow-y: auto;
+		overflow: visible;
 		border: 0;
 		outline: 0;
 		background: transparent;
 		box-shadow: none;
-		scrollbar-color: rgb(255 255 255 / 34%) transparent;
-		scrollbar-width: thin;
 	}
 
 	.search-suggestions[hidden] {
@@ -1222,12 +1230,12 @@ const backgroundWindows = [
 		min-height: 52px;
 		padding: 9px 12px 9px 15px;
 		column-gap: 16px;
-		border: 1px solid rgb(255 255 255 / 58%);
-		border-radius: 20px;
-		outline: 1px solid rgb(255 255 255 / 16%);
+		border: 1px solid var(--control-glass-border);
+		border-radius: 26px;
+		outline: 1px solid var(--control-glass-outline);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 78%);
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		background: var(--control-glass-surface);
+		box-shadow: var(--control-glass-shadow);
 		color: var(--black);
 		text-decoration: none;
 		-webkit-backdrop-filter: blur(12px);
@@ -1235,15 +1243,12 @@ const backgroundWindows = [
 		animation:
 			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
 			search-open-glow 2.8s ease-in-out var(--search-glow-delay, 0ms) infinite;
-		transition:
-			background-color 150ms ease,
-			border-color 150ms ease;
+		transition: background-color 150ms ease;
 	}
 
 	:global(.search-suggestion:hover),
 	:global(.search-suggestion.is-active) {
-		border-color: rgb(255 255 255 / 72%);
-		background: rgb(255 255 255 / 78%);
+		background: var(--control-glass-surface-active);
 	}
 
 	:global(.search-suggestion-copy) {
@@ -1289,12 +1294,12 @@ const backgroundWindows = [
 	:global(.search-empty) {
 		margin: 0;
 		padding: 17px 15px;
-		border: 1px solid rgb(255 255 255 / 58%);
-		border-radius: 20px;
-		outline: 1px solid rgb(255 255 255 / 16%);
+		border: 1px solid var(--control-glass-border);
+		border-radius: 26px;
+		outline: 1px solid var(--control-glass-outline);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 78%);
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		background: var(--control-glass-surface);
+		box-shadow: var(--control-glass-shadow);
 		color: rgb(37 37 37 / 68%);
 		font: 700 0.84rem/1.35 var(--font-body);
 		text-align: center;
@@ -2939,11 +2944,13 @@ const backgroundWindows = [
 		let closeRippleTimer: number | undefined;
 		let focusTimer: number | undefined;
 		let suggestionRevealTimer: number | undefined;
+		let searchResizeTimer: number | undefined;
 		let visibleResults: SearchDestination[] = [];
 		let activeResultIndex = -1;
 		let hasRenderedSuggestions = false;
 		let suggestionsReady = false;
 		let searchOpenedAt = 0;
+		let renderedSuggestionLimit = 0;
 		const reducedSearchMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
 		);
@@ -3077,6 +3084,16 @@ const backgroundWindows = [
 			visibleResults = [];
 			activeResultIndex = -1;
 			hasRenderedSuggestions = false;
+			renderedSuggestionLimit = 0;
+		};
+
+		const getMaximumSuggestionCount = () => {
+			const viewportHeight =
+				window.visualViewport?.height ?? window.innerHeight;
+			return Math.max(
+				2,
+				Math.min(6, Math.floor((viewportHeight - 130) / 60)),
+			);
 		};
 
 		const renderSuggestions = () => {
@@ -3092,6 +3109,8 @@ const backgroundWindows = [
 			const suggestionDuration = useOpeningCascade ? 330 : 210;
 			const suggestionStartDelay = useOpeningCascade ? 55 : 12;
 			const suggestionDelayStep = useOpeningCascade ? 55 : 18;
+			const maximumSuggestionCount = getMaximumSuggestionCount();
+			renderedSuggestionLimit = maximumSuggestionCount;
 			const searchGlowDelay =
 				searchOpenedAt > 0
 					? -Math.max(0, performance.now() - searchOpenedAt)
@@ -3104,7 +3123,7 @@ const backgroundWindows = [
 				}))
 				.filter((result) => result.score >= 0)
 				.sort((left, right) => right.score - left.score || left.order - right.order)
-				.slice(0, 6);
+				.slice(0, maximumSuggestionCount);
 
 			visibleResults = rankedDestinations.map((result) => result.destination);
 			activeResultIndex = -1;
@@ -3196,6 +3215,7 @@ const backgroundWindows = [
 			window.clearTimeout(closeRippleTimer);
 			window.clearTimeout(focusTimer);
 			window.clearTimeout(suggestionRevealTimer);
+			window.clearTimeout(searchResizeTimer);
 
 			if (isOpen) {
 				suggestionsReady = false;
@@ -3330,6 +3350,25 @@ const backgroundWindows = [
 		window.addEventListener("site-menu:opened", () => {
 			setSearchOpen(false);
 		});
+
+		const updateSuggestionsForViewport = () => {
+			window.clearTimeout(searchResizeTimer);
+			searchResizeTimer = window.setTimeout(() => {
+				if (
+					searchBar.classList.contains("is-open") &&
+					suggestionsReady &&
+					getMaximumSuggestionCount() !== renderedSuggestionLimit
+				) {
+					renderSuggestions();
+				}
+			}, 120);
+		};
+
+		window.addEventListener("resize", updateSuggestionsForViewport);
+		window.visualViewport?.addEventListener(
+			"resize",
+			updateSuggestionsForViewport,
+		);
 
 		searchBar.addEventListener("pointerleave", () => {
 			searchBar.classList.remove("suppress-hover");
