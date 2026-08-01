@@ -1,0 +1,12 @@
+{"message":"connected.","label":"vite","level":"info"}
+{"message":"Generated 0ms","label":"types","level":"info"}
+{"message":"connected.","label":"vite","level":"info"}
+{"message":"Re-optimizing dependencies because vite config has changed","label":"vite","level":"info"}
+{"message":"Port 4321 is in use, trying another one...","label":"vite","level":"info"}
+{"message":"Port 4322 is in use, trying another one...","label":"vite","level":"info"}
+{"message":"Port 4323 is in use, trying another one...","label":"vite","level":"info"}
+{"message":"Port 4324 is in use, trying another one...","label":"vite","level":"info"}
+{"message":"Port 4325 is in use, trying another one...","label":"vite","level":"info"}
+{"message":"Port 4326 is in use, trying another one...","label":"vite","level":"info"}
+{"message":" astro  v7.1.3 ready in 582 ms\n┃ Local    http://localhost:4327/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
+{"message":"watching for file changes...","label":null,"level":"info"}

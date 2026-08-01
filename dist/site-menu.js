@@ -6,16 +6,29 @@ for (const menuControl of menuControls) {
 	}
 
 	const menuToggle = menuControl.querySelector(".menu-toggle");
-	if (!(menuToggle instanceof HTMLButtonElement)) continue;
+	const siteMenu = menuControl.querySelector(".site-menu");
+	if (
+		!(menuToggle instanceof HTMLButtonElement) ||
+		!(siteMenu instanceof HTMLElement)
+	) {
+		continue;
+	}
 	menuControl.dataset.menuReady = "true";
 
 	const setMenuOpen = (isOpen) => {
+		const wasOpen = menuControl.classList.contains("is-open");
 		menuControl.classList.toggle("is-open", isOpen);
+		siteMenu.inert = !isOpen;
+		siteMenu.setAttribute("aria-hidden", String(!isOpen));
 		menuToggle.setAttribute("aria-expanded", String(isOpen));
 		menuToggle.setAttribute(
 			"aria-label",
 			isOpen ? "Close site menu" : "Open site menu",
 		);
+
+		if (isOpen && !wasOpen) {
+			window.dispatchEvent(new CustomEvent("site-menu:opened"));
+		}
 	};
 
 	menuToggle.addEventListener("click", () => {
@@ -30,8 +43,17 @@ for (const menuControl of menuControls) {
 	});
 
 	document.addEventListener("keydown", (event) => {
-		if (event.key !== "Escape") return;
+		if (
+			event.key !== "Escape" ||
+			!menuControl.classList.contains("is-open")
+		) {
+			return;
+		}
 		setMenuOpen(false);
 		menuToggle.focus();
+	});
+
+	window.addEventListener("site-search:opened", () => {
+		setMenuOpen(false);
 	});
 }

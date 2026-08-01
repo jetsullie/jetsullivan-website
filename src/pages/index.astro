@@ -50,12 +50,12 @@ const backgroundWindows = [
 	<body class="home-layout-pending">
 		<SiteMenu />
 
-		<form class="search-bar" action="/work" method="get" role="search">
+		<form class="search-bar" action="/" method="get" role="search">
 			<button
 				class="search-toggle"
 				type="button"
 				aria-expanded="false"
-				aria-label="Open work search"
+				aria-label="Open site search"
 			>
 				<span class="magnifier" aria-hidden="true"></span>
 			</button>
@@ -63,13 +63,40 @@ const backgroundWindows = [
 				class="search-input"
 				type="search"
 				name="q"
-				placeholder="Search"
-				aria-label="Search"
+				placeholder="Where do you want to go?"
+				aria-label="Search the site"
+				autocomplete="off"
+				spellcheck="false"
+				role="combobox"
+				aria-autocomplete="list"
+				aria-controls="site-search-suggestions"
+				aria-expanded="false"
+				aria-hidden="true"
+				tabindex="-1"
 			/>
-			<button class="search-close" type="button" aria-label="Close work search">
+			<button
+				class="search-close"
+				type="button"
+				aria-label="Close site search"
+				aria-hidden="true"
+				tabindex="-1"
+			>
 				<span aria-hidden="true"></span>
 			</button>
-			<button class="visually-hidden" type="submit">Search</button>
+			<button
+				class="visually-hidden"
+				type="submit"
+				aria-hidden="true"
+				tabindex="-1"
+			>Search</button>
+			<div
+				id="site-search-suggestions"
+				class="search-suggestions"
+				role="listbox"
+				aria-label="Suggested pages"
+				hidden
+			></div>
+			<p class="visually-hidden" data-search-status role="status" aria-live="polite"></p>
 		</form>
 
 		<main class="canvas" data-motion-root>
@@ -1066,6 +1093,7 @@ const backgroundWindows = [
 
 	.search-bar.is-open {
 		width: min(50vw, 690px);
+		overflow: visible;
 		animation: search-open-glow 2.8s ease-in-out infinite;
 	}
 
@@ -1160,6 +1188,98 @@ const backgroundWindows = [
 		opacity: 1;
 		pointer-events: auto;
 		transform: translateX(15px) scale(1);
+	}
+
+	.search-suggestions {
+		position: absolute;
+		top: calc(100% + 10px);
+		left: 0;
+		display: grid;
+		width: 100%;
+		max-height: min(372px, calc(100dvh - 110px));
+		margin: 0;
+		padding: 10px;
+		gap: 5px;
+		overflow-y: auto;
+		border: 1px solid rgb(255 255 255 / 70%);
+		border-radius: 24px;
+		outline: 1px solid rgb(255 255 255 / 18%);
+		outline-offset: -3px;
+		background: rgb(238 239 241 / 84%);
+		box-shadow:
+			0 20px 48px rgb(37 37 37 / 20%),
+			inset 0 1px 0 rgb(255 255 255 / 78%);
+		-webkit-backdrop-filter: blur(18px) saturate(1.2);
+		backdrop-filter: blur(18px) saturate(1.2);
+	}
+
+	.search-suggestions[hidden] {
+		display: none;
+	}
+
+	:global(.search-suggestion) {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: center;
+		min-height: 52px;
+		padding: 9px 12px 9px 15px;
+		column-gap: 16px;
+		border: 1px solid transparent;
+		border-radius: 16px;
+		color: var(--black);
+		text-decoration: none;
+		transition:
+			background-color 150ms ease,
+			border-color 150ms ease,
+			box-shadow 180ms ease;
+	}
+
+	:global(.search-suggestion:hover),
+	:global(.search-suggestion.is-active) {
+		border-color: rgb(255 255 255 / 72%);
+		background: rgb(255 255 255 / 66%);
+		box-shadow: 0 7px 18px rgb(37 37 37 / 10%);
+	}
+
+	:global(.search-suggestion-copy) {
+		display: grid;
+		min-width: 0;
+		gap: 1px;
+	}
+
+	:global(.search-suggestion strong) {
+		overflow: hidden;
+		font: 800 0.96rem/1.2 var(--font-body);
+		letter-spacing: -0.01em;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	:global(.search-suggestion small) {
+		overflow: hidden;
+		color: rgb(37 37 37 / 62%);
+		font: 650 0.72rem/1.25 var(--font-body);
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	:global(.search-suggestion-arrow) {
+		display: grid;
+		width: 30px;
+		height: 30px;
+		border: 1px solid rgb(37 37 37 / 11%);
+		border-radius: 50%;
+		background: rgb(255 255 255 / 42%);
+		font: 800 1rem/1 var(--font-body);
+		place-items: center;
+	}
+
+	:global(.search-empty) {
+		margin: 0;
+		padding: 17px 15px;
+		color: rgb(37 37 37 / 66%);
+		font: 700 0.84rem/1.35 var(--font-body);
+		text-align: center;
 	}
 
 	.search-close span {
@@ -2679,18 +2799,313 @@ const backgroundWindows = [
 		document.querySelector<HTMLButtonElement>(".search-close");
 	const searchInput =
 		document.querySelector<HTMLInputElement>(".search-input");
+	const searchSuggestions = document.querySelector<HTMLElement>(
+		"#site-search-suggestions",
+	);
+	const searchStatus =
+		document.querySelector<HTMLElement>("[data-search-status]");
 
-	if (searchBar && searchToggle && searchClose && searchInput) {
+	if (
+		searchBar &&
+		searchToggle &&
+		searchClose &&
+		searchInput &&
+		searchSuggestions &&
+		searchStatus
+	) {
+		type SearchDestination = {
+			title: string;
+			href: string;
+			description: string;
+			keywords: string[];
+		};
+
+		const siteDestinations: SearchDestination[] = [
+			{
+				title: "Home",
+				href: "/",
+				description: "Return to Jet Sullivan's homepage.",
+				keywords: ["landing", "start", "jet sullivan"],
+			},
+			{
+				title: "About",
+				href: "/about/",
+				description: "Learn more about Jet.",
+				keywords: ["about me", "biography", "bio", "who is jet"],
+			},
+			{
+				title: "Contact",
+				href: "/contact/",
+				description: "Get in touch with Jet.",
+				keywords: ["email", "message", "booking", "hire"],
+			},
+			{
+				title: "News and Media",
+				href: "/media/",
+				description: "Browse Jet's latest news and media.",
+				keywords: ["news", "media", "updates", "articles"],
+			},
+			{
+				title: "Featured",
+				href: "/media/featured/",
+				description: "See highlighted stories and work.",
+				keywords: ["highlights", "top stories", "spotlight"],
+			},
+			{
+				title: "Interviews",
+				href: "/media/interviews/",
+				description: "Watch and read Jet's interviews.",
+				keywords: ["interview", "questions", "conversation", "podcast"],
+			},
+			{
+				title: "Behind the Scenes",
+				href: "/media/behind-the-scenes/",
+				description: "Go behind the scenes of Jet's work.",
+				keywords: ["bts", "on set", "process", "production"],
+			},
+			{
+				title: "Press",
+				href: "/media/press/",
+				description: "Read press coverage and announcements.",
+				keywords: ["coverage", "article", "publication", "release"],
+			},
+			{
+				title: "Socials",
+				href: "/socials/",
+				description: "Find Jet across social platforms.",
+				keywords: ["social media", "instagram", "youtube", "tiktok"],
+			},
+			{
+				title: "Acting",
+				href: "/acting/",
+				description: "Explore Jet's acting work.",
+				keywords: ["actor", "performing", "performance", "roles"],
+			},
+			{
+				title: "Film",
+				href: "/film/",
+				description: "Explore Jet's filmmaking work.",
+				keywords: ["filmmaker", "movie", "cinema", "director"],
+			},
+			{
+				title: "Video",
+				href: "/video/",
+				description: "Explore Jet's videography work.",
+				keywords: ["videographer", "camera", "content", "production"],
+			},
+		];
+
 		let closeRippleTimer: number | undefined;
+		let focusTimer: number | undefined;
+		let visibleResults: SearchDestination[] = [];
+		let activeResultIndex = -1;
+
+		const normalizeSearchText = (value: string) =>
+			value
+				.toLocaleLowerCase()
+				.normalize("NFKD")
+				.replace(/[\u0300-\u036f]/g, "")
+				.replace(/[^a-z0-9]+/g, " ")
+				.trim();
+
+		const normalizePath = (path: string) => {
+			const withLeadingSlash = path.startsWith("/") ? path : `/${path}`;
+			return withLeadingSlash === "/"
+				? "/"
+				: `${withLeadingSlash.replace(/\/+$/, "")}/`;
+		};
+
+		const currentPath = normalizePath(window.location.pathname);
+		const publicDestinations = siteDestinations.filter(
+			(destination) => normalizePath(destination.href) !== currentPath,
+		);
+
+		const editDistance = (left: string, right: string) => {
+			const previous = Array.from(
+				{ length: right.length + 1 },
+				(_, index) => index,
+			);
+
+			for (let leftIndex = 1; leftIndex <= left.length; leftIndex += 1) {
+				let diagonal = previous[0];
+				previous[0] = leftIndex;
+
+				for (
+					let rightIndex = 1;
+					rightIndex <= right.length;
+					rightIndex += 1
+				) {
+					const above = previous[rightIndex];
+					previous[rightIndex] = Math.min(
+						previous[rightIndex] + 1,
+						previous[rightIndex - 1] + 1,
+						diagonal +
+							(left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1),
+					);
+					diagonal = above;
+				}
+			}
+
+			return previous[right.length];
+		};
+
+		const scoreDestination = (
+			destination: SearchDestination,
+			query: string,
+		) => {
+			if (!query) return 1;
+
+			const title = normalizeSearchText(destination.title);
+			const terms = [title, ...destination.keywords.map(normalizeSearchText)];
+			const words = terms.flatMap((term) => term.split(" "));
+			let score = 0;
+
+			if (title === query) score += 1000;
+			else if (title.startsWith(query)) score += 700;
+			else if (title.includes(query)) score += 520;
+
+			if (terms.some((term) => term === query)) score += 430;
+			else if (terms.some((term) => term.startsWith(query))) score += 300;
+			else if (terms.some((term) => term.includes(query))) score += 220;
+
+			const queryWords = query.split(" ");
+			for (const queryWord of queryWords) {
+				let wordScore = 0;
+
+				for (const word of words) {
+					if (word === queryWord) wordScore = Math.max(wordScore, 130);
+					else if (word.startsWith(queryWord)) {
+						wordScore = Math.max(wordScore, 100);
+					} else if (word.includes(queryWord)) {
+						wordScore = Math.max(wordScore, 70);
+					} else if (
+						queryWord.length >= 4 &&
+						Math.abs(word.length - queryWord.length) <= 2 &&
+						editDistance(word, queryWord) <=
+							(queryWord.length >= 6 ? 2 : 1)
+					) {
+						wordScore = Math.max(wordScore, 48);
+					}
+				}
+
+				if (wordScore === 0) return -1;
+				score += wordScore;
+			}
+
+			return score;
+		};
+
+		const setActiveResult = (nextIndex: number) => {
+			const resultElements = Array.from(
+				searchSuggestions.querySelectorAll<HTMLElement>(".search-suggestion"),
+			);
+
+			if (resultElements.length === 0) {
+				activeResultIndex = -1;
+				searchInput.removeAttribute("aria-activedescendant");
+				return;
+			}
+
+			activeResultIndex =
+				(nextIndex + resultElements.length) % resultElements.length;
+
+			resultElements.forEach((result, index) => {
+				const isActive = index === activeResultIndex;
+				result.classList.toggle("is-active", isActive);
+				result.setAttribute("aria-selected", String(isActive));
+
+				if (isActive) {
+					searchInput.setAttribute("aria-activedescendant", result.id);
+					result.scrollIntoView({ block: "nearest" });
+				}
+			});
+		};
+
+		const hideSuggestions = () => {
+			searchSuggestions.hidden = true;
+			searchSuggestions.replaceChildren();
+			searchInput.setAttribute("aria-expanded", "false");
+			searchInput.removeAttribute("aria-activedescendant");
+			visibleResults = [];
+			activeResultIndex = -1;
+		};
+
+		const renderSuggestions = () => {
+			if (!searchBar.classList.contains("is-open")) {
+				hideSuggestions();
+				return;
+			}
+
+			const query = normalizeSearchText(searchInput.value);
+			const rankedDestinations = publicDestinations
+				.map((destination, order) => ({
+					destination,
+					order,
+					score: scoreDestination(destination, query),
+				}))
+				.filter((result) => result.score >= 0)
+				.sort((left, right) => right.score - left.score || left.order - right.order)
+				.slice(0, 6);
+
+			visibleResults = rankedDestinations.map((result) => result.destination);
+			activeResultIndex = -1;
+			searchInput.removeAttribute("aria-activedescendant");
+			searchSuggestions.replaceChildren();
+
+			if (visibleResults.length === 0) {
+				const emptyMessage = document.createElement("p");
+				emptyMessage.className = "search-empty";
+				emptyMessage.textContent = "No matching page yet. Try another search.";
+				searchSuggestions.append(emptyMessage);
+				searchStatus.textContent = "No matching pages.";
+			} else {
+				const resultFragment = document.createDocumentFragment();
+
+				visibleResults.forEach((destination, index) => {
+					const result = document.createElement("a");
+					const copy = document.createElement("span");
+					const title = document.createElement("strong");
+					const description = document.createElement("small");
+					const arrow = document.createElement("span");
+
+					result.id = `site-search-result-${index}`;
+					result.className = "search-suggestion";
+					result.href = destination.href;
+					result.setAttribute("role", "option");
+					result.setAttribute("aria-selected", "false");
+					result.tabIndex = -1;
+					copy.className = "search-suggestion-copy";
+					title.textContent = destination.title;
+					description.textContent = destination.description;
+					arrow.className = "search-suggestion-arrow";
+					arrow.setAttribute("aria-hidden", "true");
+					arrow.textContent = "→";
+
+					copy.append(title, description);
+					result.append(copy, arrow);
+					result.addEventListener("pointerenter", () => setActiveResult(index));
+					resultFragment.append(result);
+				});
+
+				searchSuggestions.append(resultFragment);
+				searchStatus.textContent = `${visibleResults.length} page${visibleResults.length === 1 ? "" : "s"} suggested.`;
+			}
+
+			searchSuggestions.hidden = false;
+			searchInput.setAttribute("aria-expanded", "true");
+		};
 
 		const setSearchOpen = (isOpen: boolean) => {
 			const wasOpen = searchBar.classList.contains("is-open");
 			window.clearTimeout(closeRippleTimer);
+			window.clearTimeout(focusTimer);
 
 			if (isOpen) {
 				searchBar.classList.remove("is-closing", "suppress-hover");
 				searchBar.classList.add("is-open");
+				window.dispatchEvent(new CustomEvent("site-search:opened"));
 			} else {
+				hideSuggestions();
 				searchBar.classList.remove("is-open", "is-closing");
 
 				if (wasOpen) {
@@ -2706,13 +3121,17 @@ const backgroundWindows = [
 			}
 
 			searchToggle.setAttribute("aria-expanded", String(isOpen));
+			searchInput.tabIndex = isOpen ? 0 : -1;
+			searchClose.tabIndex = isOpen ? 0 : -1;
+			searchInput.setAttribute("aria-hidden", String(!isOpen));
+			searchClose.setAttribute("aria-hidden", String(!isOpen));
 			searchToggle.setAttribute(
 				"aria-label",
-				isOpen ? "Close work search" : "Open work search",
+				isOpen ? "Close site search" : "Open site search",
 			);
 
 			if (isOpen) {
-				window.setTimeout(() => searchInput.focus(), 180);
+				focusTimer = window.setTimeout(() => searchInput.focus(), 180);
 			}
 		};
 
@@ -2729,12 +3148,78 @@ const backgroundWindows = [
 
 		searchBar.addEventListener("submit", (event) => {
 			event.preventDefault();
+			const query = normalizeSearchText(searchInput.value);
+
+			if (query === "admin") {
+				window.location.assign("/login/");
+				return;
+			}
+
+			const selectedDestination =
+				visibleResults[activeResultIndex] ?? visibleResults[0];
+
+			if (selectedDestination && (query || activeResultIndex >= 0)) {
+				window.location.assign(selectedDestination.href);
+				return;
+			}
+
+			searchStatus.textContent = query
+				? "No matching page. Try another search."
+				: "Type a page or topic to search.";
 		});
 
-		searchInput.addEventListener("keydown", (event) => {
-			if (event.key !== "Escape") return;
+		searchInput.addEventListener("input", renderSuggestions);
+		searchInput.addEventListener("focus", renderSuggestions);
+
+		searchBar.addEventListener("keydown", (event) => {
+			if (event.key === "Escape") {
+				event.preventDefault();
+				event.stopPropagation();
+				setSearchOpen(false);
+				searchToggle.focus();
+				return;
+			}
+
+			if (event.target !== searchInput) return;
+
+			if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+				if (visibleResults.length === 0) return;
+				event.preventDefault();
+				setActiveResult(
+					event.key === "ArrowDown"
+						? activeResultIndex + 1
+						: activeResultIndex < 0
+							? visibleResults.length - 1
+							: activeResultIndex - 1,
+				);
+				return;
+			}
+
+			if (event.key === "Home" && visibleResults.length > 0) {
+				event.preventDefault();
+				setActiveResult(0);
+				return;
+			}
+
+			if (event.key === "End" && visibleResults.length > 0) {
+				event.preventDefault();
+				setActiveResult(visibleResults.length - 1);
+				return;
+			}
+		});
+
+		document.addEventListener("pointerdown", (event) => {
+			if (
+				searchBar.classList.contains("is-open") &&
+				event.target instanceof Node &&
+				!searchBar.contains(event.target)
+			) {
+				setSearchOpen(false);
+			}
+		});
+
+		window.addEventListener("site-menu:opened", () => {
 			setSearchOpen(false);
-			searchToggle.focus();
 		});
 
 		searchBar.addEventListener("pointerleave", () => {

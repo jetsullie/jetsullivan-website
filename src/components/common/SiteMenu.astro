@@ -10,9 +10,31 @@ const {
 	homeButtonHref = "/",
 	homeButtonLabel = "Return to homepage",
 } = Astro.props;
+
+const menuItems = [
+	{ href: "/", label: "Home" },
+	{ href: "/about/", label: "About" },
+	{ href: "/contact/", label: "Contact" },
+	{ href: "/media/", label: "News and Media" },
+	{ href: "/socials/", label: "Socials" },
+	{ href: "/acting/", label: "Acting" },
+	{ href: "/film/", label: "Film" },
+	{ href: "/video/", label: "Video" },
+];
+
+const normalizePath = (path: string) =>
+	path === "/" ? path : path.replace(/\/+$/, "");
+const currentPath = normalizePath(Astro.url.pathname);
+const visibleMenuItems = menuItems.filter(
+	({ href }) => normalizePath(href) !== currentPath,
+);
+const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 ---
 
-<div class="menu-control">
+<div
+	class="menu-control"
+	style={`--menu-expanded-height: ${expandedMenuHeight}px;`}
+>
 	<button
 		class="menu-toggle"
 		type="button"
@@ -22,13 +44,14 @@ const {
 	>
 		<span aria-hidden="true"></span>
 	</button>
-	<nav id="site-menu" class="site-menu" aria-label="Main navigation">
-		<a href="/">Home</a>
-		<a href="/about/">About</a>
-		<a href="/socials/">Socials</a>
-		<a href="/media/">Media</a>
-		<a href="/contact/">Contact</a>
-		<a href="/login/">Admin</a>
+	<nav
+		id="site-menu"
+		class="site-menu"
+		aria-label="Main navigation"
+		aria-hidden="true"
+		inert
+	>
+		{visibleMenuItems.map(({ href, label }) => <a href={href}>{label}</a>)}
 	</nav>
 </div>
 
@@ -130,7 +153,7 @@ const {
 
 	.menu-control.is-open {
 		width: min(230px, calc(100vw - 36px));
-		height: 354px;
+		height: min(var(--menu-expanded-height), calc(100dvh - 36px));
 		border-radius: 28px;
 	}
 
@@ -196,10 +219,14 @@ const {
 	.site-menu {
 		position: absolute;
 		top: 66px;
+		bottom: 14px;
 		right: 16px;
 		left: 16px;
 		display: grid;
 		gap: 5px;
+		align-content: start;
+		overflow-y: auto;
+		overscroll-behavior: contain;
 		opacity: 0;
 		pointer-events: none;
 		transform: translateY(-8px);
