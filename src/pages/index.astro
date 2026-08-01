@@ -1221,17 +1221,16 @@ const backgroundWindows = [
 		min-height: 52px;
 		padding: 9px 12px 9px 15px;
 		column-gap: 16px;
-		border: 1px solid rgb(255 255 255 / 38%);
-		border-radius: 16px;
-		background: rgb(47 51 57 / 45%);
-		box-shadow:
-			0 8px 20px rgb(20 22 25 / 13%),
-			inset 0 1px 0 rgb(255 255 255 / 28%);
-		color: rgb(255 255 255 / 96%);
-		text-shadow: 0 1px 2px rgb(20 22 25 / 48%);
+		border: 1px solid rgb(255 255 255 / 58%);
+		border-radius: 20px;
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 64%);
+		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		color: var(--black);
 		text-decoration: none;
-		-webkit-backdrop-filter: blur(12px) saturate(1.1);
-		backdrop-filter: blur(12px) saturate(1.1);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
 		animation:
 			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
 			search-suggestion-glow 2.8s ease-in-out infinite;
@@ -1242,8 +1241,8 @@ const backgroundWindows = [
 
 	:global(.search-suggestion:hover),
 	:global(.search-suggestion.is-active) {
-		border-color: rgb(255 255 255 / 58%);
-		background: rgb(47 51 57 / 54%);
+		border-color: rgb(255 255 255 / 72%);
+		background: rgb(255 255 255 / 78%);
 	}
 
 	:global(.search-suggestion-copy) {
@@ -1262,7 +1261,7 @@ const backgroundWindows = [
 
 	:global(.search-suggestion small) {
 		overflow: hidden;
-		color: rgb(255 255 255 / 82%);
+		color: rgb(37 37 37 / 62%);
 		font: 650 0.72rem/1.25 var(--font-body);
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -1272,28 +1271,34 @@ const backgroundWindows = [
 		display: grid;
 		width: 30px;
 		height: 30px;
-		border: 1px solid rgb(255 255 255 / 18%);
-		border-radius: 50%;
-		background: rgb(255 255 255 / 16%);
-		font: 800 1rem/1 var(--font-body);
 		place-items: center;
+	}
+
+	:global(.search-suggestion-arrow svg) {
+		display: block;
+		width: 26px;
+		height: 20px;
+		fill: none;
+		stroke: var(--black);
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 4;
 	}
 
 	:global(.search-empty) {
 		margin: 0;
 		padding: 17px 15px;
-		border: 1px solid rgb(255 255 255 / 38%);
-		border-radius: 16px;
-		background: rgb(47 51 57 / 45%);
-		box-shadow:
-			0 8px 20px rgb(20 22 25 / 13%),
-			inset 0 1px 0 rgb(255 255 255 / 28%);
-		color: rgb(255 255 255 / 88%);
-		text-shadow: 0 1px 2px rgb(20 22 25 / 48%);
+		border: 1px solid rgb(255 255 255 / 58%);
+		border-radius: 20px;
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 64%);
+		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		color: rgb(37 37 37 / 68%);
 		font: 700 0.84rem/1.35 var(--font-body);
 		text-align: center;
-		-webkit-backdrop-filter: blur(12px) saturate(1.1);
-		backdrop-filter: blur(12px) saturate(1.1);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
 		animation:
 			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
 			search-suggestion-glow 2.8s ease-in-out infinite;
@@ -1358,26 +1363,23 @@ const backgroundWindows = [
 		0%,
 		100% {
 			box-shadow:
-				0 8px 20px rgb(20 22 25 / 13%),
-				0 0 12px rgb(147 233 249 / 40%),
-				0 0 22px rgb(147 233 249 / 15%),
-				inset 0 1px 0 rgb(255 255 255 / 28%);
+				0 8px 28px rgb(37 37 37 / 14%),
+				0 0 18px rgb(147 233 249 / 48%),
+				0 0 38px rgb(147 233 249 / 20%);
 		}
 
 		33% {
 			box-shadow:
-				0 8px 20px rgb(20 22 25 / 13%),
-				0 0 13px rgb(253 191 191 / 42%),
-				0 0 24px rgb(253 191 191 / 16%),
-				inset 0 1px 0 rgb(255 255 255 / 28%);
+				0 8px 28px rgb(37 37 37 / 14%),
+				0 0 20px rgb(253 191 191 / 52%),
+				0 0 42px rgb(253 191 191 / 22%);
 		}
 
 		66% {
 			box-shadow:
-				0 8px 20px rgb(20 22 25 / 13%),
-				0 0 13px rgb(124 245 181 / 40%),
-				0 0 24px rgb(124 245 181 / 15%),
-				inset 0 1px 0 rgb(255 255 255 / 28%);
+				0 8px 28px rgb(37 37 37 / 14%),
+				0 0 20px rgb(124 245 181 / 50%),
+				0 0 42px rgb(124 245 181 / 20%);
 		}
 	}
 
@@ -3150,6 +3152,14 @@ const backgroundWindows = [
 					const title = document.createElement("strong");
 					const description = document.createElement("small");
 					const arrow = document.createElement("span");
+					const arrowIcon = document.createElementNS(
+						"http://www.w3.org/2000/svg",
+						"svg",
+					);
+					const arrowPath = document.createElementNS(
+						"http://www.w3.org/2000/svg",
+						"path",
+					);
 
 					result.id = `site-search-result-${index}`;
 					result.className = "search-suggestion";
@@ -3170,7 +3180,11 @@ const backgroundWindows = [
 					description.textContent = destination.description;
 					arrow.className = "search-suggestion-arrow";
 					arrow.setAttribute("aria-hidden", "true");
-					arrow.textContent = "→";
+					arrowIcon.setAttribute("viewBox", "0 0 26 20");
+					arrowIcon.setAttribute("focusable", "false");
+					arrowPath.setAttribute("d", "M3 10H23M16 3L23 10L16 17");
+					arrowIcon.append(arrowPath);
+					arrow.append(arrowIcon);
 
 					copy.append(title, description);
 					result.append(copy, arrow);
