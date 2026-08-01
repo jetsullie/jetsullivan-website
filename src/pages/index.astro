@@ -1192,30 +1192,22 @@ const backgroundWindows = [
 
 	.search-suggestions {
 		position: absolute;
-		top: calc(100% + 10px);
-		left: 0;
+		top: calc(100% + 4px);
+		left: -16px;
 		display: grid;
-		width: 100%;
-		max-height: min(372px, calc(100dvh - 110px));
+		width: calc(100% + 32px);
+		max-height: min(430px, calc(100dvh - 102px));
 		margin: 0;
-		padding: 10px;
-		gap: 5px;
+		padding: 12px 16px 24px;
+		gap: 8px;
+		overflow-x: hidden;
 		overflow-y: auto;
-		border: 1px solid rgb(255 255 255 / 70%);
-		border-radius: 24px;
-		outline: 1px solid rgb(255 255 255 / 18%);
-		outline-offset: -3px;
-		background: rgb(47 51 57 / 90%);
-		box-shadow:
-			0 20px 48px rgb(20 22 25 / 30%),
-			inset 0 1px 0 rgb(255 255 255 / 24%);
+		border: 0;
+		outline: 0;
+		background: transparent;
+		box-shadow: none;
 		scrollbar-color: rgb(255 255 255 / 34%) transparent;
-		transform-origin: top center;
-		-webkit-backdrop-filter: blur(18px) saturate(1.2);
-		backdrop-filter: blur(18px) saturate(1.2);
-		animation:
-			search-suggestions-unfold 340ms cubic-bezier(0.22, 1, 0.36, 1),
-			search-suggestions-glow 2.8s ease-in-out infinite;
+		scrollbar-width: thin;
 	}
 
 	.search-suggestions[hidden] {
@@ -1229,26 +1221,28 @@ const backgroundWindows = [
 		min-height: 52px;
 		padding: 9px 12px 9px 15px;
 		column-gap: 16px;
-		border: 1px solid rgb(255 255 255 / 12%);
+		border: 1px solid rgb(255 255 255 / 38%);
 		border-radius: 16px;
-		background: rgb(17 20 24 / 32%);
-		color: rgb(244 246 248 / 96%);
+		background: rgb(47 51 57 / 45%);
+		box-shadow:
+			0 8px 20px rgb(20 22 25 / 13%),
+			inset 0 1px 0 rgb(255 255 255 / 28%);
+		color: rgb(27 30 34 / 96%);
 		text-decoration: none;
-		animation: search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) both;
-		animation-delay: var(--suggestion-delay, 55ms);
+		-webkit-backdrop-filter: blur(12px) saturate(1.1);
+		backdrop-filter: blur(12px) saturate(1.1);
+		animation:
+			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
+			search-suggestion-glow 2.8s ease-in-out infinite;
 		transition:
 			background-color 150ms ease,
-			border-color 150ms ease,
-			box-shadow 180ms ease;
+			border-color 150ms ease;
 	}
 
 	:global(.search-suggestion:hover),
 	:global(.search-suggestion.is-active) {
-		border-color: rgb(255 255 255 / 34%);
-		background: rgb(255 255 255 / 15%);
-		box-shadow:
-			0 7px 18px rgb(10 12 15 / 24%),
-			inset 0 1px 0 rgb(255 255 255 / 18%);
+		border-color: rgb(255 255 255 / 58%);
+		background: rgb(47 51 57 / 54%);
 	}
 
 	:global(.search-suggestion-copy) {
@@ -1267,7 +1261,7 @@ const backgroundWindows = [
 
 	:global(.search-suggestion small) {
 		overflow: hidden;
-		color: rgb(235 238 242 / 68%);
+		color: rgb(27 30 34 / 82%);
 		font: 650 0.72rem/1.25 var(--font-body);
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -1277,9 +1271,9 @@ const backgroundWindows = [
 		display: grid;
 		width: 30px;
 		height: 30px;
-		border: 1px solid rgb(255 255 255 / 18%);
+		border: 1px solid rgb(27 30 34 / 14%);
 		border-radius: 50%;
-		background: rgb(255 255 255 / 8%);
+		background: rgb(255 255 255 / 16%);
 		font: 800 1rem/1 var(--font-body);
 		place-items: center;
 	}
@@ -1287,11 +1281,20 @@ const backgroundWindows = [
 	:global(.search-empty) {
 		margin: 0;
 		padding: 17px 15px;
-		color: rgb(238 241 244 / 76%);
+		border: 1px solid rgb(255 255 255 / 38%);
+		border-radius: 16px;
+		background: rgb(47 51 57 / 45%);
+		box-shadow:
+			0 8px 20px rgb(20 22 25 / 13%),
+			inset 0 1px 0 rgb(255 255 255 / 28%);
+		color: rgb(27 30 34 / 84%);
 		font: 700 0.84rem/1.35 var(--font-body);
 		text-align: center;
-		animation: search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) both;
-		animation-delay: var(--suggestion-delay, 55ms);
+		-webkit-backdrop-filter: blur(12px) saturate(1.1);
+		backdrop-filter: blur(12px) saturate(1.1);
+		animation:
+			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
+			search-suggestion-glow 2.8s ease-in-out infinite;
 	}
 
 	.search-close span {
@@ -1337,56 +1340,42 @@ const backgroundWindows = [
 		}
 	}
 
-	@keyframes search-suggestions-unfold {
-		0% {
-			opacity: 0;
-			clip-path: inset(0 0 100% 0 round 24px);
-			transform: translateY(-10px) scaleX(0.985);
-		}
-
-		100% {
-			opacity: 1;
-			clip-path: inset(0 round 24px);
-			transform: translateY(0) scaleX(1);
-		}
-	}
-
 	@keyframes search-suggestion-cascade {
 		0% {
 			opacity: 0;
-			transform: translateY(-22px) scale(0.97);
+			transform: translateY(-30px);
 		}
 
 		100% {
 			opacity: 1;
-			transform: translateY(0) scale(1);
+			transform: translateY(0);
 		}
 	}
 
-	@keyframes search-suggestions-glow {
+	@keyframes search-suggestion-glow {
 		0%,
 		100% {
 			box-shadow:
-				0 20px 48px rgb(20 22 25 / 30%),
-				0 0 18px rgb(147 233 249 / 48%),
-				0 0 38px rgb(147 233 249 / 20%),
-				inset 0 1px 0 rgb(255 255 255 / 24%);
+				0 8px 20px rgb(20 22 25 / 13%),
+				0 0 12px rgb(147 233 249 / 40%),
+				0 0 22px rgb(147 233 249 / 15%),
+				inset 0 1px 0 rgb(255 255 255 / 28%);
 		}
 
 		33% {
 			box-shadow:
-				0 20px 48px rgb(20 22 25 / 30%),
-				0 0 20px rgb(253 191 191 / 52%),
-				0 0 42px rgb(253 191 191 / 22%),
-				inset 0 1px 0 rgb(255 255 255 / 24%);
+				0 8px 20px rgb(20 22 25 / 13%),
+				0 0 13px rgb(253 191 191 / 42%),
+				0 0 24px rgb(253 191 191 / 16%),
+				inset 0 1px 0 rgb(255 255 255 / 28%);
 		}
 
 		66% {
 			box-shadow:
-				0 20px 48px rgb(20 22 25 / 30%),
-				0 0 20px rgb(124 245 181 / 50%),
-				0 0 42px rgb(124 245 181 / 20%),
-				inset 0 1px 0 rgb(255 255 255 / 24%);
+				0 8px 20px rgb(20 22 25 / 13%),
+				0 0 13px rgb(124 245 181 / 40%),
+				0 0 24px rgb(124 245 181 / 15%),
+				inset 0 1px 0 rgb(255 255 255 / 28%);
 		}
 	}
 
@@ -2968,9 +2957,14 @@ const backgroundWindows = [
 
 		let closeRippleTimer: number | undefined;
 		let focusTimer: number | undefined;
+		let suggestionRevealTimer: number | undefined;
 		let visibleResults: SearchDestination[] = [];
 		let activeResultIndex = -1;
 		let hasRenderedSuggestions = false;
+		let suggestionsReady = false;
+		const reducedSearchMotion = window.matchMedia(
+			"(prefers-reduced-motion: reduce)",
+		);
 
 		const normalizeSearchText = (value: string) =>
 			value
@@ -3109,6 +3103,8 @@ const backgroundWindows = [
 				return;
 			}
 
+			if (!suggestionsReady) return;
+
 			const query = normalizeSearchText(searchInput.value);
 			const useOpeningCascade = !hasRenderedSuggestions;
 			const suggestionDuration = useOpeningCascade ? 330 : 210;
@@ -3193,12 +3189,20 @@ const backgroundWindows = [
 			const wasOpen = searchBar.classList.contains("is-open");
 			window.clearTimeout(closeRippleTimer);
 			window.clearTimeout(focusTimer);
+			window.clearTimeout(suggestionRevealTimer);
 
 			if (isOpen) {
+				suggestionsReady = false;
 				searchBar.classList.remove("is-closing", "suppress-hover");
 				searchBar.classList.add("is-open");
 				window.dispatchEvent(new CustomEvent("site-search:opened"));
+				suggestionRevealTimer = window.setTimeout(() => {
+					if (!searchBar.classList.contains("is-open")) return;
+					suggestionsReady = true;
+					renderSuggestions();
+				}, reducedSearchMotion.matches ? 0 : 420);
 			} else {
+				suggestionsReady = false;
 				hideSuggestions();
 				searchBar.classList.remove("is-open", "is-closing");
 
@@ -3225,7 +3229,10 @@ const backgroundWindows = [
 			);
 
 			if (isOpen) {
-				focusTimer = window.setTimeout(() => searchInput.focus(), 180);
+				focusTimer = window.setTimeout(
+					() => searchInput.focus(),
+					reducedSearchMotion.matches ? 0 : 180,
+				);
 			}
 		};
 
