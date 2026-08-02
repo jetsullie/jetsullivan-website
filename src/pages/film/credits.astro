@@ -90,6 +90,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		id: string;
 		name: string;
 		link: URL | null;
+		dateFrom: string | null;
+		dateTo: string | null;
 	};
 
 	type CreditCategory = {
@@ -124,6 +126,45 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		}
 	};
 
+	const parseIsoDate = (value: unknown) => {
+		if (typeof value !== "string") return null;
+		const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+		if (!match) return null;
+
+		const year = Number(match[1]);
+		const month = Number(match[2]);
+		const day = Number(match[3]);
+		if (year < 1 || year > 9999) return null;
+
+		const parsed = new Date(0);
+		parsed.setUTCHours(0, 0, 0, 0);
+		parsed.setUTCFullYear(year, month - 1, day);
+		if (
+			parsed.getUTCFullYear() !== year ||
+			parsed.getUTCMonth() !== month - 1 ||
+			parsed.getUTCDate() !== day
+		) {
+			return null;
+		}
+
+		return value.trim();
+	};
+
+	const creditDateFormatter = new Intl.DateTimeFormat("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		timeZone: "UTC",
+	});
+
+	const formatCreditDate = (value: string) => {
+		const [year, month, day] = value.split("-").map(Number);
+		const date = new Date(0);
+		date.setUTCHours(0, 0, 0, 0);
+		date.setUTCFullYear(year, month - 1, day);
+		return creditDateFormatter.format(date);
+	};
+
 	const parseColor = (value: unknown) => {
 		const match =
 			typeof value === "string"
@@ -141,11 +182,19 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		const film = value as Record<string, unknown>;
 		const name = cleanLabel(film.name, 180);
 		if (!name) return null;
+		const dateFrom = parseIsoDate(film.dateFrom);
+		const requestedDateTo = parseIsoDate(film.dateTo);
+		const dateTo =
+			dateFrom && requestedDateTo && requestedDateTo > dateFrom
+				? requestedDateTo
+				: null;
 
 		return {
 			id: cleanLabel(film.id, 120) || `film-${index + 1}`,
 			name,
 			link: safeHttpsUrl(film.link),
+			dateFrom,
+			dateTo,
 		};
 	};
 
@@ -183,11 +232,42 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 
 	const createFilmItem = (film: CreditFilm) => {
 		const item = document.createElement("li");
+		const copy = document.createElement("span");
+		const name = document.createElement("span");
+		copy.className = "film-copy";
+		name.className = "film-name";
+		name.textContent = film.name;
+		copy.append(name);
+
+		let dateLabel = "";
+		if (film.dateFrom) {
+			const dates = document.createElement("span");
+			const fromTime = document.createElement("time");
+			const formattedFrom = formatCreditDate(film.dateFrom);
+			dates.className = "film-dates";
+			fromTime.dateTime = film.dateFrom;
+			fromTime.textContent = formattedFrom;
+
+			if (film.dateTo) {
+				const toTime = document.createElement("time");
+				const formattedTo = formatCreditDate(film.dateTo);
+				toTime.dateTime = film.dateTo;
+				toTime.textContent = formattedTo;
+				dates.append("From ", fromTime, " – To ", toTime);
+				dateLabel = `From ${formattedFrom} to ${formattedTo}`;
+			} else {
+				dates.append("Date ", fromTime);
+				dateLabel = `Date ${formattedFrom}`;
+			}
+
+			copy.append(dates);
+		}
 
 		if (!film.link) {
-			const name = document.createElement("span");
-			name.textContent = film.name;
-			item.append(name);
+			const entry = document.createElement("span");
+			entry.className = "film-entry";
+			entry.append(copy);
+			item.append(entry);
 			return item;
 		}
 
@@ -196,8 +276,12 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		link.href = film.link.href;
 		link.target = "_blank";
 		link.rel = "noopener noreferrer";
-		link.setAttribute("aria-label", `${film.name} (opens in a new tab)`);
-		link.append(document.createTextNode(film.name));
+		link.className = "film-entry";
+		link.setAttribute(
+			"aria-label",
+			`${film.name}${dateLabel ? `, ${dateLabel}` : ""} (opens in a new tab)`,
+		);
+		link.append(copy);
 		arrow.className = "outbound-arrow";
 		arrow.setAttribute("aria-hidden", "true");
 		arrow.textContent = "↗";
@@ -595,6 +679,28 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		text-decoration-color: rgb(var(--category-rgb) / 72%);
 		text-decoration-thickness: 2px;
 		text-underline-offset: 4px;
+	}
+
+	.film-copy {
+		display: grid;
+		min-width: 0;
+		gap: 4px;
+	}
+
+	.film-name {
+		overflow-wrap: anywhere;
+	}
+
+	.film-dates {
+		color: rgb(37 37 37 / 66%);
+		font-size: clamp(0.72rem, 1vw, 0.84rem);
+		font-weight: 750;
+		letter-spacing: 0.015em;
+		line-height: 1.35;
+	}
+
+	.film-dates time {
+		font-variant-numeric: tabular-nums;
 	}
 
 	.film-list a {

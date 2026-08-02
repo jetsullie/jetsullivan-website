@@ -102,8 +102,8 @@ const adminWindows = [
 							<fieldset class="credit-film-editor field-wide">
 								<legend>Films for this position</legend>
 								<p>
-									Add the film names in display order. Each film can optionally open an
-									external HTTPS link.
+									Add the film names in display order. Each film can optionally include
+									a From date, a To date, and an external HTTPS link.
 								</p>
 								<div id="credit-film-rows" class="credit-film-rows"></div>
 								<button
@@ -493,6 +493,8 @@ const adminWindows = [
 		id?: string;
 		name: string;
 		link?: string | null;
+		dateFrom?: string | null;
+		dateTo?: string | null;
 	};
 
 	type CreditCategory = {
@@ -566,6 +568,7 @@ const adminWindows = [
 		"#FDBFBF",
 	];
 	const creditColorPattern = /^#[0-9A-F]{6}$/i;
+	const creditDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 
 	const normalizeCreditColor = (value: unknown) =>
 		typeof value === "string" && creditColorPattern.test(value)
@@ -582,6 +585,32 @@ const adminWindows = [
 		} catch {
 			return null;
 		}
+	};
+
+	const normalizeCreditDate = (value: unknown) => {
+		if (typeof value !== "string" || !value.trim()) return null;
+		const date = value.trim();
+		if (!creditDatePattern.test(date) || date.startsWith("0000-")) return null;
+		const parsed = new Date(`${date}T12:00:00Z`);
+		return !Number.isNaN(parsed.getTime()) &&
+			parsed.toISOString().slice(0, 10) === date
+			? date
+			: null;
+	};
+
+	const formatCreditDate = (value: string) =>
+		new Intl.DateTimeFormat("en-US", {
+			year: "numeric",
+			month: "short",
+			day: "numeric",
+		}).format(new Date(`${value}T12:00:00`));
+
+	const formatCreditDateRange = (film: CreditFilm) => {
+		const dateFrom = normalizeCreditDate(film.dateFrom);
+		const dateTo = normalizeCreditDate(film.dateTo);
+		if (!dateFrom) return "";
+		if (!dateTo || dateTo === dateFrom) return formatCreditDate(dateFrom);
+		return `${formatCreditDate(dateFrom)} – ${formatCreditDate(dateTo)}`;
 	};
 
 	const syncCreditColor = () => {
@@ -624,12 +653,21 @@ const adminWindows = [
 		const linkField = document.createElement("label");
 		const linkLabel = document.createElement("span");
 		const linkInput = document.createElement("input");
+		const dateFields = document.createElement("div");
+		const dateFromField = document.createElement("label");
+		const dateFromLabel = document.createElement("span");
+		const dateFromInput = document.createElement("input");
+		const dateToField = document.createElement("label");
+		const dateToLabel = document.createElement("span");
+		const dateToInput = document.createElement("input");
 		const controls = document.createElement("div");
 		const moveUp = document.createElement("button");
 		const moveDown = document.createElement("button");
 		const remove = document.createElement("button");
 		const nameId = `credit-film-name-${sequence}`;
 		const linkId = `credit-film-link-${sequence}`;
+		const dateFromId = `credit-film-date-from-${sequence}`;
+		const dateToId = `credit-film-date-to-${sequence}`;
 
 		row.className = "credit-film-row";
 		row.dataset.creditFilmId = typeof film.id === "string" ? film.id : "";
@@ -654,6 +692,46 @@ const adminWindows = [
 		linkInput.placeholder = "https://";
 		linkInput.value = typeof film.link === "string" ? film.link : "";
 		linkField.append(linkLabel, linkInput);
+
+		dateFields.className = "credit-film-date-fields";
+		dateFromField.className = "field";
+		dateFromField.htmlFor = dateFromId;
+		dateFromLabel.textContent = "From date (optional)";
+		dateFromInput.id = dateFromId;
+		dateFromInput.type = "date";
+		dateFromInput.dataset.creditDateFrom = "true";
+		dateFromInput.value = normalizeCreditDate(film.dateFrom) || "";
+		dateFromField.append(dateFromLabel, dateFromInput);
+
+		dateToField.className = "field";
+		dateToField.htmlFor = dateToId;
+		dateToLabel.textContent = "To date (optional)";
+		dateToInput.id = dateToId;
+		dateToInput.type = "date";
+		dateToInput.dataset.creditDateTo = "true";
+		dateToInput.value = normalizeCreditDate(film.dateTo) || "";
+		dateToField.append(dateToLabel, dateToInput);
+		dateFields.append(dateFromField, dateToField);
+
+		const syncCreditDateRange = () => {
+			const dateFrom = normalizeCreditDate(dateFromInput.value);
+			const dateTo = normalizeCreditDate(dateToInput.value);
+			dateToInput.disabled = !dateFrom;
+			dateToInput.min = dateFrom || "";
+			if (!dateFrom) {
+				dateToInput.value = "";
+				dateToInput.setCustomValidity("");
+				return;
+			}
+			dateToInput.setCustomValidity(
+				dateTo && dateTo < dateFrom
+					? "The To date cannot be earlier than the From date."
+					: "",
+			);
+		};
+		dateFromInput.addEventListener("input", syncCreditDateRange);
+		dateToInput.addEventListener("input", syncCreditDateRange);
+		syncCreditDateRange();
 
 		controls.className = "credit-film-row-actions";
 		for (const button of [moveUp, moveDown, remove]) {
@@ -688,7 +766,7 @@ const adminWindows = [
 		});
 
 		controls.append(moveUp, moveDown, remove);
-		row.append(nameField, linkField, controls);
+		row.append(nameField, linkField, dateFields, controls);
 		creditFilmRows.append(row);
 		updateCreditFilmRowControls();
 	};
@@ -704,11 +782,37 @@ const adminWindows = [
 			const linkValue =
 				row.querySelector<HTMLInputElement>('input[type="url"]')?.value.trim() ||
 				"";
+			const dateFromValue =
+				row
+					.querySelector<HTMLInputElement>("[data-credit-date-from]")
+					?.value.trim() || "";
+			const dateToValue =
+				row
+					.querySelector<HTMLInputElement>("[data-credit-date-to]")
+					?.value.trim() || "";
 			if (!name) throw new Error(`Enter a name for film ${index + 1}.`);
 			const link = linkValue ? safeCreditLink(linkValue) : null;
 			if (linkValue && !link) {
 				throw new Error(
 					`Film ${index + 1} needs a valid HTTPS link without login details.`,
+				);
+			}
+			const dateFrom = normalizeCreditDate(dateFromValue);
+			const dateTo = normalizeCreditDate(dateToValue);
+			if (dateFromValue && !dateFrom) {
+				throw new Error(`Film ${index + 1} needs a valid From date.`);
+			}
+			if (dateToValue && !dateFrom) {
+				throw new Error(
+					`Choose a From date before adding a To date for film ${index + 1}.`,
+				);
+			}
+			if (dateToValue && !dateTo) {
+				throw new Error(`Film ${index + 1} needs a valid To date.`);
+			}
+			if (dateFrom && dateTo && dateTo < dateFrom) {
+				throw new Error(
+					`The To date for film ${index + 1} cannot be earlier than its From date.`,
 				);
 			}
 			return {
@@ -717,6 +821,8 @@ const adminWindows = [
 					: {}),
 				name,
 				link: link?.href || null,
+				dateFrom,
+				dateTo,
 			};
 		});
 	};
@@ -818,16 +924,29 @@ const adminWindows = [
 
 			for (const film of category.films) {
 				const item = document.createElement("li");
+				const filmName = document.createElement("span");
+				const dateRange = formatCreditDateRange(film);
 				const link = safeCreditLink(film.link);
+				filmName.className = "credit-admin-film-name";
+				filmName.textContent = film.name;
 				if (link) {
 					const anchor = document.createElement("a");
+					const arrow = document.createElement("span");
 					anchor.href = link.href;
 					anchor.target = "_blank";
 					anchor.rel = "noopener noreferrer";
-					anchor.textContent = `${film.name} ↗`;
+					arrow.setAttribute("aria-hidden", "true");
+					arrow.textContent = " ↗";
+					anchor.append(filmName, arrow);
 					item.append(anchor);
 				} else {
-					item.textContent = film.name;
+					item.append(filmName);
+				}
+				if (dateRange) {
+					const date = document.createElement("span");
+					date.className = "credit-admin-film-date";
+					date.textContent = dateRange;
+					item.append(date);
 				}
 				films.append(item);
 			}
@@ -2246,19 +2365,31 @@ const adminWindows = [
 		}
 		.credit-film-row {
 			display: grid;
-			grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr) auto;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
 			gap: 12px;
-			align-items: end;
+			align-items: start;
 			padding: 14px;
 			border: 1px solid rgb(68 73 74 / 14%);
 			border-radius: 18px;
 			background: rgb(255 255 255 / 46%);
 		}
+		.credit-film-date-fields {
+			display: grid;
+			grid-column: 1 / -1;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 12px;
+			padding-top: 2px;
+		}
+		.credit-film-date-fields input:disabled {
+			cursor: not-allowed;
+			opacity: .52;
+		}
 		.credit-film-row-actions {
 			display: flex;
+			grid-column: 1 / -1;
 			gap: 6px;
 			align-items: center;
-			padding-bottom: 3px;
+			justify-content: flex-end;
 		}
 		.credit-film-row-button {
 			min-width: 38px;
@@ -2360,7 +2491,14 @@ const adminWindows = [
 			font-weight: 750;
 			line-height: 1.4;
 		}
+		.credit-admin-films li {
+			display: grid;
+			gap: 2px;
+		}
 		.credit-admin-films a {
+			display: inline-flex;
+			align-items: baseline;
+			justify-self: start;
 			color: inherit;
 			text-decoration-thickness: 2px;
 			text-underline-offset: 4px;
@@ -2368,6 +2506,12 @@ const adminWindows = [
 		}
 		.credit-admin-films a:hover {
 			color: color-mix(in srgb, var(--credit-color) 70%, var(--admin-gray));
+		}
+		.credit-admin-film-date {
+			color: rgb(37 37 37 / 58%);
+			font-size: .76rem;
+			font-weight: 850;
+			letter-spacing: .025em;
 		}
 		.credit-category-actions {
 			display: flex;
@@ -2817,7 +2961,8 @@ const adminWindows = [
 			.field-grid,
 			.image-fields,
 			.entry-admin-grid { grid-template-columns: 1fr; }
-			.credit-film-row { grid-template-columns: 1fr; }
+			.credit-film-row,
+			.credit-film-date-fields { grid-template-columns: 1fr; }
 			.credit-film-row-actions {
 				flex-wrap: wrap;
 				padding-bottom: 0;

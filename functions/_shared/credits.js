@@ -9,6 +9,7 @@ const MAX_LINK_LENGTH = 2048;
 const UUID_PATTERN =
 	/^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const COLOR_PATTERN = /^#[0-9a-f]{6}$/i;
+const CREDIT_DATE_PATTERN = /^(\d{4})-(\d{2})-(\d{2})$/;
 const CONTROL_CHARACTER_PATTERN = /[\u0000-\u001f\u007f]/;
 
 const isObject = (value) =>
@@ -118,6 +119,63 @@ export const normalizeCreditLink = (value) => {
 	return url.href;
 };
 
+const normalizeCreditDate = (value, label) => {
+	if (value === null || value === undefined || value === "") return null;
+	if (typeof value !== "string") {
+		throw new CreditRequestError(`${label} must use the YYYY-MM-DD format.`);
+	}
+
+	const date = value.trim();
+	if (!date) return null;
+	const match = CREDIT_DATE_PATTERN.exec(date);
+	if (!match) {
+		throw new CreditRequestError(`${label} must use the YYYY-MM-DD format.`);
+	}
+
+	const year = Number(match[1]);
+	const month = Number(match[2]);
+	const day = Number(match[3]);
+	const isLeapYear = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
+	const daysInMonth = [
+		31,
+		isLeapYear ? 29 : 28,
+		31,
+		30,
+		31,
+		30,
+		31,
+		31,
+		30,
+		31,
+		30,
+		31,
+	];
+	if (
+		year === 0 ||
+		month < 1 ||
+		month > 12 ||
+		day < 1 ||
+		day > daysInMonth[month - 1]
+	) {
+		throw new CreditRequestError(`${label} must be a real calendar date.`);
+	}
+	return date;
+};
+
+export const normalizeCreditDateRange = (dateFromValue, dateToValue) => {
+	const dateFrom = normalizeCreditDate(dateFromValue, "From date");
+	const dateTo = normalizeCreditDate(dateToValue, "To date");
+	if (dateTo && !dateFrom) {
+		throw new CreditRequestError("Add a From date before adding a To date.");
+	}
+	if (dateFrom && dateTo && dateTo < dateFrom) {
+		throw new CreditRequestError(
+			"The To date must be the same as or later than the From date.",
+		);
+	}
+	return { dateFrom, dateTo };
+};
+
 const normalizeFilmName = (value) =>
 	normalizeRequiredText(value, {
 		label: "Film name",
@@ -153,11 +211,13 @@ export const normalizeCreditFilms = (
 			throw new CreditRequestError("Film IDs must be unique within a category.");
 		}
 		seenIds.add(id);
+		const dates = normalizeCreditDateRange(film.dateFrom, film.dateTo);
 
 		return {
 			id,
 			name: normalizeFilmName(film.name),
 			link: normalizeCreditLink(film.link),
+			...dates,
 		};
 	});
 };
@@ -290,10 +350,12 @@ const normalizeStoredDocument = (value) => {
 					throw new CreditRequestError("Film IDs must be unique.");
 				}
 				filmIds.add(filmId);
+				const dates = normalizeCreditDateRange(film.dateFrom, film.dateTo);
 				return {
 					id: filmId,
 					name: normalizeFilmName(film.name),
 					link: normalizeCreditLink(film.link),
+					...dates,
 				};
 			});
 
@@ -364,5 +426,7 @@ export const toPublicCreditCategory = (category) => ({
 		id: film.id,
 		name: film.name,
 		link: film.link,
+		dateFrom: film.dateFrom,
+		dateTo: film.dateTo,
 	})),
 });
