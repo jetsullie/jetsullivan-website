@@ -102,6 +102,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 									<rect x="6" y="4" width="20" height="24" rx="3" />
 									<path d="M11 11h10M11 16h10M11 21h7" />
 								</svg>
+								<span class="heading-card-label">{headingCardLabel}</span>
 							</a>
 						</div>
 					) : (
@@ -567,9 +568,14 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		top: 50%;
 		right: calc(100% + clamp(16px, 2vw, 32px));
 		display: grid;
-		width: 64px;
+		grid-template-columns: auto auto;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		width: auto;
+		min-width: 140px;
 		height: 64px;
-		padding: 0;
+		padding: 0 20px 0 18px;
 		border: 1px solid rgb(255 255 255 / 58%);
 		border-radius: 50%;
 		outline: 1px solid rgb(255 255 255 / 16%);
@@ -577,7 +583,10 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		background: rgb(255 255 255 / 64%);
 		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
 		color: #252525;
+		font: 900 .86rem/1 var(--display);
+		letter-spacing: .045em;
 		text-decoration: none;
+		text-transform: uppercase;
 		transform: translateY(-50%);
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
@@ -597,6 +606,9 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		stroke-linecap: round;
 		stroke-linejoin: round;
 		stroke-width: 2.5;
+	}
+	.heading-card-label {
+		color: inherit;
 	}
 	.heading-card:hover,
 	.heading-card:focus-visible {
@@ -984,8 +996,10 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		h1 { font-size: clamp(3.5rem, 18vw, 7rem); }
 		.heading-card {
 			right: calc(100% + 12px);
-			width: 60px;
+			min-width: 126px;
 			height: 60px;
+			padding: 0 16px 0 15px;
+			font-size: .76rem;
 		}
 		.heading-card-icon { width: 25px; }
 		.entry-grid { width: 100%; }
@@ -997,15 +1011,41 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	@media (max-width: 620px) {
 		.entry-grid { grid-template-columns: minmax(0, 1fr); }
 	}
+	@media (max-width: 560px) {
+		.heading-lockup {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			gap: 10px;
+			width: 100%;
+		}
+		.heading-card {
+			position: relative;
+			top: auto;
+			right: auto;
+			order: -1;
+			flex: 0 0 auto;
+			min-width: 112px;
+			height: 56px;
+			padding: 0 14px 0 13px;
+			transform: none;
+		}
+		.heading-card:hover,
+		.heading-card:focus-visible {
+			transform: translateY(3px);
+		}
+	}
 	@media (max-width: 480px) {
 		.page { padding-top: 128px; }
 		.eyebrow { max-width: 66%; font-size: .67rem; }
 		.heading-card {
-			right: calc(100% + 8px);
-			width: 54px;
+			min-width: 104px;
 			height: 54px;
+			padding-inline: 12px;
+			gap: 8px;
+			font-size: .68rem;
 		}
-		.heading-card-icon { width: 23px; }
+		.heading-card-icon { width: 22px; }
 		.info-window { border-radius: 24px; }
 		.info-window:not(.is-compact) { padding: 50px 22px 28px; }
 		.info-window.is-compact { padding: 18px; }
