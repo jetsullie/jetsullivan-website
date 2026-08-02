@@ -142,19 +142,21 @@ const backgroundWindows = [
 
 			<div class="portrait-emoji-layer" aria-hidden="true"></div>
 
-			<img
-				class="portrait"
-				data-motion-depth="deep"
-				data-portrait-trigger
-				src="/jet-portrait.jpg"
-				alt="Jet Sullivan"
-				aria-label="Release camera emojis from Jet's portrait"
-				draggable="false"
-				role="button"
-				tabindex="0"
-				width="605"
-				height="1816"
-			/>
+			<div class="portrait-cluster" data-motion-depth="deep">
+				<img
+					class="portrait"
+					data-portrait-trigger
+					src="/jet-portrait.jpg"
+					alt="Jet Sullivan"
+					aria-label="Release camera emojis from Jet's portrait"
+					draggable="false"
+					role="button"
+					tabindex="0"
+					width="605"
+					height="1816"
+				/>
+				<p class="resume-bubble">Check out my resumes!</p>
+			</div>
 
 		</main>
 
@@ -727,7 +729,7 @@ const backgroundWindows = [
 		pointer-events: none;
 	}
 
-	.portrait {
+	.portrait-cluster {
 		position: absolute;
 		z-index: 4;
 		right: auto;
@@ -735,11 +737,21 @@ const backgroundWindows = [
 		left: 68%;
 		width: auto;
 		height: min(74vh, 900px);
+		aspect-ratio: 605 / 1816;
+		translate: var(--deep-x) var(--deep-y);
+	}
+
+	.portrait {
+		position: absolute;
+		z-index: 1;
+		inset: 0;
+		display: block;
+		width: 100%;
+		height: 100%;
 		cursor: pointer;
 		filter: saturate(0.9) contrast(1.02);
 		-webkit-tap-highlight-color: transparent;
 		touch-action: manipulation;
-		translate: var(--deep-x) var(--deep-y);
 		user-select: none;
 	}
 
@@ -747,6 +759,61 @@ const backgroundWindows = [
 		border-radius: 999px;
 		outline: 4px solid var(--pink);
 		outline-offset: 6px;
+	}
+
+	.resume-bubble {
+		--resume-orange: 255 176 92;
+		--resume-bubble-width: clamp(165px, 14vw, 220px);
+		position: absolute;
+		z-index: 2;
+		top: 12%;
+		left: 65%;
+		width: var(--resume-bubble-width);
+		margin: 0;
+		padding: clamp(15px, 1.25vw, 19px) clamp(17px, 1.4vw, 22px);
+		border: 1px solid rgb(255 255 255 / 58%);
+		border-radius: 24px;
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
+		background:
+			linear-gradient(145deg, rgb(255 255 255 / 22%), transparent 64%),
+			rgb(var(--resume-orange) / 64%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 48%),
+			0 8px 28px rgb(37 37 37 / 14%),
+			0 0 22px rgb(var(--resume-orange) / 22%);
+		color: var(--black);
+		font: 900 clamp(0.82rem, 0.95vw, 1rem) / 1.18 var(--font-display);
+		letter-spacing: -0.025em;
+		pointer-events: none;
+		text-align: center;
+		text-shadow: 0 1px 0 rgb(255 255 255 / 38%);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+	}
+
+	.resume-bubble::before,
+	.resume-bubble::after {
+		position: absolute;
+		top: 50%;
+		clip-path: polygon(100% 0, 100% 100%, 0 50%);
+		content: "";
+		pointer-events: none;
+		transform: translateY(-50%);
+	}
+
+	.resume-bubble::before {
+		left: -18px;
+		width: 20px;
+		height: 24px;
+		background: rgb(255 255 255 / 58%);
+	}
+
+	.resume-bubble::after {
+		left: -15px;
+		width: 18px;
+		height: 20px;
+		background: rgb(var(--resume-orange) / 72%);
 	}
 
 	.portrait-emoji-layer {
@@ -2160,12 +2227,34 @@ const backgroundWindows = [
 			line-height: 0.74;
 		}
 
-		.portrait {
+		.portrait-cluster {
 			left: auto;
 			right: 0;
 			bottom: 0;
 			width: auto;
 			height: min(64vh, 700px);
+		}
+
+		.resume-bubble {
+			top: 12%;
+			right: calc(100% + 16px);
+			left: auto;
+			width: clamp(150px, 24vw, 185px);
+		}
+
+		.resume-bubble::before,
+		.resume-bubble::after {
+			right: auto;
+			left: auto;
+			clip-path: polygon(0 0, 100% 50%, 0 100%);
+		}
+
+		.resume-bubble::before {
+			right: -18px;
+		}
+
+		.resume-bubble::after {
+			right: -15px;
 		}
 
 		.about-window {
@@ -2274,10 +2363,14 @@ const backgroundWindows = [
 			height: 33px;
 		}
 
-		.portrait {
+		.portrait-cluster {
 			right: -6px;
 			bottom: calc(2vh - 150px);
 			height: min(3.3vh, 27px);
+		}
+
+		.resume-bubble {
+			display: none;
 		}
 
 		.search-bar.is-open {
@@ -2489,10 +2582,20 @@ const backgroundWindows = [
 			line-height: 0.84;
 		}
 
-		.portrait {
+		.portrait-cluster {
 			right: 0;
 			width: auto;
 			height: min(58vh, 560px);
+		}
+
+		.resume-bubble {
+			top: -7%;
+			right: calc(100% - 60px);
+			display: block;
+			width: min(44vw, 160px);
+			padding: 12px 14px;
+			border-radius: 20px;
+			font-size: 0.74rem;
 		}
 
 		.about-window {
