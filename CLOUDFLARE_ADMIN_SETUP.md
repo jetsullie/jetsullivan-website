@@ -81,14 +81,18 @@ After deployment:
 6. Use **Sign out** in the admin header and confirm the application session is
    cleared.
 7. Save the biography and refresh `/about/`.
-8. Add a small Press test entry and refresh `/media/press/`.
-9. Add a Behind the Scenes test entry with a photo and refresh
+8. Create at least two credit categories with different colors, add multiple
+   films (including one optional HTTPS link), reorder both the categories and
+   films, and confirm the public credits display follows that order. Edit one
+   category and then delete the test categories.
+9. Add a small Press test entry and refresh `/media/press/`.
+10. Add a Behind the Scenes test entry with a photo and refresh
    `/media/behind-the-scenes/`.
-10. Add an Acting, Film, or Video test post with an attachment and confirm that
+11. Add an Acting, Film, or Video test post with an attachment and confirm that
    images, browser-playable video/audio, and PDFs display inside the post.
-11. Star a Press, Interviews, or Behind the Scenes post and confirm the original
+12. Star a Press, Interviews, or Behind the Scenes post and confirm the original
    post also appears in `/media/featured/`; un-star it and confirm it disappears.
-12. Edit the entries, replace or remove an attachment, then delete the test
+13. Edit the entries, replace or remove an attachment, then delete the test
    entries from the dashboard.
 
 ## Security notes
@@ -102,6 +106,10 @@ After deployment:
   issued token after logout.
 - Write responses use `Cache-Control: no-store`.
 - The biography has a 5,000-character limit.
+- Credit categories and their ordered film lists are stored in the
+  `content:credits` KV record. Category colors use the `#RRGGBB` format, and
+  optional film links must use HTTPS. Public credit changes can take up to
+  roughly one minute to pass through the public API cache.
 - Media entries are stored as structured records in KV and appear publicly after
   a short cache delay of up to roughly one minute.
 - Behind-the-scenes entry photos accept JPEG, PNG, WebP, or AVIF files up to
@@ -122,6 +130,6 @@ After deployment:
 - The Website Media Library lists every R2 upload. Renaming changes its
   user-facing/download name without changing the stable storage URL. Permanent
   deletion clears any post references before removing the R2 object.
-- Export or copy the `media-entry:*` KV records regularly, and enable R2 object
-  versioning or backups before storing irreplaceable media.
+- Export or copy the `content:credits` and `media-entry:*` KV records regularly,
+  and enable R2 object versioning or backups before storing irreplaceable media.
 - Keep the Cloudflare account recovery methods and MFA devices secure.

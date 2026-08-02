@@ -56,19 +56,79 @@ const adminWindows = [
 				<strong>Authorized owner:</strong> jetsullivan1@gmail.com
 			</div>
 
-			<section aria-labelledby="about-editor-title">
-				<h2 id="about-editor-title">About biography</h2>
-				<form id="about-form">
+				<section aria-labelledby="about-editor-title">
+					<h2 id="about-editor-title">About biography</h2>
+					<form id="about-form">
 					<label for="biography">Biography</label>
 					<textarea id="biography" name="biography" maxlength="5000" required></textarea>
 					<div class="actions">
 						<button type="submit">Save biography</button>
 						<output id="about-status" aria-live="polite"></output>
 					</div>
-				</form>
-			</section>
+					</form>
+				</section>
 
-			<section aria-labelledby="media-entry-editor-title">
+				<section aria-labelledby="credits-editor-title">
+					<h2 id="credits-editor-title">Film credits</h2>
+					<p class="section-intro">
+						Create a position category, choose its color, and list every film or
+						project where you held that position. Film links are optional, and the
+						order shown here is the order visitors will see.
+					</p>
+					<form id="credit-form">
+						<input id="credit-id" type="hidden" />
+						<div class="field-grid">
+							<label class="field">
+								<span>Position category</span>
+								<input
+									id="credit-position"
+									type="text"
+									maxlength="80"
+									placeholder="Sound Mixer"
+									autocomplete="off"
+									required
+								/>
+							</label>
+
+							<div class="field">
+								<label for="credit-color">Category color</label>
+								<div class="credit-color-control">
+									<input id="credit-color" type="color" value="#F55C66" />
+									<span class="credit-color-preview" aria-hidden="true"></span>
+									<span id="credit-color-value">#F55C66</span>
+								</div>
+							</div>
+
+							<fieldset class="credit-film-editor field-wide">
+								<legend>Films for this position</legend>
+								<p>
+									Add the film names in display order. Each film can optionally open an
+									external HTTPS link.
+								</p>
+								<div id="credit-film-rows" class="credit-film-rows"></div>
+								<button
+									id="credit-add-film"
+									class="secondary-button credit-add-film"
+									type="button"
+								>
+									+ Add another film
+								</button>
+							</fieldset>
+						</div>
+
+						<div class="actions">
+							<button id="credit-submit" type="submit">Create category</button>
+							<button id="credit-cancel" class="secondary-button" type="button" hidden>
+								Cancel edit
+							</button>
+							<output id="credit-status" aria-live="polite"></output>
+						</div>
+					</form>
+
+					<div id="credit-category-list" class="credit-category-admin-list"></div>
+				</section>
+
+				<section aria-labelledby="media-entry-editor-title">
 				<h2 id="media-entry-editor-title">Site posts</h2>
 				<p class="section-intro">
 					Add a dated update to Featured, Interviews, Behind the Scenes, or
@@ -254,6 +314,20 @@ const adminWindows = [
 			</form>
 		</dialog>
 
+		<dialog id="credit-delete-dialog" class="delete-confirm-dialog">
+			<form method="dialog">
+				<p class="dialog-eyebrow">Confirm deletion</p>
+				<h2>Delete this category?</h2>
+				<p id="credit-delete-message" class="delete-confirm-message"></p>
+				<div class="dialog-actions">
+					<button class="secondary-button" value="cancel">Keep category</button>
+					<button id="credit-delete-submit" class="danger-button" value="confirm">
+						Delete category
+					</button>
+				</div>
+			</form>
+		</dialog>
+
 		<dialog id="media-delete-dialog" class="delete-confirm-dialog">
 			<form method="dialog">
 				<p class="dialog-eyebrow">Permanent deletion</p>
@@ -286,6 +360,33 @@ const adminWindows = [
 	const biography = document.querySelector<HTMLTextAreaElement>("#biography");
 	const aboutForm = document.querySelector<HTMLFormElement>("#about-form");
 	const aboutStatus = document.querySelector<HTMLOutputElement>("#about-status");
+	const creditForm = document.querySelector<HTMLFormElement>("#credit-form");
+	const creditId = document.querySelector<HTMLInputElement>("#credit-id");
+	const creditPosition =
+		document.querySelector<HTMLInputElement>("#credit-position");
+	const creditColor = document.querySelector<HTMLInputElement>("#credit-color");
+	const creditColorValue =
+		document.querySelector<HTMLElement>("#credit-color-value");
+	const creditColorPreview =
+		document.querySelector<HTMLElement>(".credit-color-preview");
+	const creditFilmRows =
+		document.querySelector<HTMLElement>("#credit-film-rows");
+	const creditAddFilm =
+		document.querySelector<HTMLButtonElement>("#credit-add-film");
+	const creditSubmit =
+		document.querySelector<HTMLButtonElement>("#credit-submit");
+	const creditCancel =
+		document.querySelector<HTMLButtonElement>("#credit-cancel");
+	const creditStatus =
+		document.querySelector<HTMLOutputElement>("#credit-status");
+	const creditCategoryList =
+		document.querySelector<HTMLElement>("#credit-category-list");
+	const creditDeleteDialog =
+		document.querySelector<HTMLDialogElement>("#credit-delete-dialog");
+	const creditDeleteMessage =
+		document.querySelector<HTMLElement>("#credit-delete-message");
+	const creditDeleteSubmit =
+		document.querySelector<HTMLButtonElement>("#credit-delete-submit");
 	const mediaForm = document.querySelector<HTMLFormElement>("#media-form");
 	const mediaStatus = document.querySelector<HTMLOutputElement>("#media-status");
 	const mediaList = document.querySelector<HTMLElement>("#media-list");
@@ -388,6 +489,21 @@ const adminWindows = [
 		usedBy: MediaReference[];
 	};
 
+	type CreditFilm = {
+		id?: string;
+		name: string;
+		link?: string | null;
+	};
+
+	type CreditCategory = {
+		id: string;
+		position: string;
+		color: string;
+		films: CreditFilm[];
+		createdAt?: string;
+		updatedAt?: string;
+	};
+
 	const mediaSections: Array<{
 		value: MediaSection;
 		label: string;
@@ -406,6 +522,9 @@ const adminWindows = [
 	let editingAttachmentName = "";
 	let pendingDeleteEntry: MediaEntry | null = null;
 	let pendingDeleteMedia: MediaItem | null = null;
+	let creditCategories: CreditCategory[] = [];
+	let pendingDeleteCredit: CreditCategory | null = null;
+	let creditFilmRowSequence = 0;
 
 	const readError = async (response: Response) => {
 		const contentType = response.headers.get("Content-Type") || "";
@@ -436,6 +555,459 @@ const adminWindows = [
 
 		return `Request failed with HTTP ${response.status}.`;
 	};
+
+	const creditPalette = [
+		"#F55C66",
+		"#FFB05C",
+		"#EFDA4A",
+		"#7CF5B5",
+		"#93E9F9",
+		"#BFA6FF",
+		"#FDBFBF",
+	];
+	const creditColorPattern = /^#[0-9A-F]{6}$/i;
+
+	const normalizeCreditColor = (value: unknown) =>
+		typeof value === "string" && creditColorPattern.test(value)
+			? value.toUpperCase()
+			: creditPalette[0];
+
+	const safeCreditLink = (value: unknown) => {
+		if (typeof value !== "string" || !value.trim()) return null;
+		try {
+			const url = new URL(value);
+			return url.protocol === "https:" && !url.username && !url.password
+				? url
+				: null;
+		} catch {
+			return null;
+		}
+	};
+
+	const syncCreditColor = () => {
+		if (!creditColor) return;
+		const color = normalizeCreditColor(creditColor.value);
+		creditColor.value = color;
+		if (creditColorValue) creditColorValue.textContent = color;
+		creditColorPreview?.style.setProperty("--credit-preview-color", color);
+	};
+
+	const getCreditFilmRowElements = () =>
+		creditFilmRows
+			? Array.from(
+					creditFilmRows.querySelectorAll<HTMLElement>(".credit-film-row"),
+				)
+			: [];
+
+	const updateCreditFilmRowControls = () => {
+		const rows = getCreditFilmRowElements();
+		rows.forEach((row, index) => {
+			const up = row.querySelector<HTMLButtonElement>("[data-credit-row-up]");
+			const down = row.querySelector<HTMLButtonElement>("[data-credit-row-down]");
+			const remove = row.querySelector<HTMLButtonElement>(
+				"[data-credit-row-remove]",
+			);
+			if (up) up.disabled = index === 0;
+			if (down) down.disabled = index === rows.length - 1;
+			if (remove) remove.disabled = rows.length === 1;
+		});
+	};
+
+	const createCreditFilmRow = (film: Partial<CreditFilm> = {}) => {
+		if (!creditFilmRows) return;
+		creditFilmRowSequence += 1;
+		const sequence = creditFilmRowSequence;
+		const row = document.createElement("div");
+		const nameField = document.createElement("label");
+		const nameLabel = document.createElement("span");
+		const nameInput = document.createElement("input");
+		const linkField = document.createElement("label");
+		const linkLabel = document.createElement("span");
+		const linkInput = document.createElement("input");
+		const controls = document.createElement("div");
+		const moveUp = document.createElement("button");
+		const moveDown = document.createElement("button");
+		const remove = document.createElement("button");
+		const nameId = `credit-film-name-${sequence}`;
+		const linkId = `credit-film-link-${sequence}`;
+
+		row.className = "credit-film-row";
+		row.dataset.creditFilmId = typeof film.id === "string" ? film.id : "";
+		nameField.className = "field";
+		nameField.htmlFor = nameId;
+		nameLabel.textContent = "Film or project name";
+		nameInput.id = nameId;
+		nameInput.type = "text";
+		nameInput.maxLength = 160;
+		nameInput.autocomplete = "off";
+		nameInput.required = true;
+		nameInput.value = typeof film.name === "string" ? film.name : "";
+		nameField.append(nameLabel, nameInput);
+
+		linkField.className = "field";
+		linkField.htmlFor = linkId;
+		linkLabel.textContent = "HTTPS link (optional)";
+		linkInput.id = linkId;
+		linkInput.type = "url";
+		linkInput.inputMode = "url";
+		linkInput.maxLength = 2048;
+		linkInput.placeholder = "https://";
+		linkInput.value = typeof film.link === "string" ? film.link : "";
+		linkField.append(linkLabel, linkInput);
+
+		controls.className = "credit-film-row-actions";
+		for (const button of [moveUp, moveDown, remove]) {
+			button.type = "button";
+			button.className = "secondary-button credit-film-row-button";
+		}
+		moveUp.textContent = "↑";
+		moveUp.title = "Move film up";
+		moveUp.setAttribute("aria-label", "Move this film up");
+		moveUp.dataset.creditRowUp = "true";
+		moveDown.textContent = "↓";
+		moveDown.title = "Move film down";
+		moveDown.setAttribute("aria-label", "Move this film down");
+		moveDown.dataset.creditRowDown = "true";
+		remove.textContent = "Remove";
+		remove.setAttribute("aria-label", "Remove this film from the category");
+		remove.dataset.creditRowRemove = "true";
+
+		moveUp.addEventListener("click", () => {
+			const previous = row.previousElementSibling;
+			if (previous) creditFilmRows.insertBefore(row, previous);
+			updateCreditFilmRowControls();
+		});
+		moveDown.addEventListener("click", () => {
+			const next = row.nextElementSibling;
+			if (next) next.after(row);
+			updateCreditFilmRowControls();
+		});
+		remove.addEventListener("click", () => {
+			row.remove();
+			updateCreditFilmRowControls();
+		});
+
+		controls.append(moveUp, moveDown, remove);
+		row.append(nameField, linkField, controls);
+		creditFilmRows.append(row);
+		updateCreditFilmRowControls();
+	};
+
+	const collectCreditFilms = (): CreditFilm[] => {
+		const rows = getCreditFilmRowElements();
+		if (!rows.length) throw new Error("Add at least one film to this category.");
+
+		return rows.map((row, index) => {
+			const name =
+				row.querySelector<HTMLInputElement>('input[type="text"]')?.value.trim() ||
+				"";
+			const linkValue =
+				row.querySelector<HTMLInputElement>('input[type="url"]')?.value.trim() ||
+				"";
+			if (!name) throw new Error(`Enter a name for film ${index + 1}.`);
+			const link = linkValue ? safeCreditLink(linkValue) : null;
+			if (linkValue && !link) {
+				throw new Error(
+					`Film ${index + 1} needs a valid HTTPS link without login details.`,
+				);
+			}
+			return {
+				...(row.dataset.creditFilmId
+					? { id: row.dataset.creditFilmId }
+					: {}),
+				name,
+				link: link?.href || null,
+			};
+		});
+	};
+
+	const resetCreditForm = () => {
+		if (!creditForm) return;
+		creditForm.reset();
+		if (creditId) creditId.value = "";
+		if (creditColor) {
+			creditColor.value =
+				creditPalette[creditCategories.length % creditPalette.length];
+		}
+		creditFilmRows?.replaceChildren();
+		createCreditFilmRow();
+		if (creditSubmit) creditSubmit.textContent = "Create category";
+		if (creditCancel) creditCancel.hidden = true;
+		syncCreditColor();
+	};
+
+	const startEditingCredit = (category: CreditCategory) => {
+		if (
+			!creditForm ||
+			!creditId ||
+			!creditPosition ||
+			!creditColor ||
+			!creditFilmRows
+		) {
+			return;
+		}
+		creditForm.reset();
+		creditId.value = category.id;
+		creditPosition.value = category.position;
+		creditColor.value = normalizeCreditColor(category.color);
+		creditFilmRows.replaceChildren();
+		for (const film of category.films) createCreditFilmRow(film);
+		if (!category.films.length) createCreditFilmRow();
+		if (creditSubmit) creditSubmit.textContent = "Update category";
+		if (creditCancel) creditCancel.hidden = false;
+		if (creditStatus) {
+			creditStatus.textContent = `Editing “${category.position}”.`;
+		}
+		syncCreditColor();
+		creditForm.scrollIntoView({ behavior: "smooth", block: "center" });
+		creditPosition.focus({ preventScroll: true });
+	};
+
+	const requestCreditDeletion = (category: CreditCategory) => {
+		if (!creditDeleteDialog || !creditDeleteMessage) return;
+		pendingDeleteCredit = category;
+		creditDeleteDialog.returnValue = "";
+		const count = category.films.length;
+		creditDeleteMessage.textContent =
+			`Delete “${category.position}” and its ${count} ${
+				count === 1 ? "film credit" : "film credits"
+			}? This cannot be undone.`;
+		creditDeleteDialog.showModal();
+	};
+
+	const renderCreditCategories = (categories: CreditCategory[]) => {
+		if (!creditCategoryList) return;
+		creditCategoryList.replaceChildren();
+
+		if (!categories.length) {
+			const empty = document.createElement("p");
+			empty.className = "entry-empty credit-category-empty";
+			empty.textContent = "No film credit categories have been added yet.";
+			creditCategoryList.append(empty);
+			return;
+		}
+
+		categories.forEach((category, index) => {
+			const card = document.createElement("article");
+			const header = document.createElement("div");
+			const headingWrap = document.createElement("div");
+			const swatch = document.createElement("span");
+			const heading = document.createElement("h3");
+			const count = document.createElement("p");
+			const films = document.createElement("ol");
+			const actions = document.createElement("div");
+			const moveUp = document.createElement("button");
+			const moveDown = document.createElement("button");
+			const edit = document.createElement("button");
+			const remove = document.createElement("button");
+			const color = normalizeCreditColor(category.color);
+
+			card.className = "credit-admin-card";
+			card.style.setProperty("--credit-color", color);
+			header.className = "credit-admin-header";
+			headingWrap.className = "credit-admin-heading";
+			swatch.className = "credit-admin-swatch";
+			swatch.setAttribute("aria-hidden", "true");
+			heading.textContent = category.position;
+			count.textContent = `${category.films.length} ${
+				category.films.length === 1 ? "film" : "films"
+			}`;
+			headingWrap.append(swatch, heading);
+			header.append(headingWrap, count);
+			films.className = "credit-admin-films";
+
+			for (const film of category.films) {
+				const item = document.createElement("li");
+				const link = safeCreditLink(film.link);
+				if (link) {
+					const anchor = document.createElement("a");
+					anchor.href = link.href;
+					anchor.target = "_blank";
+					anchor.rel = "noopener noreferrer";
+					anchor.textContent = `${film.name} ↗`;
+					item.append(anchor);
+				} else {
+					item.textContent = film.name;
+				}
+				films.append(item);
+			}
+
+			actions.className = "credit-category-actions";
+			for (const button of [moveUp, moveDown, edit, remove]) {
+				button.type = "button";
+			}
+			moveUp.className = "secondary-button";
+			moveUp.textContent = "Move up";
+			moveUp.disabled = index === 0;
+			moveUp.addEventListener("click", () => {
+				void moveCreditCategory(index, -1);
+			});
+			moveDown.className = "secondary-button";
+			moveDown.textContent = "Move down";
+			moveDown.disabled = index === categories.length - 1;
+			moveDown.addEventListener("click", () => {
+				void moveCreditCategory(index, 1);
+			});
+			edit.className = "secondary-button";
+			edit.textContent = "Edit";
+			edit.addEventListener("click", () => startEditingCredit(category));
+			remove.className = "danger-button";
+			remove.textContent = "Delete";
+			remove.addEventListener("click", () => requestCreditDeletion(category));
+			actions.append(moveUp, moveDown, edit, remove);
+			card.append(header, films, actions);
+			creditCategoryList.append(card);
+		});
+	};
+
+	const loadCredits = async (successMessage = "") => {
+		if (!creditStatus) return;
+		creditStatus.textContent = "Loading credits…";
+		try {
+			const response = await fetch("/admin/api/credits", {
+				credentials: "same-origin",
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			const result = await response.json();
+			creditCategories = Array.isArray(result.categories)
+				? result.categories
+				: [];
+			renderCreditCategories(creditCategories);
+			if (!creditId?.value && !creditPosition?.value.trim() && creditColor) {
+				creditColor.value =
+					creditPalette[creditCategories.length % creditPalette.length];
+				syncCreditColor();
+			}
+			creditStatus.textContent = successMessage;
+		} catch (error) {
+			creditStatus.textContent =
+				error instanceof Error ? error.message : "Could not load film credits.";
+		}
+	};
+
+	const moveCreditCategory = async (index: number, direction: -1 | 1) => {
+		const nextIndex = index + direction;
+		if (
+			!creditStatus ||
+			index < 0 ||
+			nextIndex < 0 ||
+			nextIndex >= creditCategories.length
+		) {
+			return;
+		}
+		const reordered = [...creditCategories];
+		[reordered[index], reordered[nextIndex]] = [
+			reordered[nextIndex],
+			reordered[index],
+		];
+		creditStatus.textContent = "Updating category order…";
+		try {
+			const response = await fetch("/admin/api/credits", {
+				method: "PATCH",
+				credentials: "same-origin",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					categoryIds: reordered.map((category) => category.id),
+				}),
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			await loadCredits("Category order updated.");
+		} catch (error) {
+			creditStatus.textContent =
+				error instanceof Error ? error.message : "Could not reorder categories.";
+		}
+	};
+
+	const deleteCreditCategory = async (category: CreditCategory) => {
+		if (creditStatus) creditStatus.textContent = "Deleting category…";
+		if (creditDeleteSubmit) creditDeleteSubmit.disabled = true;
+		try {
+			const response = await fetch(
+				`/admin/api/credits?id=${encodeURIComponent(category.id)}`,
+				{ method: "DELETE", credentials: "same-origin" },
+			);
+			if (!response.ok) throw new Error(await readError(response));
+			if (creditId?.value === category.id) resetCreditForm();
+			await loadCredits("Credit category deleted.");
+		} catch (error) {
+			if (creditStatus) {
+				creditStatus.textContent =
+					error instanceof Error
+						? error.message
+						: "Could not delete credit category.";
+			}
+		} finally {
+			if (creditDeleteSubmit) creditDeleteSubmit.disabled = false;
+			pendingDeleteCredit = null;
+		}
+	};
+
+	creditAddFilm?.addEventListener("click", () => {
+		createCreditFilmRow();
+		getCreditFilmRowElements()
+			.at(-1)
+			?.querySelector<HTMLInputElement>('input[type="text"]')
+			?.focus();
+	});
+	creditColor?.addEventListener("input", syncCreditColor);
+	creditCancel?.addEventListener("click", () => {
+		resetCreditForm();
+		if (creditStatus) creditStatus.textContent = "Edit cancelled.";
+	});
+	creditDeleteDialog?.addEventListener("close", () => {
+		if (
+			creditDeleteDialog.returnValue === "confirm" &&
+			pendingDeleteCredit
+		) {
+			void deleteCreditCategory(pendingDeleteCredit);
+		} else {
+			pendingDeleteCredit = null;
+		}
+	});
+	creditForm?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		if (
+			!creditForm ||
+			!creditId ||
+			!creditPosition ||
+			!creditColor ||
+			!creditStatus
+		) {
+			return;
+		}
+		const isEditing = Boolean(creditId.value);
+		creditStatus.textContent = isEditing
+			? "Updating category…"
+			: "Creating category…";
+		if (creditSubmit) creditSubmit.disabled = true;
+		if (creditCancel) creditCancel.disabled = true;
+
+		try {
+			const films = collectCreditFilms();
+			const response = await fetch("/admin/api/credits", {
+				method: isEditing ? "PUT" : "POST",
+				credentials: "same-origin",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					...(isEditing ? { id: creditId.value } : {}),
+					position: creditPosition.value.trim(),
+					color: normalizeCreditColor(creditColor.value),
+					films,
+				}),
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			resetCreditForm();
+			await loadCredits(
+				isEditing ? "Credit category updated." : "Credit category created.",
+			);
+		} catch (error) {
+			creditStatus.textContent =
+				error instanceof Error ? error.message : "Could not save credit category.";
+		} finally {
+			if (creditSubmit) creditSubmit.disabled = false;
+			if (creditCancel) creditCancel.disabled = false;
+		}
+	});
 
 	const getLocalDate = () => {
 		const now = new Date();
@@ -1188,8 +1760,10 @@ const adminWindows = [
 		void loadMedia();
 	});
 
+	resetCreditForm();
 	resetMediaEntryForm();
 	void loadBiography();
+	void loadCredits();
 	void loadMediaEntries();
 	void loadMedia();
 
@@ -1535,10 +2109,11 @@ const adminWindows = [
 	form { display: grid; gap: 12px; }
 	label { font-weight: 900; }
 	textarea,
-	input[type="text"],
-	input[type="url"],
-	input[type="date"],
-	input[type="file"],
+		input[type="text"],
+		input[type="url"],
+		input[type="date"],
+		input[type="color"],
+		input[type="file"],
 	select {
 		width: 100%;
 		border: 1px solid rgb(255 255 255 / 66%);
@@ -1558,10 +2133,11 @@ const adminWindows = [
 			box-shadow 180ms ease;
 	}
 	textarea:hover,
-	input[type="text"]:hover,
-	input[type="url"]:hover,
-	input[type="date"]:hover,
-	input[type="file"]:hover,
+		input[type="text"]:hover,
+		input[type="url"]:hover,
+		input[type="date"]:hover,
+		input[type="color"]:hover,
+		input[type="file"]:hover,
 	select:hover {
 		background: rgb(255 255 255 / 92%);
 	}
@@ -1588,17 +2164,228 @@ const adminWindows = [
 		font-weight: 650;
 	}
 	.compact-textarea { min-height: 125px; }
-	.image-fields {
-		display: grid;
+		.image-fields {
+			display: grid;
 		grid-template-columns: repeat(2, minmax(0, 1fr));
 		gap: 16px;
 		padding: 18px;
 		border: 1px solid rgb(68 73 74 / 18%);
 		border-radius: 22px;
 		background: rgb(255 255 255 / 42%);
-		box-shadow: inset 0 1px 0 rgb(255 255 255 / 72%);
-	}
-	.checkbox-field {
+			box-shadow: inset 0 1px 0 rgb(255 255 255 / 72%);
+		}
+		.credit-color-control {
+			display: grid;
+			grid-template-columns: 68px 28px minmax(0, 1fr);
+			gap: 11px;
+			align-items: center;
+			min-height: 50px;
+		}
+		.credit-color-control input[type="color"] {
+			width: 68px;
+			height: 50px;
+			padding: 5px;
+			border-radius: 14px;
+			cursor: pointer;
+		}
+		.credit-color-control input[type="color"]::-webkit-color-swatch-wrapper {
+			padding: 0;
+		}
+		.credit-color-control input[type="color"]::-webkit-color-swatch {
+			border: 0;
+			border-radius: 9px;
+		}
+		.credit-color-preview {
+			display: block;
+			width: 28px;
+			height: 28px;
+			border: 1px solid rgb(37 37 37 / 16%);
+			border-radius: 50%;
+			background: var(--credit-preview-color, #f55c66);
+			box-shadow:
+				inset 0 1px 0 rgb(255 255 255 / 58%),
+				0 0 14px color-mix(
+					in srgb,
+					var(--credit-preview-color, #f55c66) 32%,
+					transparent
+				);
+		}
+		#credit-color-value {
+			min-width: 0;
+			font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+			font-size: .88rem;
+			font-weight: 800;
+			letter-spacing: .04em;
+		}
+		.credit-film-editor {
+			display: grid;
+			gap: 16px;
+			min-width: 0;
+			margin: 0;
+			padding: 20px;
+			border: 1px solid rgb(68 73 74 / 18%);
+			border-radius: 22px;
+			background: rgb(255 255 255 / 42%);
+			box-shadow: inset 0 1px 0 rgb(255 255 255 / 72%);
+		}
+		.credit-film-editor legend {
+			padding: 0 8px;
+			font: 900 1rem var(--display);
+			text-transform: uppercase;
+		}
+		.credit-film-editor > p {
+			margin: 0;
+			color: rgb(68 73 74 / 72%);
+			font-size: .88rem;
+			font-weight: 650;
+			line-height: 1.45;
+		}
+		.credit-film-rows {
+			display: grid;
+			gap: 12px;
+		}
+		.credit-film-row {
+			display: grid;
+			grid-template-columns: minmax(0, .9fr) minmax(0, 1.15fr) auto;
+			gap: 12px;
+			align-items: end;
+			padding: 14px;
+			border: 1px solid rgb(68 73 74 / 14%);
+			border-radius: 18px;
+			background: rgb(255 255 255 / 46%);
+		}
+		.credit-film-row-actions {
+			display: flex;
+			gap: 6px;
+			align-items: center;
+			padding-bottom: 3px;
+		}
+		.credit-film-row-button {
+			min-width: 38px;
+			min-height: 38px;
+			padding: 7px 10px;
+			border-radius: 12px;
+			font-size: .78rem;
+		}
+		.credit-add-film {
+			justify-self: start;
+		}
+		.credit-category-admin-list {
+			display: grid;
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+			gap: 16px;
+			margin-top: 34px;
+		}
+		.credit-admin-card {
+			--credit-color: #f55c66;
+			position: relative;
+			display: flex;
+			flex-direction: column;
+			min-width: 0;
+			padding: 22px;
+			overflow: hidden;
+			border: 1px solid color-mix(in srgb, var(--credit-color) 24%, white);
+			border-radius: 24px;
+			outline: 1px solid rgb(255 255 255 / 34%);
+			outline-offset: -3px;
+			background:
+				linear-gradient(rgb(255 255 255 / 64%), rgb(255 255 255 / 46%)),
+				color-mix(in srgb, var(--credit-color) 12%, transparent);
+			box-shadow:
+				inset 0 1px 0 rgb(255 255 255 / 74%),
+				0 10px 26px rgb(37 37 37 / 9%);
+			transition:
+				border-color 180ms ease,
+				box-shadow 220ms ease;
+		}
+		.credit-admin-card::before {
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			width: 7px;
+			background: var(--credit-color);
+			content: "";
+			opacity: .72;
+		}
+		.credit-admin-card:hover,
+		.credit-admin-card:focus-within {
+			border-color: color-mix(in srgb, var(--credit-color) 58%, white);
+			box-shadow:
+				inset 0 1px 0 rgb(255 255 255 / 82%),
+				0 12px 30px rgb(37 37 37 / 11%),
+				0 0 26px color-mix(in srgb, var(--credit-color) 38%, transparent);
+		}
+		.credit-admin-header {
+			display: flex;
+			justify-content: space-between;
+			gap: 16px;
+			align-items: flex-start;
+		}
+		.credit-admin-heading {
+			display: flex;
+			gap: 10px;
+			align-items: center;
+			min-width: 0;
+		}
+		.credit-admin-swatch {
+			flex: 0 0 auto;
+			width: 16px;
+			height: 16px;
+			border: 1px solid rgb(37 37 37 / 14%);
+			border-radius: 50%;
+			background: var(--credit-color);
+			box-shadow: 0 0 12px color-mix(in srgb, var(--credit-color) 44%, transparent);
+		}
+		.credit-admin-heading h3 {
+			margin: 0;
+			font: 900 clamp(1.05rem, 2vw, 1.35rem) / 1.08 var(--display);
+			text-transform: uppercase;
+			overflow-wrap: anywhere;
+		}
+		.credit-admin-header > p {
+			flex: 0 0 auto;
+			margin: 1px 0 0;
+			color: rgb(37 37 37 / 62%);
+			font-size: .74rem;
+			font-weight: 900;
+			letter-spacing: .06em;
+			text-transform: uppercase;
+		}
+		.credit-admin-films {
+			display: grid;
+			gap: 8px;
+			margin: 18px 0 22px;
+			padding-left: 1.35rem;
+			font-weight: 750;
+			line-height: 1.4;
+		}
+		.credit-admin-films a {
+			color: inherit;
+			text-decoration-thickness: 2px;
+			text-underline-offset: 4px;
+			overflow-wrap: anywhere;
+		}
+		.credit-admin-films a:hover {
+			color: color-mix(in srgb, var(--credit-color) 70%, var(--admin-gray));
+		}
+		.credit-category-actions {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 8px;
+			align-items: center;
+			margin-top: auto;
+		}
+		.credit-category-actions button {
+			min-height: 36px;
+			padding: 8px 12px;
+			border-radius: 999px;
+			font-size: .78rem;
+		}
+		.credit-category-empty {
+			grid-column: 1 / -1;
+		}
+		.checkbox-field {
 		display: flex;
 		gap: 9px;
 		align-items: center;
@@ -1918,8 +2705,9 @@ const adminWindows = [
 	.delete-confirm-dialog h2 {
 		margin-bottom: 16px;
 	}
-	.delete-confirm-dialog #delete-confirm-message,
-	.delete-confirm-dialog #media-delete-message {
+		.delete-confirm-dialog #delete-confirm-message,
+		.delete-confirm-dialog #credit-delete-message,
+		.delete-confirm-dialog #media-delete-message {
 		margin: 0 auto;
 		max-width: 390px;
 		font-size: 1.02rem;
@@ -2009,9 +2797,12 @@ const adminWindows = [
 			padding: 36px 24px 34px;
 			border-radius: 30px;
 		}
-		.entry-admin-grid {
-			grid-template-columns: 1fr;
-		}
+			.entry-admin-grid {
+				grid-template-columns: 1fr;
+			}
+			.credit-category-admin-list {
+				grid-template-columns: 1fr;
+			}
 		.footer-content { grid-template-columns: 1fr 1fr; }
 		.footer-name { grid-column: 1 / -1; }
 	}
@@ -2023,9 +2814,15 @@ const adminWindows = [
 		.notice {
 			width: 100%;
 		}
-		.field-grid,
-		.image-fields,
-		.entry-admin-grid { grid-template-columns: 1fr; }
+			.field-grid,
+			.image-fields,
+			.entry-admin-grid { grid-template-columns: 1fr; }
+			.credit-film-row { grid-template-columns: 1fr; }
+			.credit-film-row-actions {
+				flex-wrap: wrap;
+				padding-bottom: 0;
+			}
+			.credit-add-film { width: 100%; }
 		.field-wide { grid-column: auto; }
 		.actions { align-items: flex-start; flex-direction: column; }
 		.dialog-actions {

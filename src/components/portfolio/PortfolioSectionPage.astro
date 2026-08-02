@@ -13,6 +13,8 @@ interface Props {
 	accentTop: string;
 	accent: string;
 	accentBottom: string;
+	headingCardHref?: string;
+	headingCardLabel?: string;
 }
 
 const {
@@ -25,7 +27,11 @@ const {
 	accentTop,
 	accent,
 	accentBottom,
+	headingCardHref,
+	headingCardLabel,
 } = Astro.props;
+
+const hasHeadingCard = Boolean(headingCardHref && headingCardLabel);
 
 const windows = Array.from({ length: 20 }, (_, index) => ({
 	x: (index * 17 + 3) % 94,
@@ -78,7 +84,34 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				aria-labelledby="page-heading"
 			>
 				<p class="eyebrow">{eyebrow}</p>
-				<h1 id="page-heading">{heading}</h1>
+				{
+					hasHeadingCard ? (
+						<div class="heading-lockup">
+							<h1 id="page-heading">{heading}</h1>
+							<a
+								class="heading-card"
+								href={headingCardHref}
+								aria-label={`View ${headingCardLabel} page`}
+							>
+								<span class="heading-card-dots" aria-hidden="true">
+									<i></i><i></i><i></i>
+								</span>
+								<svg
+									class="heading-card-icon"
+									viewBox="0 0 32 32"
+									aria-hidden="true"
+									focusable="false"
+								>
+									<rect x="6" y="4" width="20" height="24" rx="3" />
+									<path d="M11 11h10M11 16h10M11 21h7" />
+								</svg>
+								<span>{headingCardLabel}</span>
+							</a>
+						</div>
+					) : (
+						<h1 id="page-heading">{heading}</h1>
+					)
+				}
 				<p class="introduction">{description}</p>
 				<p class="sr-only" data-entry-status aria-live="polite">
 					Loading {title.toLowerCase()} posts…
@@ -522,6 +555,95 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		margin: 0; font: 950 clamp(4rem, 13vw, 13rem)/.72 var(--display);
 		letter-spacing: -.035em; text-align: center; text-transform: uppercase;
 	}
+	.heading-lockup {
+		position: relative;
+		width: max-content;
+		max-width: 100%;
+		margin: 0 auto;
+	}
+	.heading-lockup h1 {
+		position: relative;
+		z-index: 1;
+	}
+	.heading-card {
+		position: absolute;
+		z-index: 2;
+		top: 50%;
+		right: calc(100% + clamp(18px, 2.5vw, 42px));
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr);
+		align-items: center;
+		gap: clamp(8px, 1vw, 13px);
+		width: clamp(140px, 11vw, 190px);
+		min-height: clamp(80px, 7vw, 108px);
+		padding: clamp(12px, 1.2vw, 17px);
+		border: 1px solid rgb(255 255 255 / 52%);
+		border-radius: clamp(22px, 2vw, 28px);
+		outline: 1px solid rgb(255 255 255 / 14%);
+		outline-offset: -3px;
+		background:
+			linear-gradient(rgb(255 255 255 / 5%), rgb(255 255 255 / 1%)),
+			rgb(37 37 37 / 88%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 48%),
+			0 14px 34px rgb(37 37 37 / 12%);
+		color: #bfc4c5;
+		font: 900 clamp(.76rem, 1vw, 1rem)/1 var(--display);
+		letter-spacing: .035em;
+		text-decoration: none;
+		text-transform: uppercase;
+		transform: translateY(-50%);
+		-webkit-backdrop-filter: blur(10px);
+		backdrop-filter: blur(10px);
+		transition:
+			border-color 180ms ease,
+			box-shadow 220ms ease,
+			color 180ms ease,
+			transform 260ms cubic-bezier(.34, 1.4, .64, 1);
+	}
+	.heading-card-dots {
+		position: absolute;
+		top: 10px;
+		left: 12px;
+		display: flex;
+		gap: 4px;
+	}
+	.heading-card-dots i {
+		display: block;
+		width: 6px;
+		height: 6px;
+		border: 1px solid rgb(37 37 37 / 18%);
+		border-radius: 50%;
+		background: var(--pink);
+		box-shadow: inset 0 1px 0 rgb(255 255 255 / 48%);
+	}
+	.heading-card-dots i:nth-child(2) { background: var(--yellow); }
+	.heading-card-dots i:nth-child(3) { background: var(--mint); }
+	.heading-card-icon {
+		display: block;
+		width: clamp(24px, 2.2vw, 32px);
+		height: auto;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2.5;
+	}
+	.heading-card:hover,
+	.heading-card:focus-visible {
+		border-color: color-mix(in srgb, var(--accent) 58%, white);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 58%),
+			0 14px 34px rgb(37 37 37 / 14%),
+			0 0 28px color-mix(in srgb, var(--accent) 70%, transparent),
+			0 0 54px color-mix(in srgb, var(--accent) 30%, transparent);
+		color: var(--accent);
+		transform: translateY(calc(-50% - 3px)) scale(1.02);
+	}
+	.heading-card:focus-visible {
+		outline: 3px solid color-mix(in srgb, var(--accent) 76%, white);
+		outline-offset: 4px;
+	}
 	.sr-only {
 		position: absolute;
 		width: 1px;
@@ -892,6 +1014,15 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		.dots { gap: 4px; } .dots i { width: 7px; height: 7px; }
 		.arrow { font-size: 1.8rem; } .home-window > span:last-child { font-size: .72rem; }
 		h1 { font-size: clamp(3.5rem, 18vw, 7rem); }
+		.heading-card {
+			right: calc(100% + 12px);
+			width: clamp(100px, 22vw, 132px);
+			min-height: 72px;
+			padding: 10px 11px;
+			border-radius: 22px;
+			font-size: clamp(.68rem, 1.8vw, .82rem);
+		}
+		.heading-card-icon { width: clamp(21px, 4vw, 27px); }
 		.entry-grid { width: 100%; }
 		.info-window { width: 100%; margin: 0; }
 	}
@@ -904,6 +1035,20 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	@media (max-width: 480px) {
 		.page { padding-top: 128px; }
 		.eyebrow { max-width: 66%; font-size: .67rem; }
+		.heading-card {
+			right: calc(100% + 8px);
+			grid-template-columns: 1fr;
+			justify-items: center;
+			gap: 4px;
+			width: 76px;
+			min-height: 62px;
+			padding: 7px 6px;
+			border-radius: 17px;
+			font-size: .58rem;
+			letter-spacing: .02em;
+		}
+		.heading-card-dots { display: none; }
+		.heading-card-icon { width: 18px; }
 		.info-window { border-radius: 24px; }
 		.info-window:not(.is-compact) { padding: 50px 22px 28px; }
 		.info-window.is-compact { padding: 18px; }
@@ -938,6 +1083,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 
 	@media (prefers-reduced-motion: reduce) {
 		.home-window,
+		.heading-card,
 		.info-window {
 			animation: none;
 			transition: none;
