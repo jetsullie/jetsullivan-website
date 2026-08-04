@@ -1,0 +1,956 @@
+---
+import SiteMenu from "../common/SiteMenu.astro";
+import PageMotion from "../common/PageMotion.astro";
+
+interface Props {
+	metaDescription: string;
+	documentTitle: string;
+	homeButtonHref: string;
+	homeButtonLabel: string;
+	eyebrow: string;
+	heading?: string;
+	introduction: string;
+	endpoint: string;
+	categoryKicker: string;
+	emptyItemMessage: string;
+	accentTop: string;
+	accent: string;
+	accentBottom: string;
+	defaultCategoryColor: string;
+	defaultCategoryRgb: string;
+}
+
+const {
+	metaDescription,
+	documentTitle,
+	homeButtonHref,
+	homeButtonLabel,
+	eyebrow,
+	heading = "Credits",
+	introduction,
+	endpoint,
+	categoryKicker,
+	emptyItemMessage,
+	accentTop,
+	accent,
+	accentBottom,
+	defaultCategoryColor,
+	defaultCategoryRgb,
+} = Astro.props;
+
+const windows = Array.from({ length: 20 }, (_, index) => ({
+	x: (index * 17 + 3) % 94,
+	y: (index * 29 + 8) % 88,
+	w: 38 + (index % 7) * 10,
+	h: 31 + (index % 6) * 8,
+	symbol: ["+", "○", "✦", "×", "◇", "▶", "⌁", "●"][index % 8],
+}));
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta
+			name="description"
+			content={metaDescription}
+		/>
+		<link rel="icon" type="image/png" href="/favicon-profile.png" />
+		<title>{documentTitle}</title>
+	</head>
+	<body>
+		<main
+			class="page"
+			data-motion-root
+			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--default-category-rgb:${defaultCategoryRgb};`}
+		>
+			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
+			<div class="accent-panel" data-motion-depth="counter" aria-hidden="true"></div>
+
+			<div class="floaters" data-motion-bounds aria-hidden="true">
+				{
+					windows.map((item, index) => (
+						<span
+							class="mini-window"
+							data-motion-float
+							style={`--x:${item.x}%;--y:${item.y}%;--w:${item.w}px;--h:${item.h}px;--delay:-${index * 0.34}s;`}
+						>
+							<span class="mini-dots"><i></i><i></i><i></i></span>
+							<span>{item.symbol}</span>
+						</span>
+					))
+				}
+			</div>
+
+			<SiteMenu
+				showHomeButton
+				homeButtonHref={homeButtonHref}
+				homeButtonLabel={homeButtonLabel}
+			/>
+
+			<section
+				class="content"
+				data-motion-depth="scene"
+				aria-labelledby="credits-heading"
+			>
+				<p class="eyebrow">{eyebrow}</p>
+				<h1 id="credits-heading">{heading}</h1>
+				<p class="introduction">{introduction}</p>
+				<p class="sr-only" data-credit-status aria-live="polite">
+					Loading credits…
+				</p>
+				<div
+					class="credits-list"
+					data-credit-categories
+					data-credits-endpoint={endpoint}
+					data-category-kicker={categoryKicker}
+					data-empty-item-message={emptyItemMessage}
+					data-default-category-color={defaultCategoryColor}
+					aria-busy="true"
+				>
+					<article class="status-card">
+						<p>Loading credits…</p>
+					</article>
+				</div>
+			</section>
+		</main>
+
+		<div class="section-divider footer-divider" aria-hidden="true"></div>
+
+		<footer class="site-footer">
+			<div class="footer-content">
+				<p class="footer-name">Jet Sullivan</p>
+				<span aria-hidden="true"></span>
+				<p class="footer-location">Austin, Texas</p>
+			</div>
+		</footer>
+
+		<PageMotion />
+	</body>
+</html>
+
+<script>
+	type CreditFilm = {
+		id: string;
+		name: string;
+		link: URL | null;
+		dateFrom: string | null;
+		dateTo: string | null;
+	};
+
+	type CreditCategory = {
+		id: string;
+		position: string;
+		colorRgb: string;
+		films: CreditFilm[];
+	};
+
+	const categoriesRoot = document.querySelector<HTMLElement>(
+		"[data-credit-categories]",
+	);
+	const creditStatus =
+		document.querySelector<HTMLElement>("[data-credit-status]");
+	const creditsEndpoint = categoriesRoot?.dataset.creditsEndpoint || "/api/credits";
+	const categoryKicker = categoriesRoot?.dataset.categoryKicker || "Position";
+	const emptyItemMessage =
+		categoriesRoot?.dataset.emptyItemMessage ||
+		"No productions have been added to this category yet.";
+	const defaultCategoryColor =
+		categoriesRoot?.dataset.defaultCategoryColor || "#f55c66";
+
+	const cleanLabel = (value: unknown, maximumLength: number) => {
+		if (typeof value !== "string") return null;
+		const label = value.trim();
+		return label && label.length <= maximumLength ? label : null;
+	};
+
+	const safeHttpsUrl = (value: unknown) => {
+		if (typeof value !== "string" || !value.trim()) return null;
+
+		try {
+			const url = new URL(value);
+			return url.protocol === "https:" && !url.username && !url.password
+				? url
+				: null;
+		} catch {
+			return null;
+		}
+	};
+
+	const parseIsoDate = (value: unknown) => {
+		if (typeof value !== "string") return null;
+		const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value.trim());
+		if (!match) return null;
+
+		const year = Number(match[1]);
+		const month = Number(match[2]);
+		const day = Number(match[3]);
+		if (year < 1 || year > 9999) return null;
+
+		const parsed = new Date(0);
+		parsed.setUTCHours(0, 0, 0, 0);
+		parsed.setUTCFullYear(year, month - 1, day);
+		if (
+			parsed.getUTCFullYear() !== year ||
+			parsed.getUTCMonth() !== month - 1 ||
+			parsed.getUTCDate() !== day
+		) {
+			return null;
+		}
+
+		return value.trim();
+	};
+
+	const creditDateFormatter = new Intl.DateTimeFormat("en-US", {
+		year: "numeric",
+		month: "short",
+		day: "numeric",
+		timeZone: "UTC",
+	});
+
+	const formatCreditDate = (value: string) => {
+		const [year, month, day] = value.split("-").map(Number);
+		const date = new Date(0);
+		date.setUTCHours(0, 0, 0, 0);
+		date.setUTCFullYear(year, month - 1, day);
+		return creditDateFormatter.format(date);
+	};
+
+	const parseColor = (value: unknown) => {
+		const match =
+			typeof value === "string"
+				? /^#([0-9a-f]{6})$/i.exec(value.trim())
+				: null;
+		const fallbackMatch = /^#([0-9a-f]{6})$/i.exec(defaultCategoryColor);
+		const hex = match?.[1] || fallbackMatch?.[1] || "f55c66";
+		const channels = [0, 2, 4].map((offset) =>
+			Number.parseInt(hex.slice(offset, offset + 2), 16),
+		);
+		return `${channels[0]} ${channels[1]} ${channels[2]}`;
+	};
+
+	const normalizeFilm = (value: unknown, index: number): CreditFilm | null => {
+		if (!value || typeof value !== "object") return null;
+		const film = value as Record<string, unknown>;
+		const name = cleanLabel(film.name, 180);
+		if (!name) return null;
+		const dateFrom = parseIsoDate(film.dateFrom);
+		const requestedDateTo = parseIsoDate(film.dateTo);
+		const dateTo =
+			dateFrom && requestedDateTo && requestedDateTo > dateFrom
+				? requestedDateTo
+				: null;
+
+		return {
+			id: cleanLabel(film.id, 120) || `film-${index + 1}`,
+			name,
+			link: safeHttpsUrl(film.link),
+			dateFrom,
+			dateTo,
+		};
+	};
+
+	const normalizeCategory = (
+		value: unknown,
+		index: number,
+	): CreditCategory | null => {
+		if (!value || typeof value !== "object") return null;
+		const category = value as Record<string, unknown>;
+		const position = cleanLabel(category.position, 100);
+		if (!position) return null;
+
+		const films = Array.isArray(category.films)
+			? category.films
+					.map((film, filmIndex) => normalizeFilm(film, filmIndex))
+					.filter((film): film is CreditFilm => film !== null)
+			: [];
+
+		return {
+			id: cleanLabel(category.id, 120) || `category-${index + 1}`,
+			position,
+			colorRgb: parseColor(category.color),
+			films,
+		};
+	};
+
+	const createStatusCard = (message: string, isError = false) => {
+		const card = document.createElement("article");
+		const copy = document.createElement("p");
+		card.className = `status-card${isError ? " error-card" : ""}`;
+		copy.textContent = message;
+		card.append(copy);
+		return card;
+	};
+
+	const createFilmItem = (film: CreditFilm) => {
+		const item = document.createElement("li");
+		const copy = document.createElement("span");
+		const name = document.createElement("span");
+		copy.className = "film-copy";
+		name.className = "film-name";
+		name.textContent = film.name;
+		copy.append(name);
+
+		let dateLabel = "";
+		if (film.dateFrom) {
+			const dates = document.createElement("span");
+			const fromTime = document.createElement("time");
+			const formattedFrom = formatCreditDate(film.dateFrom);
+			dates.className = "film-dates";
+			fromTime.dateTime = film.dateFrom;
+			fromTime.textContent = formattedFrom;
+
+			if (film.dateTo) {
+				const toTime = document.createElement("time");
+				const formattedTo = formatCreditDate(film.dateTo);
+				toTime.dateTime = film.dateTo;
+				toTime.textContent = formattedTo;
+				dates.append("From ", fromTime, " – To ", toTime);
+				dateLabel = `From ${formattedFrom} to ${formattedTo}`;
+			} else {
+				dates.append("Date ", fromTime);
+				dateLabel = `Date ${formattedFrom}`;
+			}
+
+			copy.append(dates);
+		}
+
+		if (!film.link) {
+			const entry = document.createElement("span");
+			entry.className = "film-entry";
+			entry.append(copy);
+			item.append(entry);
+			return item;
+		}
+
+		const link = document.createElement("a");
+		const arrow = document.createElement("span");
+		link.href = film.link.href;
+		link.target = "_blank";
+		link.rel = "noopener noreferrer";
+		link.className = "film-entry";
+		link.setAttribute(
+			"aria-label",
+			`${film.name}${dateLabel ? `, ${dateLabel}` : ""} (opens in a new tab)`,
+		);
+		link.append(copy);
+		arrow.className = "outbound-arrow";
+		arrow.setAttribute("aria-hidden", "true");
+		arrow.textContent = "↗";
+		link.append(arrow);
+		item.append(link);
+		return item;
+	};
+
+	const createCategoryCard = (category: CreditCategory, index: number) => {
+		const card = document.createElement("article");
+		const headingGroup = document.createElement("div");
+		const marker = document.createElement("span");
+		const kicker = document.createElement("p");
+		const heading = document.createElement("h2");
+		const films = document.createElement("ul");
+		const headingId = `credit-category-heading-${index + 1}`;
+
+		card.className = "credit-card";
+		card.setAttribute("aria-labelledby", headingId);
+		card.style.setProperty("--category-rgb", category.colorRgb);
+		headingGroup.className = "credit-heading";
+		marker.className = "credit-marker";
+		marker.setAttribute("aria-hidden", "true");
+		kicker.className = "credit-kicker";
+		kicker.textContent = categoryKicker;
+		heading.id = headingId;
+		heading.textContent = category.position;
+		films.className = "film-list";
+
+		headingGroup.append(marker, kicker, heading);
+
+		if (category.films.length) {
+			for (const film of category.films) films.append(createFilmItem(film));
+		} else {
+			const empty = document.createElement("li");
+			empty.className = "empty-films";
+			empty.textContent = emptyItemMessage;
+			films.append(empty);
+		}
+
+		card.append(headingGroup, films);
+		return card;
+	};
+
+	const loadCredits = async () => {
+		if (!categoriesRoot || !creditStatus) return;
+		categoriesRoot.setAttribute("aria-busy", "true");
+		creditStatus.textContent = "Loading credits…";
+
+		try {
+			const response = await fetch(creditsEndpoint, {
+				credentials: "same-origin",
+				headers: { Accept: "application/json" },
+			});
+			if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+			const result = (await response.json()) as { categories?: unknown };
+			const categories = Array.isArray(result.categories)
+				? result.categories
+						.map((category, index) => normalizeCategory(category, index))
+						.filter(
+							(category): category is CreditCategory => category !== null,
+						)
+				: [];
+
+			if (!categories.length) {
+				const message = "No credits have been added yet.";
+				categoriesRoot.replaceChildren(createStatusCard(message));
+				creditStatus.textContent = message;
+				return;
+			}
+
+			const fragment = document.createDocumentFragment();
+			categories.forEach((category, index) => {
+				fragment.append(createCategoryCard(category, index));
+			});
+			categoriesRoot.replaceChildren(fragment);
+			creditStatus.textContent = `${categories.length} credit categor${
+				categories.length === 1 ? "y" : "ies"
+			} loaded.`;
+		} catch {
+			const message =
+				"Credits are unavailable right now. Please try again soon.";
+			categoriesRoot.replaceChildren(createStatusCard(message, true));
+			creditStatus.textContent = message;
+		} finally {
+			categoriesRoot.setAttribute("aria-busy", "false");
+		}
+	};
+
+	void loadCredits();
+</script>
+
+<style is:global>
+	:root {
+		--yellow: #efda4a;
+		--white: #fff;
+		--black: #252525;
+		--pink: #fdbfbf;
+		--mint: #7cf5b5;
+		--display: "Arial Black", "Myriad Pro", Arial, sans-serif;
+		--body: "Myriad Pro", Myriad, Arial, sans-serif;
+		--credits-footer-gap: clamp(115px, 11vw, 170px);
+	}
+
+	* {
+		box-sizing: border-box;
+	}
+
+	html {
+		background: var(--black);
+		color: var(--black);
+		font-family: var(--body);
+	}
+
+	body {
+		margin: 0;
+		min-width: 320px;
+		min-height: 100vh;
+	}
+
+	.page {
+		position: relative;
+		width: 100%;
+		min-height: 100svh;
+		padding: clamp(105px, 11vh, 145px) clamp(28px, 6vw, 105px)
+			var(--credits-footer-gap);
+		overflow: hidden;
+		background: linear-gradient(
+			180deg,
+			#fff 0%,
+			color-mix(in srgb, var(--accent-top) 42%, #fff) 32%,
+			color-mix(in srgb, var(--accent) 50%, #fff) 68%,
+			color-mix(in srgb, var(--accent-bottom) 62%, #f4f4f4) 100%
+		);
+	}
+
+	.top-frame {
+		position: absolute;
+		z-index: 8;
+		top: -5vw;
+		left: -3%;
+		width: 106%;
+		height: 9vw;
+		min-height: 54px;
+		background: var(--black);
+		pointer-events: none;
+		transform: rotate(-3deg);
+	}
+
+	.accent-panel {
+		position: absolute;
+		z-index: 1;
+		top: 23%;
+		bottom: -3%;
+		left: 50%;
+		width: min(76vw, 1050px);
+		border: 1px solid rgb(255 255 255 / 58%);
+		border-radius: 24px;
+		outline: 1px solid rgb(255 255 255 / 16%);
+		outline-offset: -3px;
+		background: color-mix(
+			in srgb,
+			var(--accent) 28%,
+			rgb(255 255 255 / 68%)
+		);
+		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+		transform: translateX(-50%);
+	}
+
+	.floaters {
+		position: absolute;
+		z-index: 0;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+	}
+
+	.mini-window {
+		position: absolute;
+		top: var(--y);
+		left: var(--x);
+		display: grid;
+		width: var(--w);
+		height: var(--h);
+		border: 1px solid rgb(255 255 255 / 45%);
+		border-radius: clamp(5px, 0.7vw, 14px);
+		background: rgb(156 166 170 / 20%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 34%),
+			0 5px 14px rgb(37 37 37 / 5%);
+		color: rgb(37 37 37 / 25%);
+		font: 900 0.7rem var(--display);
+		-webkit-backdrop-filter: blur(3px);
+		backdrop-filter: blur(3px);
+		place-items: center;
+	}
+
+	.mini-dots {
+		position: absolute;
+		top: 6px;
+		left: 7px;
+		display: flex;
+		gap: 3px;
+	}
+
+	.mini-dots i {
+		width: 4px;
+		height: 4px;
+		border-radius: 50%;
+		background: var(--pink);
+	}
+
+	.mini-dots i:nth-child(2) {
+		background: var(--yellow);
+	}
+
+	.mini-dots i:nth-child(3) {
+		background: var(--mint);
+	}
+
+	.content {
+		position: relative;
+		z-index: 30;
+		width: min(100%, 1180px);
+		margin: 0 auto;
+		padding-top: clamp(32px, 3vw, 64px);
+		text-align: center;
+	}
+
+	.eyebrow {
+		margin: 0 auto clamp(12px, 2vh, 24px);
+		font-size: clamp(0.78rem, 1.1vw, 1rem);
+		font-weight: 900;
+		letter-spacing: 0.16em;
+		text-align: center;
+		text-transform: uppercase;
+	}
+
+	h1 {
+		margin: 0;
+		font: 950 clamp(4rem, 13vw, 13rem) / 0.72 var(--display);
+		letter-spacing: -0.035em;
+		text-align: center;
+		text-transform: uppercase;
+	}
+
+	.introduction {
+		width: min(90%, 720px);
+		margin: clamp(24px, 3vh, 36px) auto 0;
+		font-size: clamp(1rem, 1.5vw, 1.3rem);
+		font-weight: 700;
+		line-height: 1.45;
+	}
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		overflow: hidden;
+		border: 0;
+		margin: -1px;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+	}
+
+	.credits-list {
+		display: grid;
+		gap: clamp(18px, 2.4vw, 30px);
+		width: min(100%, 1120px);
+		min-height: 190px;
+		margin: clamp(48px, 6vh, 84px) auto 0;
+		text-align: left;
+	}
+
+	.credit-card,
+	.status-card {
+		position: relative;
+		width: 100%;
+		margin: 0;
+		border: 1px solid rgb(255 255 255 / 62%);
+		border-radius: clamp(24px, 3vw, 34px);
+		outline: 1px solid rgb(255 255 255 / 18%);
+		outline-offset: -3px;
+		background: rgb(255 255 255 / 64%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 72%),
+			0 12px 34px rgb(37 37 37 / 14%);
+		color: var(--black);
+		-webkit-backdrop-filter: blur(14px) saturate(1.08);
+		backdrop-filter: blur(14px) saturate(1.08);
+	}
+
+	.credit-card {
+		--category-rgb: var(--default-category-rgb);
+		display: grid;
+		grid-template-columns: minmax(0, 1fr);
+		align-items: start;
+		gap: clamp(24px, 3vw, 38px);
+		padding: clamp(28px, 4vw, 54px);
+		background:
+			linear-gradient(
+				135deg,
+				rgb(var(--category-rgb) / 5.5%),
+				rgb(var(--category-rgb) / 1.5%)
+			),
+			rgb(255 255 255 / 64%);
+		transition:
+			border-color 220ms ease,
+			box-shadow 240ms ease,
+			transform 260ms cubic-bezier(0.34, 1.3, 0.64, 1);
+	}
+
+	.credit-card:hover,
+	.credit-card:focus-within {
+		border-color: rgb(var(--category-rgb) / 52%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 82%),
+			0 14px 38px rgb(37 37 37 / 16%),
+			0 0 30px rgb(var(--category-rgb) / 46%),
+			0 0 64px rgb(var(--category-rgb) / 17%);
+		transform: translateY(-3px);
+	}
+
+	.credit-heading {
+		display: grid;
+		align-content: start;
+		min-width: 0;
+	}
+
+	.credit-marker {
+		display: block;
+		width: 54px;
+		height: 8px;
+		margin-bottom: 22px;
+		border-radius: 999px;
+		background: rgb(var(--category-rgb));
+		box-shadow: 0 0 18px rgb(var(--category-rgb) / 30%);
+	}
+
+	.credit-kicker {
+		margin: 0 0 8px;
+		color: rgb(37 37 37 / 64%);
+		font-size: 0.72rem;
+		font-weight: 900;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.credit-heading h2 {
+		margin: 0;
+		font: 950 clamp(1.7rem, 4vw, 3.5rem) / 0.95 var(--display);
+		letter-spacing: -0.04em;
+		overflow-wrap: anywhere;
+		text-transform: uppercase;
+	}
+
+	.film-list {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+		align-content: start;
+		gap: 10px;
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+
+	.film-list li {
+		display: flex;
+		min-width: 0;
+		min-height: 48px;
+		border: 1px solid rgb(37 37 37 / 9%);
+		border-radius: 15px;
+		background: rgb(255 255 255 / 34%);
+	}
+
+	.film-list li > span,
+	.film-list a {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		width: 100%;
+		padding: 12px 14px;
+		color: var(--black);
+		font-size: clamp(0.92rem, 1.2vw, 1.08rem);
+		font-weight: 800;
+		line-height: 1.3;
+		overflow-wrap: anywhere;
+		text-decoration-color: rgb(var(--category-rgb) / 72%);
+		text-decoration-thickness: 2px;
+		text-underline-offset: 4px;
+	}
+
+	.film-copy {
+		display: grid;
+		min-width: 0;
+		gap: 4px;
+	}
+
+	.film-name {
+		overflow-wrap: anywhere;
+	}
+
+	.film-dates {
+		color: rgb(37 37 37 / 66%);
+		font-size: clamp(0.72rem, 1vw, 0.84rem);
+		font-weight: 750;
+		letter-spacing: 0.015em;
+		line-height: 1.35;
+	}
+
+	.film-dates time {
+		font-variant-numeric: tabular-nums;
+	}
+
+	.film-list a {
+		border-radius: inherit;
+		transition:
+			background-color 180ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.film-list a:hover {
+		background: rgb(var(--category-rgb) / 9%);
+		box-shadow: inset 0 0 0 1px rgb(var(--category-rgb) / 22%);
+	}
+
+	.film-list a:focus-visible {
+		outline: 3px solid rgb(var(--category-rgb));
+		outline-offset: 3px;
+	}
+
+	.outbound-arrow {
+		flex: 0 0 auto;
+		font: 900 1.1rem/1 var(--display);
+	}
+
+	.empty-films {
+		grid-column: 1 / -1;
+		border-style: dashed !important;
+		color: rgb(37 37 37 / 68%);
+		font-weight: 700;
+	}
+
+	.status-card {
+		display: grid;
+		min-height: 190px;
+		padding: clamp(28px, 5vw, 54px);
+		text-align: center;
+		place-items: center;
+		animation: status-pulse 2.2s ease-in-out infinite;
+	}
+
+	.status-card p {
+		margin: 0;
+		font-size: clamp(1rem, 1.5vw, 1.25rem);
+		font-weight: 750;
+		line-height: 1.45;
+	}
+
+	.error-card {
+		border-color: rgb(141 41 41 / 24%);
+	}
+
+	.error-card p {
+		color: #792929;
+	}
+
+	.section-divider {
+		--divider-height: clamp(110px, 11vw, 190px);
+		position: relative;
+		z-index: 20;
+		width: 100%;
+		height: var(--divider-height);
+		margin-block: calc(var(--divider-height) / -2);
+		background: var(--black);
+		clip-path: polygon(0 28%, 100% 0, 100% 72%, 0 100%);
+		pointer-events: none;
+	}
+
+	.site-footer {
+		position: relative;
+		z-index: 1;
+		min-height: clamp(310px, 38vh, 480px);
+		padding: clamp(150px, 18vw, 240px) clamp(24px, 7vw, 120px) 64px;
+		background-color: #383838;
+		background-image: radial-gradient(
+			circle,
+			var(--black) 1.5px,
+			transparent 1.6px
+		);
+		background-size: 24px 24px;
+		color: var(--white);
+	}
+
+	.footer-content {
+		display: grid;
+		grid-template-columns: 1fr auto 1fr;
+		align-items: end;
+		gap: 32px;
+		width: min(1180px, 100%);
+		height: 100%;
+		margin: 0 auto;
+	}
+
+	.footer-name {
+		margin: 0;
+		font: 950 clamp(2rem, 4vw, 4.5rem) / 0.9 var(--display);
+		letter-spacing: -0.06em;
+		text-transform: uppercase;
+	}
+
+	.footer-location {
+		justify-self: end;
+		margin: 0;
+		font-weight: 800;
+	}
+
+	@keyframes status-pulse {
+		0%,
+		100% {
+			opacity: 0.76;
+		}
+
+		50% {
+			opacity: 1;
+		}
+	}
+
+	@media (max-width: 820px) {
+		:root {
+			--credits-footer-gap: 72px;
+		}
+
+		.page {
+			padding: 128px 22px var(--credits-footer-gap);
+		}
+
+		.accent-panel {
+			top: 28%;
+			width: calc(100% - 28px);
+		}
+
+		h1 {
+			font-size: clamp(3.5rem, 18vw, 7rem);
+		}
+	}
+
+	@media (max-width: 680px) {
+		.credit-card {
+			grid-template-columns: minmax(0, 1fr);
+			gap: 26px;
+			padding: 28px 22px;
+		}
+
+		.credit-marker {
+			margin-bottom: 17px;
+		}
+
+		.film-list {
+			grid-template-columns: minmax(0, 1fr);
+		}
+
+		.section-divider {
+			--divider-height: 108px;
+		}
+
+		.site-footer {
+			min-height: 380px;
+			padding: 138px 24px 54px;
+		}
+
+		.footer-content {
+			grid-template-columns: 1fr;
+			align-content: end;
+			align-items: start;
+			gap: 34px;
+		}
+
+		.footer-location {
+			justify-self: start;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.eyebrow {
+			max-width: 100%;
+			font-size: 0.67rem;
+			line-height: 1.4;
+		}
+
+		h1 {
+			font-size: clamp(3rem, 16vw, 5rem);
+		}
+
+		.credit-card,
+		.status-card {
+			border-radius: 24px;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.credit-card,
+		.film-list a,
+		.status-card {
+			animation: none;
+			transition: none;
+		}
+
+		.credit-card:hover,
+		.credit-card:focus-within {
+			transform: none;
+		}
+	}
+</style>

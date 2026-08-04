@@ -4,6 +4,35 @@ import PageMotion from "../components/common/PageMotion.astro";
 
 const pageTitle = "Jet Sullivan — Admin";
 
+const creditEditors = [
+	{
+		kind: "film",
+		title: "Film credits",
+		endpoint: "/admin/api/credits",
+		defaultColor: "#F55C66",
+		positionLabel: "Position category",
+		positionPlaceholder: "Sound Mixer",
+		itemsLegend: "Films for this position",
+		itemLabel: "Film or project",
+		itemLabelPlural: "films or projects",
+		intro:
+			"Create a position category, choose its color, and list every film or project where you held that position. Film links are optional, and the order shown here is the order visitors will see.",
+	},
+	{
+		kind: "acting",
+		title: "Acting credits",
+		endpoint: "/admin/api/acting-credits",
+		defaultColor: "#FDBFBF",
+		positionLabel: "Role category",
+		positionPlaceholder: "Lead Actor",
+		itemsLegend: "Productions for this role",
+		itemLabel: "Production or project",
+		itemLabelPlural: "productions or projects",
+		intro:
+			"Create an acting role category, choose its color, and list every production or project where you performed that role. Links are optional, and the order shown here is the order visitors will see.",
+	},
+];
+
 const adminWindows = [
 	[3, 17, 42, 34, "✦"], [10, 48, 52, 40, "×"], [17, 8, 46, 38, "○"],
 	[23, 76, 62, 46, "△"], [30, 28, 70, 52, "+"], [37, 87, 58, 44, "◇"],
@@ -68,65 +97,89 @@ const adminWindows = [
 					</form>
 				</section>
 
-				<section aria-labelledby="credits-editor-title">
-					<h2 id="credits-editor-title">Film credits</h2>
-					<p class="section-intro">
-						Create a position category, choose its color, and list every film or
-						project where you held that position. Film links are optional, and the
-						order shown here is the order visitors will see.
-					</p>
-					<form id="credit-form">
-						<input id="credit-id" type="hidden" />
-						<div class="field-grid">
-							<label class="field">
-								<span>Position category</span>
-								<input
-									id="credit-position"
-									type="text"
-									maxlength="80"
-									placeholder="Sound Mixer"
-									autocomplete="off"
-									required
-								/>
-							</label>
+				{
+					creditEditors.map((editor) => (
+						<section
+							class="credit-editor-section"
+							aria-labelledby={`${editor.kind}-credits-editor-title`}
+							data-credit-editor
+							data-credit-kind={editor.kind}
+							data-credit-endpoint={editor.endpoint}
+							data-credit-default-color={editor.defaultColor}
+							data-credit-item-label={editor.itemLabel}
+							data-credit-item-label-plural={editor.itemLabelPlural}
+						>
+							<h2 id={`${editor.kind}-credits-editor-title`}>{editor.title}</h2>
+							<p class="section-intro">{editor.intro}</p>
+							<form data-credit-form>
+								<input data-credit-id type="hidden" />
+								<div class="field-grid">
+									<label class="field">
+										<span>{editor.positionLabel}</span>
+										<input
+											data-credit-position
+											type="text"
+											maxlength="80"
+											placeholder={editor.positionPlaceholder}
+											autocomplete="off"
+											required
+										/>
+									</label>
 
-							<div class="field">
-								<label for="credit-color">Category color</label>
-								<div class="credit-color-control">
-									<input id="credit-color" type="color" value="#F55C66" />
-									<span class="credit-color-preview" aria-hidden="true"></span>
-									<span id="credit-color-value">#F55C66</span>
+									<div class="field">
+										<label for={`${editor.kind}-credit-color`}>Category color</label>
+										<div class="credit-color-control">
+											<input
+												id={`${editor.kind}-credit-color`}
+												data-credit-color
+												type="color"
+												value={editor.defaultColor}
+											/>
+											<span
+												class="credit-color-preview"
+												data-credit-color-preview
+												aria-hidden="true"
+											></span>
+											<span data-credit-color-value>{editor.defaultColor}</span>
+										</div>
+									</div>
+
+									<fieldset class="credit-film-editor field-wide">
+										<legend>{editor.itemsLegend}</legend>
+										<p>
+											Add {editor.itemLabelPlural} in display order. Each one can
+											optionally include a From date, a To date, and an external
+											HTTPS link.
+										</p>
+										<div data-credit-film-rows class="credit-film-rows"></div>
+										<button
+											data-credit-add-film
+											class="secondary-button credit-add-film"
+											type="button"
+										>
+											+ Add another {editor.itemLabel.toLowerCase()}
+										</button>
+									</fieldset>
 								</div>
-							</div>
 
-							<fieldset class="credit-film-editor field-wide">
-								<legend>Films for this position</legend>
-								<p>
-									Add the film names in display order. Each film can optionally include
-									a From date, a To date, and an external HTTPS link.
-								</p>
-								<div id="credit-film-rows" class="credit-film-rows"></div>
-								<button
-									id="credit-add-film"
-									class="secondary-button credit-add-film"
-									type="button"
-								>
-									+ Add another film
-								</button>
-							</fieldset>
-						</div>
+								<div class="actions">
+									<button data-credit-submit type="submit">Create category</button>
+									<button
+										data-credit-cancel
+										class="secondary-button"
+										type="button"
+										hidden
+									>
+										Cancel edit
+									</button>
+									<output data-credit-status aria-live="polite"></output>
+								</div>
+							</form>
 
-						<div class="actions">
-							<button id="credit-submit" type="submit">Create category</button>
-							<button id="credit-cancel" class="secondary-button" type="button" hidden>
-								Cancel edit
-							</button>
-							<output id="credit-status" aria-live="polite"></output>
-						</div>
-					</form>
-
-					<div id="credit-category-list" class="credit-category-admin-list"></div>
-				</section>
+							<div data-credit-category-list class="credit-category-admin-list"></div>
+						</section>
+					))
+				}
 
 				<section aria-labelledby="media-entry-editor-title">
 				<h2 id="media-entry-editor-title">Site posts</h2>
@@ -360,27 +413,9 @@ const adminWindows = [
 	const biography = document.querySelector<HTMLTextAreaElement>("#biography");
 	const aboutForm = document.querySelector<HTMLFormElement>("#about-form");
 	const aboutStatus = document.querySelector<HTMLOutputElement>("#about-status");
-	const creditForm = document.querySelector<HTMLFormElement>("#credit-form");
-	const creditId = document.querySelector<HTMLInputElement>("#credit-id");
-	const creditPosition =
-		document.querySelector<HTMLInputElement>("#credit-position");
-	const creditColor = document.querySelector<HTMLInputElement>("#credit-color");
-	const creditColorValue =
-		document.querySelector<HTMLElement>("#credit-color-value");
-	const creditColorPreview =
-		document.querySelector<HTMLElement>(".credit-color-preview");
-	const creditFilmRows =
-		document.querySelector<HTMLElement>("#credit-film-rows");
-	const creditAddFilm =
-		document.querySelector<HTMLButtonElement>("#credit-add-film");
-	const creditSubmit =
-		document.querySelector<HTMLButtonElement>("#credit-submit");
-	const creditCancel =
-		document.querySelector<HTMLButtonElement>("#credit-cancel");
-	const creditStatus =
-		document.querySelector<HTMLOutputElement>("#credit-status");
-	const creditCategoryList =
-		document.querySelector<HTMLElement>("#credit-category-list");
+	const creditEditorRoots = Array.from(
+		document.querySelectorAll<HTMLElement>("[data-credit-editor]"),
+	);
 	const creditDeleteDialog =
 		document.querySelector<HTMLDialogElement>("#credit-delete-dialog");
 	const creditDeleteMessage =
@@ -524,9 +559,10 @@ const adminWindows = [
 	let editingAttachmentName = "";
 	let pendingDeleteEntry: MediaEntry | null = null;
 	let pendingDeleteMedia: MediaItem | null = null;
-	let creditCategories: CreditCategory[] = [];
-	let pendingDeleteCredit: CreditCategory | null = null;
-	let creditFilmRowSequence = 0;
+	let pendingDeleteCredit: {
+		category: CreditCategory;
+		deleteCategory: (category: CreditCategory) => Promise<void>;
+	} | null = null;
 
 	const readError = async (response: Response) => {
 		const contentType = response.headers.get("Content-Type") || "";
@@ -558,15 +594,59 @@ const adminWindows = [
 		return `Request failed with HTTP ${response.status}.`;
 	};
 
-	const creditPalette = [
-		"#F55C66",
-		"#FFB05C",
-		"#EFDA4A",
-		"#7CF5B5",
-		"#93E9F9",
-		"#BFA6FF",
-		"#FDBFBF",
-	];
+	const createCreditEditor = (root: HTMLElement) => {
+		const kind = root.dataset.creditKind === "acting" ? "acting" : "film";
+		const endpoint = root.dataset.creditEndpoint || "/admin/api/credits";
+		const defaultColor = root.dataset.creditDefaultColor || "#F55C66";
+		const itemLabel = root.dataset.creditItemLabel || "Film or project";
+		const itemName = kind === "acting" ? "production" : "film";
+		const creditForm =
+			root.querySelector<HTMLFormElement>("[data-credit-form]");
+		const creditId =
+			root.querySelector<HTMLInputElement>("[data-credit-id]");
+		const creditPosition =
+			root.querySelector<HTMLInputElement>("[data-credit-position]");
+		const creditColor =
+			root.querySelector<HTMLInputElement>("[data-credit-color]");
+		const creditColorValue =
+			root.querySelector<HTMLElement>("[data-credit-color-value]");
+		const creditColorPreview =
+			root.querySelector<HTMLElement>("[data-credit-color-preview]");
+		const creditFilmRows =
+			root.querySelector<HTMLElement>("[data-credit-film-rows]");
+		const creditAddFilm =
+			root.querySelector<HTMLButtonElement>("[data-credit-add-film]");
+		const creditSubmit =
+			root.querySelector<HTMLButtonElement>("[data-credit-submit]");
+		const creditCancel =
+			root.querySelector<HTMLButtonElement>("[data-credit-cancel]");
+		const creditStatus =
+			root.querySelector<HTMLOutputElement>("[data-credit-status]");
+		const creditCategoryList =
+			root.querySelector<HTMLElement>("[data-credit-category-list]");
+		let creditCategories: CreditCategory[] = [];
+		let creditFilmRowSequence = 0;
+
+		const creditPalette =
+			kind === "acting"
+				? [
+						defaultColor,
+						"#F39AAF",
+						"#D9829A",
+						"#FFCFD8",
+						"#EEA7C7",
+						"#CFA7E8",
+						"#F6A57B",
+					]
+				: [
+						defaultColor,
+						"#FFB05C",
+						"#EFDA4A",
+						"#7CF5B5",
+						"#93E9F9",
+						"#BFA6FF",
+						"#FDBFBF",
+					];
 	const creditColorPattern = /^#[0-9A-F]{6}$/i;
 	const creditDatePattern = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -664,16 +744,16 @@ const adminWindows = [
 		const moveUp = document.createElement("button");
 		const moveDown = document.createElement("button");
 		const remove = document.createElement("button");
-		const nameId = `credit-film-name-${sequence}`;
-		const linkId = `credit-film-link-${sequence}`;
-		const dateFromId = `credit-film-date-from-${sequence}`;
-		const dateToId = `credit-film-date-to-${sequence}`;
+		const nameId = `${kind}-credit-item-name-${sequence}`;
+		const linkId = `${kind}-credit-item-link-${sequence}`;
+		const dateFromId = `${kind}-credit-item-date-from-${sequence}`;
+		const dateToId = `${kind}-credit-item-date-to-${sequence}`;
 
 		row.className = "credit-film-row";
 		row.dataset.creditFilmId = typeof film.id === "string" ? film.id : "";
 		nameField.className = "field";
 		nameField.htmlFor = nameId;
-		nameLabel.textContent = "Film or project name";
+		nameLabel.textContent = `${itemLabel} name`;
 		nameInput.id = nameId;
 		nameInput.type = "text";
 		nameInput.maxLength = 160;
@@ -739,15 +819,18 @@ const adminWindows = [
 			button.className = "secondary-button credit-film-row-button";
 		}
 		moveUp.textContent = "↑";
-		moveUp.title = "Move film up";
-		moveUp.setAttribute("aria-label", "Move this film up");
+		moveUp.title = `Move ${itemName} up`;
+		moveUp.setAttribute("aria-label", `Move this ${itemName} up`);
 		moveUp.dataset.creditRowUp = "true";
 		moveDown.textContent = "↓";
-		moveDown.title = "Move film down";
-		moveDown.setAttribute("aria-label", "Move this film down");
+		moveDown.title = `Move ${itemName} down`;
+		moveDown.setAttribute("aria-label", `Move this ${itemName} down`);
 		moveDown.dataset.creditRowDown = "true";
 		remove.textContent = "Remove";
-		remove.setAttribute("aria-label", "Remove this film from the category");
+		remove.setAttribute(
+			"aria-label",
+			`Remove this ${itemName} from the category`,
+		);
 		remove.dataset.creditRowRemove = "true";
 
 		moveUp.addEventListener("click", () => {
@@ -773,7 +856,9 @@ const adminWindows = [
 
 	const collectCreditFilms = (): CreditFilm[] => {
 		const rows = getCreditFilmRowElements();
-		if (!rows.length) throw new Error("Add at least one film to this category.");
+		if (!rows.length) {
+			throw new Error(`Add at least one ${itemName} to this category.`);
+		}
 
 		return rows.map((row, index) => {
 			const name =
@@ -790,29 +875,31 @@ const adminWindows = [
 				row
 					.querySelector<HTMLInputElement>("[data-credit-date-to]")
 					?.value.trim() || "";
-			if (!name) throw new Error(`Enter a name for film ${index + 1}.`);
+			if (!name) {
+				throw new Error(`Enter a name for ${itemName} ${index + 1}.`);
+			}
 			const link = linkValue ? safeCreditLink(linkValue) : null;
 			if (linkValue && !link) {
 				throw new Error(
-					`Film ${index + 1} needs a valid HTTPS link without login details.`,
+					`${itemLabel} ${index + 1} needs a valid HTTPS link without login details.`,
 				);
 			}
 			const dateFrom = normalizeCreditDate(dateFromValue);
 			const dateTo = normalizeCreditDate(dateToValue);
 			if (dateFromValue && !dateFrom) {
-				throw new Error(`Film ${index + 1} needs a valid From date.`);
+				throw new Error(`${itemLabel} ${index + 1} needs a valid From date.`);
 			}
 			if (dateToValue && !dateFrom) {
 				throw new Error(
-					`Choose a From date before adding a To date for film ${index + 1}.`,
+					`Choose a From date before adding a To date for ${itemName} ${index + 1}.`,
 				);
 			}
 			if (dateToValue && !dateTo) {
-				throw new Error(`Film ${index + 1} needs a valid To date.`);
+				throw new Error(`${itemLabel} ${index + 1} needs a valid To date.`);
 			}
 			if (dateFrom && dateTo && dateTo < dateFrom) {
 				throw new Error(
-					`The To date for film ${index + 1} cannot be earlier than its From date.`,
+					`The To date for ${itemName} ${index + 1} cannot be earlier than its From date.`,
 				);
 			}
 			return {
@@ -871,12 +958,12 @@ const adminWindows = [
 
 	const requestCreditDeletion = (category: CreditCategory) => {
 		if (!creditDeleteDialog || !creditDeleteMessage) return;
-		pendingDeleteCredit = category;
+		pendingDeleteCredit = { category, deleteCategory: deleteCreditCategory };
 		creditDeleteDialog.returnValue = "";
 		const count = category.films.length;
 		creditDeleteMessage.textContent =
 			`Delete “${category.position}” and its ${count} ${
-				count === 1 ? "film credit" : "film credits"
+				count === 1 ? `${itemName} credit` : `${itemName} credits`
 			}? This cannot be undone.`;
 		creditDeleteDialog.showModal();
 	};
@@ -888,7 +975,8 @@ const adminWindows = [
 		if (!categories.length) {
 			const empty = document.createElement("p");
 			empty.className = "entry-empty credit-category-empty";
-			empty.textContent = "No film credit categories have been added yet.";
+			empty.textContent =
+				`No ${kind === "acting" ? "acting" : "film"} credit categories have been added yet.`;
 			creditCategoryList.append(empty);
 			return;
 		}
@@ -916,7 +1004,7 @@ const adminWindows = [
 			swatch.setAttribute("aria-hidden", "true");
 			heading.textContent = category.position;
 			count.textContent = `${category.films.length} ${
-				category.films.length === 1 ? "film" : "films"
+				category.films.length === 1 ? itemName : `${itemName}s`
 			}`;
 			headingWrap.append(swatch, heading);
 			header.append(headingWrap, count);
@@ -983,7 +1071,7 @@ const adminWindows = [
 		if (!creditStatus) return;
 		creditStatus.textContent = "Loading credits…";
 		try {
-			const response = await fetch("/admin/api/credits", {
+			const response = await fetch(endpoint, {
 				credentials: "same-origin",
 			});
 			if (!response.ok) throw new Error(await readError(response));
@@ -1000,7 +1088,9 @@ const adminWindows = [
 			creditStatus.textContent = successMessage;
 		} catch (error) {
 			creditStatus.textContent =
-				error instanceof Error ? error.message : "Could not load film credits.";
+				error instanceof Error
+					? error.message
+					: `Could not load ${kind} credits.`;
 		}
 	};
 
@@ -1021,7 +1111,7 @@ const adminWindows = [
 		];
 		creditStatus.textContent = "Updating category order…";
 		try {
-			const response = await fetch("/admin/api/credits", {
+			const response = await fetch(endpoint, {
 				method: "PATCH",
 				credentials: "same-origin",
 				headers: { "Content-Type": "application/json" },
@@ -1042,7 +1132,7 @@ const adminWindows = [
 		if (creditDeleteSubmit) creditDeleteSubmit.disabled = true;
 		try {
 			const response = await fetch(
-				`/admin/api/credits?id=${encodeURIComponent(category.id)}`,
+				`${endpoint}?id=${encodeURIComponent(category.id)}`,
 				{ method: "DELETE", credentials: "same-origin" },
 			);
 			if (!response.ok) throw new Error(await readError(response));
@@ -1073,16 +1163,6 @@ const adminWindows = [
 		resetCreditForm();
 		if (creditStatus) creditStatus.textContent = "Edit cancelled.";
 	});
-	creditDeleteDialog?.addEventListener("close", () => {
-		if (
-			creditDeleteDialog.returnValue === "confirm" &&
-			pendingDeleteCredit
-		) {
-			void deleteCreditCategory(pendingDeleteCredit);
-		} else {
-			pendingDeleteCredit = null;
-		}
-	});
 	creditForm?.addEventListener("submit", async (event) => {
 		event.preventDefault();
 		if (
@@ -1103,7 +1183,7 @@ const adminWindows = [
 
 		try {
 			const films = collectCreditFilms();
-			const response = await fetch("/admin/api/credits", {
+			const response = await fetch(endpoint, {
 				method: isEditing ? "PUT" : "POST",
 				credentials: "same-origin",
 				headers: { "Content-Type": "application/json" },
@@ -1126,6 +1206,20 @@ const adminWindows = [
 			if (creditSubmit) creditSubmit.disabled = false;
 			if (creditCancel) creditCancel.disabled = false;
 		}
+	});
+
+	resetCreditForm();
+	void loadCredits();
+	};
+
+	creditEditorRoots.forEach((root) => createCreditEditor(root));
+	creditDeleteDialog?.addEventListener("close", () => {
+		const request = pendingDeleteCredit;
+		if (creditDeleteDialog.returnValue === "confirm" && request) {
+			void request.deleteCategory(request.category);
+			return;
+		}
+		pendingDeleteCredit = null;
 	});
 
 	const getLocalDate = () => {
@@ -1879,10 +1973,8 @@ const adminWindows = [
 		void loadMedia();
 	});
 
-	resetCreditForm();
 	resetMediaEntryForm();
 	void loadBiography();
-	void loadCredits();
 	void loadMediaEntries();
 	void loadMedia();
 
@@ -2211,6 +2303,27 @@ const adminWindows = [
 		-webkit-backdrop-filter: blur(14px);
 		backdrop-filter: blur(14px);
 	}
+	.credit-editor-section {
+		--credit-editor-accent: #f55c66;
+		overflow: hidden;
+	}
+	.credit-editor-section[data-credit-kind="acting"] {
+		--credit-editor-accent: #fdbfbf;
+		border-color: rgb(218 128 145 / 25%);
+		background:
+			linear-gradient(rgb(255 255 255 / 68%), rgb(255 255 255 / 68%)),
+			rgb(253 191 191 / 16%);
+	}
+	.credit-editor-section::after {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		height: 7px;
+		background: var(--credit-editor-accent);
+		content: "";
+		opacity: .58;
+	}
 	h2 {
 		margin: 0 0 24px;
 		font: 950 clamp(1.9rem, 4.4vw, 3.4rem)/.95 var(--display);
@@ -2329,7 +2442,7 @@ const adminWindows = [
 					transparent
 				);
 		}
-		#credit-color-value {
+		[data-credit-color-value] {
 			min-width: 0;
 			font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
 			font-size: .88rem;

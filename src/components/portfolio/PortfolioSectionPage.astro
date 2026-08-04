@@ -15,6 +15,7 @@ interface Props {
 	accentBottom: string;
 	headingCardHref?: string;
 	headingCardLabel?: string;
+	headingCardForeground?: string;
 }
 
 const {
@@ -29,6 +30,7 @@ const {
 	accentBottom,
 	headingCardHref,
 	headingCardLabel,
+	headingCardForeground,
 } = Astro.props;
 
 const hasHeadingCard = Boolean(headingCardHref && headingCardLabel);
@@ -55,7 +57,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		<main
 			class="page"
 			data-motion-root
-			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};`}
+			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--heading-card-foreground:${headingCardForeground || accent};`}
 		>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="accent-panel" data-motion-depth="counter" aria-hidden="true"></div>
@@ -617,11 +619,11 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			0 8px 28px rgb(37 37 37 / 14%),
 			0 0 18px rgb(255 255 255 / 38%),
 			0 0 24px color-mix(in srgb, var(--accent) 42%, transparent);
-		color: var(--accent);
+		color: var(--heading-card-foreground);
 		transform: translateY(calc(-50% + 3px));
 	}
 	.heading-card:focus-visible {
-		outline: 3px solid color-mix(in srgb, var(--accent) 76%, white);
+		outline: 3px solid color-mix(in srgb, var(--heading-card-foreground) 76%, white);
 		outline-offset: 4px;
 	}
 	.sr-only {
@@ -1047,6 +1049,33 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		.info-window:not(.is-compact) { padding: 50px 22px 28px; }
 		.info-window.is-compact { padding: 18px; }
 		.info-window p { font-size: 1rem; }
+	}
+	@media (max-width: 760px) {
+		.content[data-section="acting"] .heading-lockup {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			gap: 14px;
+			width: 100%;
+		}
+		.content[data-section="acting"] .heading-card {
+			position: relative;
+			top: auto;
+			right: auto;
+			order: -1;
+			transform: none;
+		}
+		.content[data-section="acting"] .heading-card:hover,
+		.content[data-section="acting"] .heading-card:focus-visible {
+			transform: translateY(3px);
+		}
+	}
+	@media (max-width: 480px) {
+		.content[data-section="acting"] .eyebrow {
+			max-width: 100%;
+			line-height: 1.4;
+		}
 	}
 
 	@media (max-width: 700px) {

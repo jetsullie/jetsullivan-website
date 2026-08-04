@@ -1,7 +1,7 @@
 import { createAdminCreditsHandlers } from "../../_shared/admin-credits.js";
-import { CREDITS_KEY } from "../../_shared/credits.js";
+import { ACTING_CREDITS_KEY } from "../../_shared/credits.js";
 
-const handlers = createAdminCreditsHandlers(CREDITS_KEY);
+const handlers = createAdminCreditsHandlers(ACTING_CREDITS_KEY);
 
 export const onRequestGet = handlers.onRequestGet;
 export const onRequestPost = handlers.onRequestPost;

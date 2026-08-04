@@ -1,4 +1,5 @@
 export const CREDITS_KEY = "content:credits";
+export const ACTING_CREDITS_KEY = "content:acting-credits";
 export const CREDITS_SCHEMA_VERSION = 1;
 export const MAX_CREDIT_CATEGORIES = 50;
 export const MAX_CREDIT_FILMS_PER_CATEGORY = 100;
@@ -385,8 +386,8 @@ const normalizeStoredDocument = (value) => {
 	};
 };
 
-export const readCreditsDocument = async (kv) => {
-	const stored = await kv.get(CREDITS_KEY, "json");
+export const readCreditsDocument = async (kv, storageKey = CREDITS_KEY) => {
+	const stored = await kv.get(storageKey, "json");
 	if (stored === null || stored === undefined) {
 		return {
 			schemaVersion: CREDITS_SCHEMA_VERSION,
@@ -397,7 +398,11 @@ export const readCreditsDocument = async (kv) => {
 	return normalizeStoredDocument(stored);
 };
 
-export const writeCreditsDocument = async (kv, categories) => {
+export const writeCreditsDocument = async (
+	kv,
+	categories,
+	storageKey = CREDITS_KEY,
+) => {
 	if (!Array.isArray(categories) || categories.length > MAX_CREDIT_CATEGORIES) {
 		throw new CreditRequestError(
 			`At most ${MAX_CREDIT_CATEGORIES} credit categories are allowed.`,
@@ -414,7 +419,7 @@ export const writeCreditsDocument = async (kv, categories) => {
 	};
 	// Validate the exact shape before it reaches persistent storage.
 	normalizeStoredDocument(document);
-	await kv.put(CREDITS_KEY, JSON.stringify(document));
+	await kv.put(storageKey, JSON.stringify(document));
 	return document;
 };
 

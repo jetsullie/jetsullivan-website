@@ -81,10 +81,12 @@ After deployment:
 6. Use **Sign out** in the admin header and confirm the application session is
    cleared.
 7. Save the biography and refresh `/about/`.
-8. Create at least two credit categories with different colors, add multiple
-   films (including an optional HTTPS link, a single date, and a date range),
-   reorder both the categories and films, and confirm the public credits display
-   follows that order. Edit one category and then delete the test categories.
+8. Create at least two Film Credits categories and two Acting Credits categories
+   with different colors. Add multiple titles (including an optional HTTPS link,
+   a single date, and a date range), reorder both the categories and titles, and
+   confirm each public credits page follows its own order without showing the
+   other page's credits. Edit one category in each section and then delete the
+   test categories.
 9. Add a small Press test entry and refresh `/media/press/`.
 10. Add a Behind the Scenes test entry with a photo and refresh
    `/media/behind-the-scenes/`.
@@ -106,12 +108,13 @@ After deployment:
   issued token after logout.
 - Write responses use `Cache-Control: no-store`.
 - The biography has a 5,000-character limit.
-- Credit categories and their ordered film lists are stored in the
-  `content:credits` KV record. Category colors use the `#RRGGBB` format, and
-  optional film links must use HTTPS. Film dates are optional; a film may have a
-  single `dateFrom` value or a `dateFrom`/`dateTo` range in `YYYY-MM-DD` format.
-  Public credit changes can take up to roughly one minute to pass through the
-  public API cache.
+- Film and Acting credit categories are isolated in the `content:credits` and
+  `content:acting-credits` KV records, respectively. Their ordered title lists
+  use the same schema. Category colors use the `#RRGGBB` format, and optional
+  title links must use HTTPS. Dates are optional; a title may have a single
+  `dateFrom` value or a `dateFrom`/`dateTo` range in `YYYY-MM-DD` format. Public
+  credit changes can take up to roughly one minute to pass through the public
+  API cache.
 - Media entries are stored as structured records in KV and appear publicly after
   a short cache delay of up to roughly one minute.
 - Behind-the-scenes entry photos accept JPEG, PNG, WebP, or AVIF files up to
@@ -132,6 +135,7 @@ After deployment:
 - The Website Media Library lists every R2 upload. Renaming changes its
   user-facing/download name without changing the stable storage URL. Permanent
   deletion clears any post references before removing the R2 object.
-- Export or copy the `content:credits` and `media-entry:*` KV records regularly,
-  and enable R2 object versioning or backups before storing irreplaceable media.
+- Export or copy the `content:credits`, `content:acting-credits`, and
+  `media-entry:*` KV records regularly, and enable R2 object versioning or
+  backups before storing irreplaceable media.
 - Keep the Cloudflare account recovery methods and MFA devices secure.
