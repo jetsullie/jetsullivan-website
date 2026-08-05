@@ -2095,6 +2095,7 @@ const adminWindows = [
 	* { box-sizing: border-box; }
 	html {
 		background: var(--black);
+		overflow-x: clip;
 	}
 	body {
 		position: relative;
@@ -3066,7 +3067,11 @@ const adminWindows = [
 
 	@media (max-width: 600px) {
 		main { width: min(100% - 42px, 1050px); padding-top: 116px; }
-		header { align-items: flex-start; }
+		header {
+			align-items: flex-start;
+			flex-direction: column;
+			gap: 20px;
+		}
 		header a { padding: 10px 14px; }
 		.notice {
 			width: 100%;

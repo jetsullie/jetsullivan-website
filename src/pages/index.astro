@@ -356,6 +356,7 @@ const backgroundWindows = [
 		background: var(--black);
 		color: var(--black);
 		font-family: var(--font-body);
+		overflow-x: clip;
 		scroll-behavior: smooth;
 	}
 
@@ -1967,6 +1968,8 @@ const backgroundWindows = [
 	}
 
 	.section-tab .contact-plane {
+		top: 50%;
+		left: 50%;
 		width: 46%;
 		height: 40%;
 	}
@@ -2236,7 +2239,7 @@ const backgroundWindows = [
 		}
 
 		.hero {
-			top: -70px;
+			top: 0;
 			display: grid;
 			grid-template-columns: repeat(2, minmax(0, 1fr));
 			grid-template-rows: auto auto auto auto;
@@ -2256,11 +2259,15 @@ const backgroundWindows = [
 			left: auto;
 			display: block;
 			font-size: clamp(1.35rem, 5.4vw, 1.8rem);
+			transform: none;
 		}
 
 		.location-roles {
 			top: calc(100% + 19px);
+			right: 0;
+			width: min(230px, calc(100vw - 48px));
 			font-size: clamp(0.58rem, 2.45vw, 0.76rem);
+			white-space: normal;
 		}
 
 		.location-box {
@@ -2476,7 +2483,7 @@ const backgroundWindows = [
 			top: 88px;
 			right: 24px;
 			bottom: auto;
-			font-size: 2rem;
+			font-size: clamp(1.65rem, 9vw, 2rem);
 		}
 
 		.hero {
@@ -2491,6 +2498,7 @@ const backgroundWindows = [
 
 		.portrait {
 			right: 0;
+			bottom: -64px;
 			width: auto;
 			height: min(58vh, 560px);
 		}
@@ -2541,6 +2549,22 @@ const backgroundWindows = [
 			flex-basis: 62px;
 		}
 
+	}
+
+	@media (max-width: 650px) and (min-height: 501px) {
+		.canvas.surname-does-not-fit .surname-line,
+		.surname-line {
+			position: relative;
+			display: block;
+			font-size: 0.49em;
+			line-height: 0.9;
+			visibility: visible;
+			pointer-events: auto;
+		}
+
+		.location {
+			top: calc(min(36.45vw, 27vh) + 28px);
+		}
 	}
 
 	@media (min-width: 901px) and (max-aspect-ratio: 4 / 3) {
@@ -2859,6 +2883,16 @@ const backgroundWindows = [
 		searchSuggestions &&
 		searchStatus
 	) {
+		const compactSearchLayout = window.matchMedia("(max-width: 520px)");
+		const updateSearchPlaceholder = () => {
+			searchInput.placeholder = compactSearchLayout.matches
+				? "Search"
+				: "Where do you want to go?";
+		};
+
+		compactSearchLayout.addEventListener("change", updateSearchPlaceholder);
+		updateSearchPlaceholder();
+
 		type SearchDestination = {
 			title: string;
 			href: string;
