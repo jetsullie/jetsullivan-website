@@ -145,9 +145,11 @@ const backgroundWindows = [
 	.contact-page {
 		position: relative;
 		width: 100%;
+		min-height: 100vh;
+		min-height: 100svh;
 		padding: clamp(105px, 11vh, 145px) clamp(28px, 6vw, 105px)
 			var(--contact-footer-gap);
-		overflow: hidden;
+		overflow: clip;
 		background: linear-gradient(
 			180deg,
 			var(--white) 0%,
@@ -485,7 +487,6 @@ const backgroundWindows = [
 			display: block;
 			min-height: 100svh;
 			padding: 128px 22px var(--contact-footer-gap);
-			overflow-y: auto;
 		}
 
 		.yellow-panel {

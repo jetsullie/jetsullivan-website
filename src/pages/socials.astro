@@ -242,8 +242,10 @@ const socialLinks = [
 	.social-page {
 		position: relative;
 		width: 100%;
+		min-height: 100vh;
+		min-height: 100svh;
 		padding: clamp(105px, 11vh, 145px) clamp(28px, 6vw, 105px) var(--social-footer-gap);
-		overflow: hidden;
+		overflow: clip;
 		background: linear-gradient(180deg, #fff 0%, #effcff 32%, #d4f7fd 68%, #c0f2fb 100%);
 	}
 
@@ -578,7 +580,7 @@ const socialLinks = [
 
 	@media (max-width: 760px) {
 		:root { --social-footer-gap: 48px; }
-		.social-page { padding: 128px 22px var(--social-footer-gap); overflow-y: auto; }
+		.social-page { padding: 128px 22px var(--social-footer-gap); }
 		.yellow-panel { top: 28%; left: 14px; width: calc(100% - 28px); }
 		.home-tab { top: 62px; right: 20px; width: 140px; height: 78px; padding: 12px; border-radius: 21px; }
 		.home-arrow { font-size: 1.8rem; }

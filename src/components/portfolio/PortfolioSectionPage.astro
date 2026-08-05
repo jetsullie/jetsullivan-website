@@ -476,9 +476,11 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	.page {
 		position: relative;
 		width: 100%;
+		min-height: 100vh;
+		min-height: 100svh;
 		padding: clamp(105px, 11vh, 145px) clamp(28px, 6vw, 105px)
 			var(--portfolio-footer-gap);
-		overflow: hidden;
+		overflow: clip;
 		background: linear-gradient(
 			180deg,
 			#fff 0%,
@@ -989,7 +991,6 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			display: block;
 			min-height: 100svh;
 			padding: 128px 22px var(--portfolio-footer-gap);
-			overflow-y: auto;
 		}
 		.accent-panel { top: 28%; width: calc(100% - 28px); }
 		.home-window { top: 64px; left: 22px; width: 142px; height: 78px; padding: 12px; border-radius: 22px; }

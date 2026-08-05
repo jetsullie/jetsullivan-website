@@ -1,5 +1,6 @@
 <script>
 	const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const coarsePointer = window.matchMedia("(hover: none), (pointer: coarse)");
 	const depthNames = ["far-a", "far-b", "far-c"] as const;
 
 	document.querySelectorAll<HTMLElement>("[data-motion-root]").forEach((root) => {
@@ -172,11 +173,29 @@
 				setFloatingPosition(item.element, item.followers, item.x, item.y);
 			}
 
+			const parallaxSettled =
+				Math.abs(targetX - currentX) < 0.001 &&
+				Math.abs(targetY - currentY) < 0.001;
+			if (floatingTabs.length === 0 && parallaxSettled) {
+				currentX = targetX;
+				currentY = targetY;
+				renderParallax();
+				animationFrame = 0;
+				return;
+			}
+
 			animationFrame = window.requestAnimationFrame(animate);
 		};
 
 		const startMotion = () => {
-			if (motionPreference.matches || document.hidden || animationFrame) return;
+			if (
+				motionPreference.matches ||
+				coarsePointer.matches ||
+				document.hidden ||
+				animationFrame
+			) {
+				return;
+			}
 			if (!floatingState.length) prepareFloatingTabs();
 			previousTime = performance.now();
 			animationFrame = window.requestAnimationFrame(animate);
@@ -213,7 +232,7 @@
 		};
 
 		const handleMotionPreference = () => {
-			if (motionPreference.matches) resetMotion();
+			if (motionPreference.matches || coarsePointer.matches) resetMotion();
 			else startMotion();
 		};
 
@@ -221,6 +240,7 @@
 		document.documentElement.addEventListener("mouseleave", recenter);
 		document.addEventListener("visibilitychange", handleVisibilityChange);
 		motionPreference.addEventListener("change", handleMotionPreference);
+		coarsePointer.addEventListener("change", handleMotionPreference);
 		startMotion();
 	});
 </script>

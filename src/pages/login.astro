@@ -124,9 +124,10 @@ const backgroundWindows = Array.from({ length: 22 }, (_, index) => ({
 	.login-page {
 		position: relative;
 		display: grid;
+		min-height: max(760px, 100vh);
 		min-height: max(760px, 100svh);
 		padding: clamp(116px, 13vh, 164px) clamp(28px, 6vw, 105px) var(--footer-gap);
-		overflow: hidden;
+		overflow: clip;
 		background: linear-gradient(180deg, #fff 0%, #effcff 31%, #d4f7fd 68%, #c0f2fb 100%);
 	}
 

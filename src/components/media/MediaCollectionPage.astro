@@ -565,10 +565,11 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	.collection-page {
 		position: relative;
 		width: 100%;
+		min-height: 100vh;
 		min-height: 100svh;
 		padding: clamp(110px, 12vh, 150px) clamp(28px, 6vw, 105px)
 			var(--collection-footer-gap);
-		overflow: hidden;
+		overflow: clip;
 		background: linear-gradient(
 			180deg,
 			#fff 0%,
