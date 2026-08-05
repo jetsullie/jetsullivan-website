@@ -3,6 +3,9 @@ import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 
 const name = "Jet Sullivan";
+const pageTitle = `${name} — Actor, Content Creator, and Filmmaker`;
+const pageDescription =
+	"Jet Sullivan is an Austin-based actor, producer, and content creator.";
 
 const backgroundWindows = [
 	{ x: 2, y: 16, w: 38, h: 31, symbol: "+", font: 8, depth: "a" },
@@ -35,10 +38,17 @@ const backgroundWindows = [
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta
 			name="description"
-			content="Jet Sullivan is an Austin-based director, filmmaker, and storyteller."
+			content={pageDescription}
 		/>
-		<link rel="icon" type="image/png" href="/favicon-profile.png" />
-		<title>{name} — Director & Filmmaker</title>
+		<meta name="robots" content="max-snippet:69" />
+		<link rel="canonical" href="https://jetsullivan.com/" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://jetsullivan.com/" />
+		<meta property="og:site_name" content={name} />
+		<meta property="og:title" content={pageTitle} />
+		<meta property="og:description" content={pageDescription} />
+		<link rel="icon" type="image/png" sizes="512x512" href="/favicon-profile.png" />
+		<title>{pageTitle}</title>
 		<script is:inline>
 			window.addEventListener("load", () => {
 				document.body?.classList.remove("home-layout-pending");
@@ -238,9 +248,9 @@ const backgroundWindows = [
 				<div class="section-layout">
 					<div class="glass-panel" data-motion-depth="counter">
 						<p>
-							Jet Sullivan is a Texas filmmaker, actor, and storyteller based in Austin.
-							He creates character-driven work with a sharp visual point of view and a
-							love for the people and places that make every story feel real.
+							My name is Jet Sullivan, and I am a Moody Honors Radio-Television-Film
+							senior student at the University of Texas at Austin. I am an actor,
+							producer, and videographer
 						</p>
 					</div>
 					<a class="section-tab about-tab" href="/about/" data-motion-depth="deep">
