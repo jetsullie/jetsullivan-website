@@ -32,7 +32,7 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 ---
 
 <div
-	class="menu-control"
+	class:list={["menu-control", { "menu-control--with-home": showHomeButton }]}
 	style={`--menu-expanded-height: ${expandedMenuHeight}px;`}
 >
 	<button
@@ -114,12 +114,6 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 			box-shadow 220ms ease,
 			transform 280ms cubic-bezier(0.34, 1.4, 0.64, 1),
 			opacity 160ms ease;
-	}
-
-	.menu-control.is-search-suppressed {
-		visibility: hidden;
-		opacity: 0;
-		pointer-events: none;
 	}
 
 	.menu-control:not(.is-open):has(> .menu-toggle:hover) {
@@ -283,8 +277,17 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 
 	@media (max-width: 700px) {
 		.menu-control {
-			top: calc(var(--site-control-top) + var(--site-control-step));
+			top: var(--site-control-top);
 			left: var(--site-control-left);
+		}
+
+		.menu-control--with-home {
+			right: var(--site-control-right);
+			left: auto;
+		}
+
+		.menu-control--with-home .menu-toggle {
+			margin-left: auto;
 		}
 
 		.home-bubble {
@@ -300,8 +303,17 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 			height: min(
 				var(--menu-expanded-height),
 				calc(
-					100dvh - var(--site-control-top) - var(--site-control-step) -
-						var(--site-control-bottom)
+					100dvh - var(--site-control-top) - var(--site-control-bottom)
+				)
+			);
+		}
+
+		.menu-control--with-home.is-open {
+			width: min(
+				230px,
+				calc(
+					100vw - var(--site-control-left) - var(--site-control-right) -
+						var(--site-control-size) - var(--site-control-gap)
 				)
 			);
 		}

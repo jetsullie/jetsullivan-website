@@ -2614,14 +2614,24 @@ const backgroundWindows = [
 
 	@media (max-width: 700px) {
 		.search-bar {
-			top: var(--site-control-top);
+			top: auto;
+			bottom: var(--site-control-bottom);
+			right: var(--site-control-right);
 			left: var(--site-control-left);
+			margin-inline: auto;
 		}
 
 		.search-bar.is-open {
 			width: calc(
 				100vw - var(--site-control-left) - var(--site-control-right)
 			);
+		}
+
+		.search-suggestions {
+			top: auto;
+			bottom: calc(100% + 4px);
+			padding-top: 24px;
+			padding-bottom: 12px;
 		}
 
 		.section-divider {

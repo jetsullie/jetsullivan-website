@@ -1080,6 +1080,56 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	}
 
 	@media (max-width: 700px) {
+		.content[data-section="acting"],
+		.content[data-section="film"] {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr);
+			justify-items: center;
+		}
+
+		.content[data-section="acting"] .eyebrow,
+		.content[data-section="film"] .eyebrow {
+			grid-row: 1;
+		}
+
+		.content[data-section="acting"] .heading-lockup,
+		.content[data-section="film"] .heading-lockup {
+			display: contents;
+		}
+
+		.content[data-section="acting"] .heading-lockup h1,
+		.content[data-section="film"] .heading-lockup h1 {
+			grid-row: 2;
+		}
+
+		.content[data-section="acting"] .introduction,
+		.content[data-section="film"] .introduction {
+			grid-row: 3;
+		}
+
+		.content[data-section="acting"] .heading-card,
+		.content[data-section="film"] .heading-card {
+			position: relative;
+			top: auto;
+			right: auto;
+			grid-row: 4;
+			order: initial;
+			margin-top: 18px;
+			transform: none;
+		}
+
+		.content[data-section="acting"] .heading-card:hover,
+		.content[data-section="acting"] .heading-card:focus-visible,
+		.content[data-section="film"] .heading-card:hover,
+		.content[data-section="film"] .heading-card:focus-visible {
+			transform: translateY(3px);
+		}
+
+		.content[data-section="acting"] .entry-grid,
+		.content[data-section="film"] .entry-grid {
+			grid-row: 5;
+		}
+
 		.section-divider {
 			--divider-height: 108px;
 		}
