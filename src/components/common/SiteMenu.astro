@@ -3,12 +3,14 @@ interface Props {
 	showHomeButton?: boolean;
 	homeButtonHref?: string;
 	homeButtonLabel?: string;
+	brainstormActions?: boolean;
 }
 
 const {
 	showHomeButton = false,
 	homeButtonHref = "/",
 	homeButtonLabel = "Return to homepage",
+	brainstormActions = false,
 } = Astro.props;
 
 const menuItems = [
@@ -28,7 +30,7 @@ const currentPath = normalizePath(Astro.url.pathname);
 const visibleMenuItems = menuItems.filter(
 	({ href }) => normalizePath(href) !== currentPath,
 );
-const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
+const expandedMenuHeight = 108 + (brainstormActions ? 5 : visibleMenuItems.length) * 41;
 ---
 
 <div
@@ -51,7 +53,12 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 		aria-hidden="true"
 		inert
 	>
-		{visibleMenuItems.map(({ href, label }) => <a href={href}>{label}</a>)}
+		{!brainstormActions && visibleMenuItems.map(({ href, label }) => <a href={href}>{label}</a>)}
+		{brainstormActions && <button type="button" data-brainstorm-save>Save</button>}
+		{brainstormActions && <button type="button" data-brainstorm-pdf>Save as PDF</button>}
+		{brainstormActions && <button type="button" data-brainstorm-jpeg>Save JPEG</button>}
+		{brainstormActions && <button type="button" data-brainstorm-png>Save PNG</button>}
+		{brainstormActions && <button type="button" data-brainstorm-settings>Settings</button>}
 	</nav>
 </div>
 
@@ -258,19 +265,25 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 		transform: translateY(0);
 	}
 
-	.site-menu a {
+	.site-menu a,
+	.site-menu button {
 		padding: 10px 13px;
+		border: 0;
 		border-radius: 12px;
+		background: transparent;
 		color: #252525;
 		font: 900 0.92rem "Arial Black", "Myriad Pro", Arial, sans-serif;
+		text-align: left;
 		text-decoration: none;
 		text-transform: uppercase;
+		cursor: pointer;
 		transition:
 			background-color 160ms ease,
 			transform 220ms ease;
 	}
 
-	.site-menu a:hover {
+	.site-menu a:hover,
+	.site-menu button:hover {
 		background: rgb(37 37 37 / 10%);
 		transform: translateX(3px);
 	}
@@ -321,7 +334,8 @@ const expandedMenuHeight = 108 + visibleMenuItems.length * 41;
 
 	.menu-toggle:focus-visible,
 	.home-bubble:focus-visible,
-	.site-menu a:focus-visible {
+	.site-menu a:focus-visible,
+	.site-menu button:focus-visible {
 		outline: 3px solid #fdbfbf;
 		outline-offset: 2px;
 	}

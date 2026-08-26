@@ -1,0 +1,209 @@
+---
+const resumePdf = "/Jet_Sullivan_Resume.pdf";
+---
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+		<title>Resume | Jet Sullivan</title>
+
+		<meta
+			name="description"
+			content="The professional resume of Jet Sullivan, actor, producer, filmmaker, and videographer."
+		/>
+
+		<style>
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				margin: 0;
+				min-height: 100%;
+			}
+
+			body {
+				background: #e9e6de;
+				color: #111;
+				font-family:
+					Arial,
+					Helvetica,
+					sans-serif;
+			}
+
+			.resume-page {
+				width: min(1200px, calc(100% - 32px));
+				margin: 0 auto;
+				padding: 32px 0 48px;
+			}
+
+			.resume-header {
+				display: flex;
+				align-items: flex-end;
+				justify-content: space-between;
+				gap: 24px;
+				margin-bottom: 24px;
+			}
+
+			.back-link {
+				display: inline-block;
+				margin-bottom: 18px;
+				color: #111;
+				font-weight: 700;
+				text-decoration: none;
+			}
+
+			.back-link:hover {
+				text-decoration: underline;
+			}
+
+			h1 {
+				margin: 0;
+				font-size: clamp(3rem, 8vw, 6rem);
+				line-height: 0.9;
+				letter-spacing: -0.06em;
+			}
+
+			.subtitle {
+				margin: 14px 0 0;
+				color: #555;
+				font-size: 1.05rem;
+			}
+
+			.actions {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+
+			.button {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 48px;
+				padding: 0 20px;
+				border: 1px solid #111;
+				border-radius: 999px;
+				color: #111;
+				font-weight: 700;
+				text-decoration: none;
+			}
+
+			.button-primary {
+				background: #111;
+				color: #fff;
+			}
+
+			.resume-viewer {
+				overflow: hidden;
+				width: 100%;
+				height: calc(100vh - 210px);
+				min-height: 700px;
+				border: 1px solid rgba(0, 0, 0, 0.2);
+				border-radius: 18px;
+				background: #fff;
+				box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12);
+			}
+
+			.resume-frame {
+				display: block;
+				width: 100%;
+				height: 100%;
+				border: 0;
+				background: #fff;
+			}
+
+			.fallback {
+				margin: 18px 0 0;
+				color: #555;
+				text-align: center;
+			}
+
+			.fallback a {
+				color: #111;
+				font-weight: 700;
+			}
+
+			@media (max-width: 720px) {
+				.resume-page {
+					width: min(100% - 20px, 1200px);
+					padding-top: 20px;
+				}
+
+				.resume-header {
+					align-items: stretch;
+					flex-direction: column;
+				}
+
+				.actions {
+					display: grid;
+					grid-template-columns: 1fr;
+				}
+
+				.resume-viewer {
+					height: 72vh;
+					min-height: 500px;
+					border-radius: 12px;
+				}
+			}
+		</style>
+	</head>
+
+	<body>
+		<main class="resume-page">
+			<header class="resume-header">
+				<div>
+					<a class="back-link" href="/">← Back to portfolio</a>
+
+					<h1>Resume</h1>
+
+					<p class="subtitle">
+						Jet Sullivan · Actor · Producer · Filmmaker
+					</p>
+				</div>
+
+				<div class="actions">
+					<a
+						class="button"
+						href={resumePdf}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Open PDF
+					</a>
+
+					<a
+						class="button button-primary"
+						href={resumePdf}
+						download="Jet_Sullivan_Resume.pdf"
+					>
+						Download PDF
+					</a>
+				</div>
+			</header>
+
+			<section class="resume-viewer" aria-label="Resume viewer">
+				<iframe
+					class="resume-frame"
+					src={`${resumePdf}#view=FitH&toolbar=1&navpanes=0`}
+					title="Jet Sullivan Resume"
+				></iframe>
+			</section>
+
+			<p class="fallback">
+				Resume not appearing?
+				<a
+					href={resumePdf}
+					target="_blank"
+					rel="noopener noreferrer"
+				>
+					Open the PDF directly.
+				</a>
+			</p>
+		</main>
+	</body>
+</html>
