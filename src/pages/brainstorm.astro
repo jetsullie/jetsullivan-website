@@ -740,4 +740,81 @@ const pageTitle = "Brainstorm — Jet Sullivan";
 		overflow-wrap: anywhere;
 	}
 	body.dark-mode .text-panel textarea { background: rgb(245 245 245 / 92%); color: #252525; }
+
+	/* Compact touch workspace: every tool stays reachable without horizontal scrolling. */
+	@media (max-width: 700px), (pointer: coarse) {
+		.board { touch-action: none; }
+		button, input, select, textarea { touch-action: manipulation; }
+		.idea-bubble { touch-action: none; }
+		.tool-dock {
+			bottom: max(0px, env(safe-area-inset-bottom));
+			padding: 0 6px;
+		}
+		.dock-toggle { width: 54px; height: 34px; }
+		.tool-surface {
+			width: min(100%, 500px);
+			margin-bottom: 7px;
+			padding: 7px;
+			border-radius: 20px;
+		}
+		.tool-row {
+			display: grid;
+			grid-template-columns: repeat(5, minmax(0, 1fr));
+			gap: 4px;
+			overflow: visible;
+		}
+		.tool-divider { display: none; }
+		.tool-button {
+			min-width: 0 !important;
+			min-height: 52px;
+			padding: 4px 2px;
+		}
+		.tool-button svg { width: 21px; height: 21px; }
+		.tool-button small {
+			position: static;
+			display: block;
+			margin-top: 2px;
+			padding: 0;
+			border: 0;
+			background: transparent;
+			box-shadow: none;
+			color: currentColor;
+			font-size: .45rem;
+			line-height: 1;
+			letter-spacing: .02em;
+			opacity: .72;
+			pointer-events: auto;
+			translate: 0;
+			white-space: normal;
+		}
+		.tool-row p {
+			display: block;
+			grid-column: 1 / -1;
+			min-height: 16px;
+			margin: 2px 5px 0;
+			font-size: .64rem;
+			line-height: 1.15;
+		}
+		.editor-panel,
+		.shape-panel {
+			bottom: calc(100% + 7px);
+			max-height: min(43svh, 310px);
+			overflow: auto;
+			-webkit-overflow-scrolling: touch;
+		}
+		.editor-panel { gap: 6px; padding: 9px; }
+		.editor-panel label { font-size: .58rem; }
+		.text-panel textarea { flex-basis: 100%; min-width: 100%; min-height: 58px; }
+		.connection-panel input[type="range"],
+		.color-picker-panel input[type="range"] { width: 86px; }
+		.board-stats { top: max(12px, env(safe-area-inset-top)); right: 10px; gap: 6px; }
+		.stat-line { gap: 5px; font-size: .58rem; }
+		.zoom-controls { gap: 5px; }
+		.zoom-controls button { width: 34px; height: 34px; }
+		#zoom-value { min-width: 33px; font-size: .54rem; }
+		.minimap { width: 108px; right: 10px; bottom: calc(max(0px, env(safe-area-inset-bottom)) + 70px); }
+		.offscreen-dot { width: 14px; height: 14px; }
+		.settings-backdrop { padding: max(18px, env(safe-area-inset-top)) 14px max(18px, env(safe-area-inset-bottom)); }
+		.settings-panel { max-height: calc(100svh - 36px); overflow-y: auto; }
+	}
 </style>
