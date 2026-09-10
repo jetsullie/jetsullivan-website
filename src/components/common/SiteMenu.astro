@@ -178,7 +178,7 @@ const expandedMenuHeight = 108 + (brainstormActions ? 5 : visibleMenuItems.lengt
 
 	.menu-control.is-open {
 		width: min(230px, calc(100vw - 36px));
-		height: min(var(--menu-expanded-height), calc(100dvh - 36px));
+		height: var(--menu-expanded-height);
 		border-radius: 28px;
 	}
 
@@ -250,8 +250,7 @@ const expandedMenuHeight = 108 + (brainstormActions ? 5 : visibleMenuItems.lengt
 		display: grid;
 		gap: 5px;
 		align-content: start;
-		overflow-y: auto;
-		overscroll-behavior: contain;
+		overflow: hidden;
 		opacity: 0;
 		pointer-events: none;
 		transform: translateY(-8px);
@@ -268,12 +267,16 @@ const expandedMenuHeight = 108 + (brainstormActions ? 5 : visibleMenuItems.lengt
 
 	.site-menu a,
 	.site-menu button {
+		display: block;
+		width: 100%;
+		min-width: 0;
 		padding: 10px 13px;
 		border: 0;
 		border-radius: 12px;
 		background: transparent;
 		color: #252525;
-		font: 900 0.92rem "Arial Black", "Myriad Pro", Arial, sans-serif;
+		font: 900 0.92rem/1.15 "Arial Black", "Myriad Pro", Arial, sans-serif;
+		overflow-wrap: anywhere;
 		text-align: left;
 		text-decoration: none;
 		text-transform: uppercase;
@@ -314,12 +317,7 @@ const expandedMenuHeight = 108 + (brainstormActions ? 5 : visibleMenuItems.lengt
 				230px,
 				calc(100vw - var(--site-control-left) - var(--site-control-right))
 			);
-			height: min(
-				var(--menu-expanded-height),
-				calc(
-					100dvh - var(--site-control-top) - var(--site-control-bottom)
-				)
-			);
+			height: var(--menu-expanded-height);
 		}
 
 		.menu-control--with-home.is-open {
