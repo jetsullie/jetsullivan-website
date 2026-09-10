@@ -4,8 +4,9 @@ import {
 	biographyDocumentToText,
 	normalizeBiographyDocument,
 } from "../../../_shared/biography.js";
+import { normalizeSiteLocation } from "../../../_shared/site-location.js";
 
-const allowedSections = new Set(["about"]);
+const allowedSections = new Set(["about", "site"]);
 
 const noStoreJson = (body, init = {}) =>
 	Response.json(body, {
@@ -43,7 +44,20 @@ export const onRequestPut = async ({ request, env, params }) => {
 	}
 
 	if (!body || typeof body !== "object" || Array.isArray(body)) {
-		return noStoreJson({ error: "Invalid biography data." }, { status: 400 });
+		return noStoreJson({ error: "Invalid content data." }, { status: 400 });
+	}
+
+	if (section === "site") {
+		const location = normalizeSiteLocation(body.location ?? body);
+		if (!location) {
+			return noStoreJson(
+				{ error: "Enter a city and keep each location field within its limit." },
+				{ status: 400 },
+			);
+		}
+		const content = { location, updatedAt: new Date().toISOString() };
+		await env.CONTENT_KV.put(`content:${section}`, JSON.stringify(content));
+		return noStoreJson({ content });
 	}
 
 	const hasRichDocument = body.biographyDocument !== undefined;

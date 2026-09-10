@@ -33,7 +33,7 @@ const backgroundWindows = [
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta
 			name="description"
-			content="Contact Austin filmmaker and storyteller Jet Sullivan."
+			content="Contact Austin actor and filmmaker Jet Sullivan for acting, film, videography, content, and creative collaborations."
 		/>
 		<link rel="icon" type="image/png" href="/favicon-profile.png" />
 		<title>Contact Jet Sullivan</title>
@@ -62,19 +62,50 @@ const backgroundWindows = [
 			<SiteMenu showHomeButton />
 
 			<section class="contact-content" data-motion-depth="scene" aria-labelledby="contact-heading">
-				<p class="eyebrow">Let’s make something memorable</p>
+				<p class="eyebrow">Actor · Filmmaker · Collaborator</p>
 				<h1 id="contact-heading">Contact</h1>
 
-				<div class="info-window">
-					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
-					<div class="info-copy">
-						<h2>Let’s work together.</h2>
-						<p>
-							For films, acting, creative collaborations, and other project
-							inquiries, get in touch with Jet.
-						</p>
-						<p class="coming-soon">Contact information coming soon.</p>
-					</div>
+				<div class="contact-grid">
+					<article class="info-window">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+						<div class="info-copy">
+							<p class="window-label">Start a conversation</p>
+							<h2>Let’s make something together.</h2>
+							<p>
+								For project inquiries, acting opportunities, production work, and
+								creative collaborations, send me an email.
+							</p>
+							<a class="email-link" href="mailto:contact@jetsullivan.com">
+								<span class="email-icon" aria-hidden="true">
+									<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="m4.5 7 7.5 6 7.5-6"></path></svg>
+								</span>
+								<span class="email-copy"><small>Email</small><strong>contact@jetsullivan.com</strong></span>
+								<svg class="email-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"></path></svg>
+							</a>
+							<div class="copy-row">
+								<button id="copy-email" type="button" data-email="contact@jetsullivan.com">
+									<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"></rect><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"></path></svg>
+									<span>Copy email address</span>
+								</button>
+								<output id="copy-status" aria-live="polite"></output>
+							</div>
+						</div>
+					</article>
+
+					<aside class="details-window" aria-label="Ways to work with Jet">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
+						<p class="window-label">Reach out about</p>
+						<ul>
+							<li><i aria-hidden="true"></i>Acting &amp; casting</li>
+							<li><i aria-hidden="true"></i>Film production</li>
+							<li><i aria-hidden="true"></i>Videography &amp; editing</li>
+							<li><i aria-hidden="true"></i>Creative collaborations</li>
+						</ul>
+						<div class="location-detail">
+							<small>Based in</small>
+							<strong data-site-location="long">Austin, Texas</strong>
+						</div>
+					</aside>
 				</div>
 			</section>
 		</main>
@@ -84,8 +115,8 @@ const backgroundWindows = [
 		<footer class="site-footer">
 			<div class="footer-content">
 				<p class="footer-name">Jet Sullivan</p>
-				<span aria-hidden="true"></span>
-				<p class="footer-location">Austin, Texas</p>
+				<a class="footer-email" href="mailto:contact@jetsullivan.com">contact@jetsullivan.com</a>
+				<p class="footer-location" data-site-location="long">Austin, Texas</p>
 			</div>
 		</footer>
 
@@ -94,6 +125,28 @@ const backgroundWindows = [
 </html>
 
 <script>
+	const copyEmailButton = document.querySelector<HTMLButtonElement>("#copy-email");
+	const copyStatus = document.querySelector<HTMLOutputElement>("#copy-status");
+	let copyStatusTimer: number | undefined;
+
+	copyEmailButton?.addEventListener("click", async () => {
+		const email = copyEmailButton.dataset.email;
+		if (!email || !copyStatus) return;
+
+		try {
+			await navigator.clipboard.writeText(email);
+			copyEmailButton.classList.add("is-copied");
+			copyStatus.textContent = "Copied!";
+			window.clearTimeout(copyStatusTimer);
+			copyStatusTimer = window.setTimeout(() => {
+				copyEmailButton.classList.remove("is-copied");
+				copyStatus.textContent = "";
+			}, 2200);
+		} catch {
+			copyStatus.textContent = "Copy unavailable — select the address above.";
+		}
+	});
+
 	const floatingWindows = Array.from(
 		document.querySelectorAll<HTMLElement>("[data-motion-float]"),
 	);
@@ -119,6 +172,7 @@ const backgroundWindows = [
 		--yellow-dark: #cc9504;
 		--white: #ffffff;
 		--black: #252525;
+		--blue: #93e9f9;
 		--pink: #fdbfbf;
 		--mint: #7cf5b5;
 		--font-body: "Myriad Pro", Myriad, Arial, sans-serif;
@@ -180,8 +234,8 @@ const backgroundWindows = [
 		z-index: 1;
 		top: 23%;
 		bottom: -3%;
-		left: 4%;
-		width: 52%;
+		left: 50%;
+		width: min(76vw, 1050px);
 		border: 1px solid rgb(255 255 255 / 58%);
 		border-radius: 24px;
 		outline: 1px solid rgb(255 255 255 / 16%);
@@ -190,6 +244,7 @@ const backgroundWindows = [
 		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
+		transform: translateX(-50%);
 	}
 
 	.background-windows {
@@ -326,10 +381,11 @@ const backgroundWindows = [
 		width: min(100%, 1280px);
 		margin: 0 auto;
 		padding-top: clamp(32px, 3vw, 64px);
+		text-align: center;
 	}
 
 	.eyebrow {
-		margin: 0 0 clamp(12px, 2vh, 24px);
+		margin: 0 auto clamp(12px, 2vh, 24px);
 		font-size: clamp(0.78rem, 1.1vw, 1rem);
 		font-weight: 900;
 		letter-spacing: 0.16em;
@@ -338,17 +394,25 @@ const backgroundWindows = [
 
 	h1 {
 		margin: 0;
-		font: 950 clamp(5rem, 15vw, 15rem) / 0.72 var(--font-display);
+		font: 950 clamp(4rem, 13vw, 13rem) / 0.72 var(--font-display);
 		letter-spacing: -0.035em;
 		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
-	.info-window {
+	.contact-grid {
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) minmax(240px, 310px);
+		gap: clamp(16px, 2vw, 28px);
+		align-items: stretch;
+		width: min(94%, 1040px);
+		margin: clamp(48px, 6vh, 84px) auto 0;
+		text-align: left;
+	}
+
+	.info-window,
+	.details-window {
 		position: relative;
-		width: min(88%, 690px);
-		margin: clamp(48px, 6vh, 84px) 0 0;
-		padding: clamp(52px, 6vw, 76px) clamp(25px, 4vw, 54px)
-			clamp(28px, 4vw, 48px);
 		border: 1px solid rgb(255 255 255 / 58%);
 		border-radius: 30px;
 		outline: 1px solid rgb(255 255 255 / 16%);
@@ -359,9 +423,21 @@ const backgroundWindows = [
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
 		animation: contact-float 4.8s ease-in-out infinite;
+		will-change: translate;
 	}
 
-	.info-window > .window-dots {
+	.info-window {
+		padding: clamp(52px, 6vw, 76px) clamp(25px, 4vw, 54px)
+			clamp(28px, 4vw, 48px);
+	}
+
+	.details-window {
+		padding: 58px clamp(22px, 2.5vw, 32px) 30px;
+		animation-delay: -2.4s;
+	}
+
+	.info-window > .window-dots,
+	.details-window > .window-dots {
 		position: absolute;
 		top: 22px;
 		left: 25px;
@@ -369,29 +445,220 @@ const backgroundWindows = [
 
 	.info-copy {
 		display: grid;
-		gap: 1rem;
+		gap: clamp(14px, 1.7vw, 20px);
 	}
 
 	.info-copy h2,
-	.info-copy p {
+	.info-copy p,
+	.details-window p {
 		margin: 0;
 	}
 
 	.info-copy h2 {
-		font: 900 clamp(1.45rem, 2.4vw, 2.2rem) var(--font-display);
+		max-width: 14ch;
+		font: 900 clamp(1.6rem, 2.8vw, 2.6rem) / 1.02 var(--font-display);
+		letter-spacing: -0.035em;
 		text-transform: uppercase;
 	}
 
-	.info-copy p {
+	.info-copy > p:not(.window-label) {
+		max-width: 48ch;
 		font-size: clamp(1.05rem, 1.6vw, 1.42rem);
-		font-weight: 600;
+		font-weight: 500;
 		line-height: 1.45;
 	}
 
-	.coming-soon {
-		padding-top: 0.9rem;
-		border-top: 1px solid rgb(37 37 37 / 14%);
+	.window-label {
 		color: #26798a;
+		font-size: 0.72rem;
+		font-weight: 950;
+		letter-spacing: 0.15em;
+		line-height: 1;
+		text-transform: uppercase;
+	}
+
+	.email-link {
+		display: grid;
+		grid-template-columns: auto minmax(0, 1fr) auto;
+		gap: 16px;
+		align-items: center;
+		margin-top: 4px;
+		padding: clamp(16px, 2vw, 22px);
+		border: 1px solid rgb(255 255 255 / 18%);
+		border-radius: 22px;
+		outline: 1px solid rgb(255 255 255 / 8%);
+		outline-offset: -3px;
+		background: rgb(37 37 37 / 94%);
+		box-shadow: 0 12px 28px rgb(37 37 37 / 18%);
+		color: var(--white);
+		text-decoration: none;
+		transition:
+			transform 260ms cubic-bezier(0.34, 1.4, 0.64, 1),
+			background-color 180ms ease,
+			box-shadow 180ms ease;
+	}
+
+	.email-link:hover {
+		background: var(--black);
+		box-shadow: 0 15px 34px rgb(37 37 37 / 24%);
+		transform: translateY(-3px);
+	}
+
+	.email-link:focus-visible,
+	#copy-email:focus-visible,
+	.footer-email:focus-visible {
+		outline: 3px solid var(--yellow);
+		outline-offset: 4px;
+	}
+
+	.email-icon {
+		display: grid;
+		width: 48px;
+		height: 48px;
+		border-radius: 15px;
+		background: var(--yellow);
+		color: var(--black);
+		place-items: center;
+	}
+
+	.email-icon svg {
+		width: 25px;
+		height: 25px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2;
+	}
+
+	.email-copy {
+		display: grid;
+		gap: 5px;
+		min-width: 0;
+	}
+
+	.email-copy small {
+		color: rgb(255 255 255 / 62%);
+		font-size: 0.62rem;
+		font-weight: 900;
+		letter-spacing: 0.14em;
+		text-transform: uppercase;
+	}
+
+	.email-copy strong {
+		font: 900 clamp(1rem, 1.8vw, 1.45rem) / 1.05 var(--font-display);
+		letter-spacing: -0.035em;
+		overflow-wrap: anywhere;
+	}
+
+	.email-arrow {
+		width: 24px;
+		height: 24px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2.2;
+		transition: transform 220ms ease;
+	}
+
+	.email-link:hover .email-arrow {
+		transform: translate(3px, -3px);
+	}
+
+	.copy-row {
+		display: flex;
+		gap: 12px;
+		align-items: center;
+		min-height: 38px;
+	}
+
+	#copy-email {
+		display: inline-flex;
+		gap: 8px;
+		align-items: center;
+		padding: 10px 15px;
+		border: 1px solid rgb(37 37 37 / 12%);
+		border-radius: 999px;
+		background: rgb(255 255 255 / 70%);
+		color: var(--black);
+		font: 900 0.72rem / 1 var(--font-body);
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition: background-color 180ms ease, transform 180ms ease;
+	}
+
+	#copy-email:hover,
+	#copy-email.is-copied {
+		background: var(--mint);
+		transform: translateY(-2px);
+	}
+
+	#copy-email svg {
+		width: 16px;
+		height: 16px;
+		fill: none;
+		stroke: currentColor;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+		stroke-width: 2;
+	}
+
+	#copy-status {
+		color: #26798a;
+		font-size: 0.72rem;
+		font-weight: 900;
+	}
+
+	.details-window ul {
+		display: grid;
+		gap: 15px;
+		margin: 23px 0 28px;
+		padding: 0;
+		list-style: none;
+	}
+
+	.details-window li {
+		display: grid;
+		grid-template-columns: 10px 1fr;
+		gap: 10px;
+		align-items: baseline;
+		font-size: 0.92rem;
+		font-weight: 800;
+		line-height: 1.25;
+	}
+
+	.details-window li > i {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: var(--pink);
+		box-shadow: 0 0 0 3px rgb(253 191 191 / 24%);
+	}
+
+	.details-window li:nth-child(2) > i { background: var(--yellow); box-shadow: 0 0 0 3px rgb(239 218 74 / 24%); }
+	.details-window li:nth-child(3) > i { background: var(--mint); box-shadow: 0 0 0 3px rgb(124 245 181 / 24%); }
+	.details-window li:nth-child(4) > i { background: var(--blue); box-shadow: 0 0 0 3px rgb(147 233 249 / 24%); }
+
+	.location-detail {
+		display: grid;
+		gap: 5px;
+		padding-top: 22px;
+		border-top: 1px solid rgb(37 37 37 / 14%);
+	}
+
+	.location-detail small {
+		color: #5f6566;
+		font-size: 0.62rem;
+		font-weight: 900;
+		letter-spacing: 0.13em;
+		text-transform: uppercase;
+	}
+
+	.location-detail strong {
+		font: 900 1.05rem / 1.1 var(--font-display);
+		text-transform: uppercase;
 	}
 
 	@keyframes contact-float {
@@ -472,6 +739,12 @@ const backgroundWindows = [
 		text-underline-offset: 5px;
 	}
 
+	.footer-email {
+		justify-self: center;
+		font-size: clamp(0.78rem, 1.25vw, 1rem);
+		overflow-wrap: anywhere;
+	}
+
 	.footer-location {
 		justify-self: end;
 		margin: 0;
@@ -491,7 +764,7 @@ const backgroundWindows = [
 
 		.yellow-panel {
 			top: 28%;
-			left: 14px;
+			left: 50%;
 			width: calc(100% - 28px);
 		}
 
@@ -526,15 +799,37 @@ const backgroundWindows = [
 		}
 
 		h1 {
-			font-size: clamp(3.8rem, 19vw, 7.5rem);
+			font-size: clamp(3rem, 15vw, 6rem);
 			text-align: center;
 		}
 
-		.info-window {
+		.contact-grid {
+			grid-template-columns: minmax(0, 1fr);
 			width: 100%;
 			margin-top: 42px;
 		}
 
+		.info-window,
+		.details-window {
+			z-index: 5;
+		}
+	}
+
+	@media (max-width: 600px) {
+		.email-link {
+			gap: 11px;
+			padding: 14px;
+		}
+
+		.email-icon {
+			width: 44px;
+			height: 44px;
+			border-radius: 13px;
+		}
+
+		.copy-row {
+			flex-wrap: wrap;
+		}
 	}
 
 	@media (max-width: 480px) {
@@ -543,7 +838,7 @@ const backgroundWindows = [
 		}
 
 		h1 {
-			font-size: clamp(3.2rem, 16.5vw, 5rem);
+			font-size: clamp(3rem, 15vw, 5rem);
 		}
 
 		.eyebrow {
@@ -551,13 +846,22 @@ const backgroundWindows = [
 			font-size: 0.67rem;
 		}
 
-		.info-window {
+		.info-window,
+		.details-window {
 			padding: 50px 22px 28px;
 			border-radius: 24px;
 		}
 
-		.info-copy p {
+		.info-copy > p:not(.window-label) {
 			font-size: 1rem;
+		}
+
+		.email-arrow {
+			display: none;
+		}
+
+		.email-link {
+			grid-template-columns: auto minmax(0, 1fr);
 		}
 	}
 
@@ -585,11 +889,18 @@ const backgroundWindows = [
 		.footer-location {
 			justify-self: start;
 		}
+
+		.footer-email {
+			justify-self: start;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {
 		.home-window,
-		.info-window {
+		.info-window,
+		.details-window,
+		.email-link,
+		#copy-email {
 			animation: none;
 			transition: none;
 		}

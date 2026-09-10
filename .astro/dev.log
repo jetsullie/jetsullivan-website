@@ -123,3 +123,54 @@
 {"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
 {"message":"[200] / 2ms","label":null,"level":"info"}
 {"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 5ms","label":null,"level":"info"}
+{"message":"[200] / 14ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
+{"message":"[200] / 22ms","label":null,"level":"info"}
+{"message":"[200] / 22ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 6ms","label":null,"level":"info"}
+{"message":"src/pages/contact.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 6ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 7ms","label":null,"level":"info"}
+{"message":"src/pages/contact.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 9ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 7ms","label":null,"level":"info"}
+{"message":"/src/pages/contact.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"/src/pages/contact.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"/src/pages/contact.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"[200] /contact/ 3ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 2ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 1ms","label":null,"level":"info"}
+{"message":"/src/components/common/SiteMenu.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 18ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 33ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 6ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"src/pages/contact.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 5ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
+{"message":"[200] /contact/ 9ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
+{"message":"[200] / 15ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /login/ 6ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /admin/ 9ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/credits 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/acting-credits 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/interviews 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/content/about 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/featured 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/behind-the-scenes 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/press 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/acting 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/film 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media-entries/video 0ms","label":null,"level":"info"}
+{"message":"[404] /admin/api/media 0ms","label":null,"level":"info"}

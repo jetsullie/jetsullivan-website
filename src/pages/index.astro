@@ -144,7 +144,7 @@ const backgroundWindows = [
 					<span class="location-box" aria-hidden="true">
 						<span class="selection-cursor"></span>
 					</span>
-					<span class="location-name">Austin, TX</span>
+					<span class="location-name" data-site-location="short">Austin, TX</span>
 					<span class="location-roles">Actor · Filmmaker · Videographer · Content Creator</span>
 				</div>
 
@@ -334,7 +334,7 @@ const backgroundWindows = [
 			<div class="footer-content">
 				<p class="footer-name">Jet Sullivan</p>
 				<span aria-hidden="true"></span>
-				<p class="footer-location">Austin, Texas</p>
+				<p class="footer-location" data-site-location="long">Austin, Texas</p>
 			</div>
 		</footer>
 
@@ -729,14 +729,16 @@ const backgroundWindows = [
 	}
 
 	.surname-line {
+		--surname-fit-size: 1em;
 		position: relative;
 		width: max-content;
+		font-size: var(--surname-fit-size);
 	}
 
 	.canvas.surname-does-not-fit .surname-line {
-		position: absolute;
-		visibility: hidden;
-		pointer-events: none;
+		position: relative;
+		visibility: visible;
+		pointer-events: auto;
 	}
 
 	.portrait {
@@ -2741,8 +2743,9 @@ const backgroundWindows = [
 <script>
 	const responsiveCanvas = document.querySelector<HTMLElement>(".canvas");
 	const surnameLine = document.querySelector<HTMLElement>(".surname-line");
+	const surnameWord = surnameLine?.querySelector<HTMLElement>(".name-word");
 
-	if (responsiveCanvas && surnameLine) {
+	if (responsiveCanvas && surnameLine && surnameWord) {
 		const compactLayout = window.matchMedia(
 			"(max-width: 650px), (max-height: 500px) and (max-width: 950px)",
 		);
@@ -2753,14 +2756,26 @@ const backgroundWindows = [
 				responsiveCanvas.clientWidth -
 				Number.parseFloat(canvasStyle.paddingLeft) -
 				Number.parseFloat(canvasStyle.paddingRight);
+			surnameLine.style.setProperty("--surname-fit-size", "1em");
+
+			if (compactLayout.matches) {
+				surnameLine.style.removeProperty("--surname-fit-size");
+				responsiveCanvas.classList.add("surname-does-not-fit");
+				return;
+			}
+
 			const shouldCheckFit =
 				window.innerWidth <= 1200 ||
 				window.innerWidth / Math.max(window.innerHeight, 1) < 1.45;
-			const surnameFits = surnameLine.offsetWidth <= availableWidth + 8;
+			const naturalWidth = surnameWord.getBoundingClientRect().width;
+			const fitScale = shouldCheckFit && naturalWidth > availableWidth
+				? Math.max(0.1, (availableWidth - 2) / naturalWidth)
+				: 1;
+			surnameLine.style.setProperty("--surname-fit-size", `${fitScale}em`);
 
 			responsiveCanvas.classList.toggle(
 				"surname-does-not-fit",
-				compactLayout.matches || (shouldCheckFit && !surnameFits),
+				fitScale < 1,
 			);
 		};
 

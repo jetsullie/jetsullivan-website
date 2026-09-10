@@ -85,6 +85,41 @@ const adminWindows = [
 				<strong>Authorized owner:</strong> jetsullivan1@gmail.com
 			</div>
 
+				<section class="site-location-section" aria-labelledby="site-location-title">
+					<h2 id="site-location-title">Based-in location</h2>
+					<p class="section-intro">
+						Update the location shown on the homepage, Contact page, and every
+						site footer from one place. The full and abbreviated previews show
+						exactly how the location will appear.
+					</p>
+					<form id="site-location-form">
+						<div class="field-grid">
+							<label class="field">
+								<span>City</span>
+								<input id="site-location-city" type="text" maxlength="80" autocomplete="address-level2" value="Austin" required />
+							</label>
+							<label class="field">
+								<span>State or region</span>
+								<input id="site-location-region" type="text" maxlength="80" autocomplete="address-level1" value="Texas" />
+							</label>
+							<label class="field">
+								<span>State or region abbreviation</span>
+								<input id="site-location-region-short" type="text" maxlength="12" autocapitalize="characters" value="TX" />
+								<small>Optional. Used for the compact homepage label.</small>
+							</label>
+							<div class="location-preview field">
+								<span>Site preview</span>
+								<p><small>Compact</small><strong id="site-location-short-preview">Austin, TX</strong></p>
+								<p><small>Full</small><strong id="site-location-long-preview">Austin, Texas</strong></p>
+							</div>
+						</div>
+						<div class="actions">
+							<button id="site-location-submit" type="submit">Save site location</button>
+							<output id="site-location-status" aria-live="polite"></output>
+						</div>
+					</form>
+				</section>
+
 				<section aria-labelledby="about-editor-title">
 					<h2 id="about-editor-title">About biography</h2>
 					<p class="section-intro">Format the biography here exactly as it should appear on the public About Me page.</p>
@@ -463,7 +498,7 @@ const adminWindows = [
 			<div class="footer-content">
 				<p class="footer-name">Admin Jet Sullivan</p>
 				<span aria-hidden="true"></span>
-				<p class="footer-location">Austin, Texas</p>
+				<p class="footer-location" data-site-location="long">Austin, Texas</p>
 			</div>
 		</footer>
 
@@ -485,6 +520,14 @@ const adminWindows = [
 	const biography = document.querySelector<HTMLElement>("#biography");
 	const aboutForm = document.querySelector<HTMLFormElement>("#about-form");
 	const aboutStatus = document.querySelector<HTMLOutputElement>("#about-status");
+	const siteLocationForm = document.querySelector<HTMLFormElement>("#site-location-form");
+	const siteLocationCity = document.querySelector<HTMLInputElement>("#site-location-city");
+	const siteLocationRegion = document.querySelector<HTMLInputElement>("#site-location-region");
+	const siteLocationRegionShort = document.querySelector<HTMLInputElement>("#site-location-region-short");
+	const siteLocationShortPreview = document.querySelector<HTMLElement>("#site-location-short-preview");
+	const siteLocationLongPreview = document.querySelector<HTMLElement>("#site-location-long-preview");
+	const siteLocationSubmit = document.querySelector<HTMLButtonElement>("#site-location-submit");
+	const siteLocationStatus = document.querySelector<HTMLOutputElement>("#site-location-status");
 	const biographyToolbar =
 		document.querySelector<HTMLElement>("#biography-toolbar");
 	const biographyFormat =
@@ -496,6 +539,29 @@ const adminWindows = [
 		biographyToolbar?.querySelectorAll<HTMLElement>("button, select") ?? [],
 	);
 	let biographySelection: Range | null = null;
+	type SiteLocation = { city: string; region: string; regionAbbreviation: string };
+	const readSiteLocationForm = (): SiteLocation => ({
+		city: siteLocationCity?.value.trim().replace(/\s+/g, " ") || "",
+		region: siteLocationRegion?.value.trim().replace(/\s+/g, " ") || "",
+		regionAbbreviation: siteLocationRegionShort?.value.trim().replace(/\s+/g, " ") || "",
+	});
+	const formatSiteLocation = (location: SiteLocation) => {
+		const long = [location.city, location.region].filter(Boolean).join(", ");
+		const shortRegion = location.regionAbbreviation || location.region;
+		const short = [location.city, shortRegion].filter(Boolean).join(", ");
+		return { ...location, long, short };
+	};
+	const updateSiteLocationPreview = () => {
+		const location = formatSiteLocation(readSiteLocationForm());
+		if (siteLocationShortPreview) siteLocationShortPreview.textContent = location.short || "—";
+		if (siteLocationLongPreview) siteLocationLongPreview.textContent = location.long || "—";
+	};
+	[siteLocationCity, siteLocationRegion].forEach((input) => input?.addEventListener("input", updateSiteLocationPreview));
+	siteLocationRegionShort?.addEventListener("input", () => {
+		siteLocationRegionShort.value = siteLocationRegionShort.value.toUpperCase();
+		updateSiteLocationPreview();
+	});
+	updateSiteLocationPreview();
 
 	biographyToolbarControls.forEach((control, index) => {
 		control.tabIndex = index === 0 ? 0 : -1;
@@ -1924,6 +1990,60 @@ const adminWindows = [
 		}
 	});
 
+	const loadSiteLocation = async () => {
+		if (!siteLocationCity || !siteLocationRegion || !siteLocationRegionShort || !siteLocationStatus) return;
+		siteLocationStatus.textContent = "Loading…";
+		try {
+			const response = await fetch("/admin/api/content/site", {
+				credentials: "same-origin",
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			const result = await response.json();
+			const location = result.content?.location;
+			if (location && typeof location.city === "string") {
+				siteLocationCity.value = location.city;
+				siteLocationRegion.value = typeof location.region === "string" ? location.region : "";
+				siteLocationRegionShort.value = typeof location.regionAbbreviation === "string" ? location.regionAbbreviation : "";
+			}
+			updateSiteLocationPreview();
+			siteLocationStatus.textContent = result.content ? "Loaded." : "Using the default Austin location.";
+		} catch (error) {
+			siteLocationStatus.textContent =
+				error instanceof Error ? error.message : "Could not load the site location.";
+		}
+	};
+
+	siteLocationForm?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		if (!siteLocationCity || !siteLocationStatus || !siteLocationSubmit) return;
+		const location = readSiteLocationForm();
+		if (!location.city) {
+			siteLocationStatus.textContent = "City is required.";
+			siteLocationCity.focus();
+			return;
+		}
+		siteLocationStatus.textContent = "Saving…";
+		siteLocationSubmit.disabled = true;
+		try {
+			const response = await fetch("/admin/api/content/site", {
+				method: "PUT",
+				credentials: "same-origin",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ location }),
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			const result = await response.json();
+			const savedLocation = result.content?.location ?? location;
+			window.dispatchEvent(new CustomEvent("jet:site-location-update", { detail: savedLocation }));
+			siteLocationStatus.textContent = "Location saved across the site.";
+		} catch (error) {
+			siteLocationStatus.textContent =
+				error instanceof Error ? error.message : "Could not save the site location.";
+		} finally {
+			siteLocationSubmit.disabled = false;
+		}
+	});
+
 	const loadBiography = async () => {
 		if (!biography || !aboutStatus) return;
 		aboutStatus.textContent = "Loading…";
@@ -2259,6 +2379,7 @@ const adminWindows = [
 	});
 
 	resetMediaEntryForm();
+	void loadSiteLocation();
 	void loadBiography();
 	void loadMediaEntries();
 	void loadMedia();
@@ -2590,6 +2711,23 @@ const adminWindows = [
 		-webkit-backdrop-filter: blur(14px);
 		backdrop-filter: blur(14px);
 	}
+	.site-location-section {
+		overflow: hidden;
+		border-color: rgb(38 121 138 / 24%);
+		background:
+			linear-gradient(rgb(255 255 255 / 68%), rgb(255 255 255 / 68%)),
+			rgb(147 233 249 / 20%);
+	}
+	.site-location-section::after {
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		height: 7px;
+		background: var(--blue);
+		content: "";
+		opacity: .72;
+	}
 	.credit-editor-section {
 		--credit-editor-accent: #f55c66;
 		overflow: hidden;
@@ -2827,6 +2965,34 @@ const adminWindows = [
 		color: rgb(68 73 74 / 72%);
 		font-size: .82rem;
 		font-weight: 650;
+	}
+	.location-preview {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 9px;
+		padding: 12px;
+		border: 1px solid rgb(38 121 138 / 16%);
+		border-radius: 18px;
+		background: rgb(255 255 255 / 46%);
+	}
+	.location-preview > span { grid-column: 1 / -1; }
+	.location-preview p {
+		display: grid;
+		gap: 4px;
+		min-width: 0;
+		margin: 0;
+		padding: 10px 11px;
+		border-radius: 12px;
+		background: rgb(255 255 255 / 64%);
+	}
+	.location-preview p small {
+		font-size: .62rem;
+		font-weight: 900;
+		letter-spacing: .1em;
+		text-transform: uppercase;
+	}
+	.location-preview p strong {
+		font: 900 clamp(.82rem, 1.2vw, 1rem)/1.15 var(--display);
+		overflow-wrap: anywhere;
 	}
 	.compact-textarea { min-height: 125px; }
 		.image-fields {

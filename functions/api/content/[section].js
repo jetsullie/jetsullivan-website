@@ -1,4 +1,4 @@
-const allowedSections = new Set(["about"]);
+const allowedSections = new Set(["about", "site"]);
 
 export const onRequestGet = async ({ env, params }) => {
 	const section = String(params.section || "");
