@@ -87,3 +87,39 @@
 {"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
 {"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
 {"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 4ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
+{"message":"[200] / 16ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
+{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 11ms","label":null,"level":"info"}
+{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 11ms","label":null,"level":"info"}
+{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 10ms","label":null,"level":"info"}
+{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 10ms","label":null,"level":"info"}
+{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
+{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 11ms","label":null,"level":"info"}
+{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
+{"message":"[200] /brainstorm 35ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 35ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
+{"message":"[200] / 2ms","label":null,"level":"info"}
+{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
