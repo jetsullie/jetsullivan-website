@@ -17,6 +17,7 @@ const socialLinks = [
 		href: "https://www.instagram.com/jetsullie/?hl=en",
 		className: "instagram",
 		icon: "vertical-video",
+		accent: "253 191 191",
 	},
 	{
 		name: "TikTok",
@@ -24,13 +25,15 @@ const socialLinks = [
 		href: "https://www.tiktok.com/@jetsullie",
 		className: "tiktok",
 		icon: "vertical-video",
+		accent: "147 233 249",
 	},
 	{
-		name: "YouTube",
-		type: "@JetSullie",
-		href: "https://www.youtube.com/@JetSullie",
-		className: "youtube",
-		icon: "horizontal-video",
+		name: "Facebook",
+		type: "@jetsullie",
+		href: "https://www.facebook.com/jetsullie/",
+		className: "facebook",
+		icon: "vertical-video",
+		accent: "8 102 255",
 	},
 	{
 		name: "IMDb",
@@ -38,6 +41,7 @@ const socialLinks = [
 		href: "https://www.imdb.com/user/p.k3qpjpuypnjk7ykbwmg3ga7qau?ref_=tt_nv_profile",
 		className: "imdb",
 		icon: "film-frame",
+		accent: "245 197 24",
 	},
 	{
 		name: "LinkedIn",
@@ -45,6 +49,15 @@ const socialLinks = [
 		href: "https://www.linkedin.com/in/jetsullivan/",
 		className: "linkedin",
 		icon: "briefcase",
+		accent: "10 102 194",
+	},
+	{
+		name: "YouTube",
+		type: "@jetsullie",
+		href: "https://www.youtube.com/@JetSullie",
+		className: "youtube",
+		icon: "horizontal-video",
+		accent: "255 0 0",
 	},
 ];
 ---
@@ -59,7 +72,7 @@ const socialLinks = [
 		<title>Socials — Jet Sullivan</title>
 	</head>
 
-	<body>
+	<body class="brand-guide-socials">
 		<main class="social-page" data-motion-root>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="yellow-panel" data-motion-depth="counter" aria-hidden="true"></div>
@@ -83,7 +96,7 @@ const socialLinks = [
 			<SiteMenu showHomeButton />
 
 			<section class="hero" data-motion-depth="scene" aria-labelledby="social-heading">
-				<p class="eyebrow">Find Jet online</p>
+				<p class="eyebrow" style="color: #93e9f9;">Check out Jet’s</p>
 				<h1 id="social-heading">Socials</h1>
 
 				<div class="social-grid">
@@ -92,6 +105,7 @@ const socialLinks = [
 							<a
 								class={`social-tab ${link.className}`}
 								href={link.href}
+								style={`--social-accent: ${link.accent};`}
 								target="_blank"
 								rel="noopener noreferrer"
 							>
@@ -630,6 +644,232 @@ const socialLinks = [
 		.tiktok-gradient-surface {
 			animation: none;
 			transition: none;
+		}
+	}
+</style>
+
+<!-- Brand Center visual system for the Socials page. -->
+<style id="brand-guide-socials">
+	:global(body.brand-guide-socials) {
+		background: var(--black);
+	}
+
+	:global(body.brand-guide-socials) .social-page {
+		background-color: #383838;
+		background-image: radial-gradient(circle, var(--black) 1.5px, transparent 1.6px);
+		background-size: 24px 24px;
+	}
+
+	:global(body.brand-guide-socials) .top-frame {
+		background: var(--black);
+	}
+
+	:global(body.brand-guide-socials) .yellow-panel {
+		top: 4%;
+		right: -12%;
+		bottom: auto;
+		left: auto;
+		width: min(58vw, 860px);
+		height: auto;
+		aspect-ratio: 1;
+		border: 0;
+		border-radius: 50%;
+		outline: 0;
+		background: var(--blue);
+		box-shadow: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	:global(body.brand-guide-socials) .background-windows {
+		display: none;
+	}
+
+	:global(body.brand-guide-socials) .hero {
+		width: min(100%, 1180px);
+		padding-top: clamp(32px, 5vw, 76px);
+	}
+
+	:global(body.brand-guide-socials) .eyebrow {
+		color: var(--blue);
+		font-family: var(--display);
+		font-size: clamp(0.76rem, 1vw, 0.92rem);
+		letter-spacing: 0.16em;
+	}
+
+	:global(body.brand-guide-socials) h1 {
+		color: var(--white);
+		font-size: clamp(5rem, 14vw, 13rem);
+		letter-spacing: -0.035em;
+		line-height: 0.76;
+		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
+			rgb(0 0 0 / 24%);
+	}
+
+	:global(body.brand-guide-socials) .social-grid {
+		gap: clamp(18px, 2.5vw, 34px);
+		width: 100%;
+		max-width: 1120px;
+		margin-top: clamp(58px, 8vh, 94px);
+	}
+
+	:global(body.brand-guide-socials) .social-tab {
+		min-height: clamp(145px, 15vw, 200px);
+		border-color: rgb(255 255 255 / 58%);
+		border-radius: 25px;
+		background: var(--black);
+		box-shadow: 12px 15px 0 rgb(0 0 0 / 15%);
+		color: #bfc4c5;
+		text-shadow: 0 1px 0 rgb(255 255 255 / 55%);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	:global(body.brand-guide-socials) .social-icon {
+		color: rgb(255 255 255 / 91%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab strong {
+		color: #bfc4c5;
+		text-shadow: 0 1px 0 rgb(255 255 255 / 55%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab small {
+		color: rgb(255 255 255 / 72%);
+		font-family: var(--body);
+		text-shadow: none;
+	}
+
+	:global(body.brand-guide-socials) .social-icon .icon-surface {
+		fill: rgb(255 255 255 / 28%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab:hover .icon-surface,
+	:global(body.brand-guide-socials) .social-tab:focus-visible .icon-surface {
+		fill: rgb(var(--social-accent));
+	}
+
+	:global(body.brand-guide-socials) .social-icon .briefcase-seam {
+		stroke: currentColor;
+	}
+
+	:global(body.brand-guide-socials) .instagram-gradient-surface,
+	:global(body.brand-guide-socials) .tiktok-gradient-surface {
+		opacity: 0;
+	}
+
+	:global(body.brand-guide-socials) .social-tab.instagram:hover .instagram-gradient-surface,
+	:global(body.brand-guide-socials) .social-tab.instagram:focus-visible .instagram-gradient-surface,
+	:global(body.brand-guide-socials) .social-tab.tiktok:hover .tiktok-gradient-surface,
+	:global(body.brand-guide-socials) .social-tab.tiktok:focus-visible .tiktok-gradient-surface {
+		opacity: 1;
+	}
+
+	:global(body.brand-guide-socials) .social-tab:hover,
+	:global(body.brand-guide-socials) .social-tab:focus-visible {
+		background: var(--black);
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(var(--social-accent) / 82%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab:hover {
+		transform: translateY(3px) scale(0.99);
+	}
+
+	:global(body.brand-guide-socials) .social-tab.instagram:hover,
+	:global(body.brand-guide-socials) .social-tab.instagram:focus-visible {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			-13px -10px 30px rgb(118 56 250 / 30%),
+			14px -8px 30px rgb(255 1 105 / 33%),
+			-10px 14px 28px rgb(255 214 0 / 34%),
+			12px 14px 30px rgb(255 86 0 / 32%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab.tiktok:hover,
+	:global(body.brand-guide-socials) .social-tab.tiktok:focus-visible {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			-15px 0 32px rgb(37 244 238 / 72%),
+			15px 0 32px rgb(254 44 85 / 72%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab.youtube:hover,
+	:global(body.brand-guide-socials) .social-tab.youtube:focus-visible {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(255 0 0 / 84%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab.imdb:hover,
+	:global(body.brand-guide-socials) .social-tab.imdb:focus-visible {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(245 197 24 / 84%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab.linkedin:hover,
+	:global(body.brand-guide-socials) .social-tab.linkedin:focus-visible {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(10 102 194 / 82%);
+	}
+
+	:global(body.brand-guide-socials) .social-tab.facebook:hover,
+	:global(body.brand-guide-socials) .social-tab.facebook:focus-visible {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(8 102 255 / 84%);
+	}
+
+	:global(body.brand-guide-socials) .section-divider {
+		background: var(--black);
+	}
+
+	:global(body.brand-guide-socials) .site-footer {
+		background: var(--black);
+	}
+
+	:global(body.brand-guide-socials) .footer-name {
+		letter-spacing: -0.035em;
+	}
+
+	@media (max-width: 760px) {
+		:global(body.brand-guide-socials) .social-page {
+			padding-top: 132px;
+		}
+
+		:global(body.brand-guide-socials) .yellow-panel {
+			top: 8%;
+			right: -48%;
+			width: 118vw;
+		}
+
+		:global(body.brand-guide-socials) .hero {
+			padding-top: 22px;
+		}
+
+		:global(body.brand-guide-socials) h1 {
+			font-size: clamp(4rem, 19vw, 7.6rem);
+		}
+
+		:global(body.brand-guide-socials) .social-grid {
+			grid-template-columns: repeat(2, minmax(0, 1fr));
+		}
+
+		:global(body.brand-guide-socials) .social-tab {
+			min-height: 138px;
+		}
+	}
+
+	@media (max-width: 430px) {
+		:global(body.brand-guide-socials) .social-grid {
+			grid-template-columns: 1fr;
+		}
+
+		:global(body.brand-guide-socials) .social-tab {
+			min-height: 120px;
 		}
 	}
 </style>

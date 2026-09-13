@@ -9,6 +9,13 @@ const colors = [
 	{ name: "Soft Pink", value: "#FDBFBF", className: "pink" },
 	{ name: "Fresh Mint", value: "#7CF5B5", className: "mint" },
 ];
+
+const secondaryColors = [
+	{ name: "Grid Gray", value: "#383838", className: "grid-gray" },
+	{ name: "Signal Red", value: "#F55C66", className: "signal-red" },
+	{ name: "Deep Teal", value: "#26798A", className: "deep-teal" },
+	{ name: "Warm Ochre", value: "#CC9504", className: "warm-ochre" },
+];
 ---
 
 <!doctype html>
@@ -64,6 +71,8 @@ const colors = [
 					</figcaption>
 				</figure>
 			</section>
+
+			<div class="section-divider hero-divider" aria-hidden="true"></div>
 
 			<section class="section identity-section" aria-labelledby="identity-heading">
 				<div class="section-heading" data-motion-depth="scene">
@@ -132,6 +141,31 @@ const colors = [
 					<p class="section-supporting">
 						The colors are bright and vibrant and keep the site feeling bold.
 					</p>
+				</div>
+				<div class="secondary-palette" data-motion-depth="counter">
+					<div class="secondary-palette-heading">
+						<h3>Secondary colors</h3>
+						<p>Use these supporting accents sparingly when the core six need extra range.</p>
+					</div>
+					<div class="palette-grid secondary-palette-grid">
+						{
+							secondaryColors.map((color) => (
+								<button
+									class={`color-card color-${color.className}`}
+									type="button"
+									data-copy-color={color.value}
+									aria-label={`Copy ${color.name} color ${color.value}`}
+								>
+									<span class="color-fill" aria-hidden="true"></span>
+									<span class="color-info">
+										<strong>{color.name}</strong>
+										<code>{color.value}</code>
+									</span>
+									<span class="copy-label" aria-hidden="true">Copy</span>
+								</button>
+							))
+						}
+					</div>
 				</div>
 				<p class="copy-status" aria-live="polite"></p>
 			</section>
@@ -317,6 +351,34 @@ const colors = [
 							<div class="pattern-preview interface-type-preview" aria-hidden="true">
 								<strong>Make it<br />bold.</strong>
 								<p>Then give the details room to breathe.</p>
+							</div>
+						</div>
+					</details>
+
+					<details class="design-detail">
+						<summary>
+							<span class="detail-number">06</span>
+							<span class="detail-title">
+								<strong>Dotted grid</strong>
+								<small>Homepage footer · Brainstorm canvas</small>
+							</span>
+							<span class="detail-toggle" aria-hidden="true"></span>
+						</summary>
+						<div class="detail-content">
+							<div class="detail-copy">
+								<p>
+									The dotted grid adds quiet structure and texture without competing
+									with the work. It gives open areas a graphic rhythm while keeping
+									the overall layout clean.
+								</p>
+								<ul>
+									<li>Keep the dots small, even, and low contrast.</li>
+									<li>Use the grid in open backgrounds rather than behind dense text.</li>
+									<li>Pair it with bold type, clean panels, or spacious layouts.</li>
+								</ul>
+							</div>
+							<div class="pattern-preview dot-grid-preview" aria-hidden="true">
+								<span>Dotted grid</span>
 							</div>
 						</div>
 					</details>
@@ -582,7 +644,9 @@ const colors = [
 		min-height: min(900px, 100svh);
 		padding: clamp(125px, 14vw, 180px) clamp(24px, 7vw, 110px) clamp(85px, 9vw, 130px);
 		overflow: hidden;
-		background: var(--black);
+		background-color: var(--black);
+		background-image: radial-gradient(circle, #383838 1.5px, transparent 1.6px);
+		background-size: 24px 24px;
 		color: var(--white);
 	}
 
@@ -597,6 +661,46 @@ const colors = [
 		min-height: 470px;
 		border-radius: 50%;
 		background: var(--yellow);
+		content: "";
+	}
+
+	.section-divider {
+		--divider-height: clamp(110px, 11vw, 190px);
+		position: relative;
+		z-index: 20;
+		width: 100%;
+		height: var(--divider-height);
+		margin-block: calc(var(--divider-height) / -2);
+		background: var(--black);
+		clip-path: polygon(0 28%, 100% 0, 100% 72%, 0 100%);
+		pointer-events: none;
+	}
+
+	.section-divider.hero-divider {
+		--hero-divider-base-height: clamp(192.5px, 19.25vw, 332.5px);
+		--divider-height: calc(var(--hero-divider-base-height) + 96px);
+		--divider-slant: clamp(53px, 5.4vw, 93px);
+		clip-path: polygon(
+			0 var(--divider-slant),
+			100% 0,
+			100% calc(100% - var(--divider-slant)),
+			0 100%
+		);
+	}
+
+	.section-divider.hero-divider::after {
+		--secondary-divider-height: clamp(72px, 7.5vw, 128px);
+		position: absolute;
+		inset: 0;
+		background-color: #383838;
+		background-image: radial-gradient(circle, var(--black) 1.5px, transparent 1.6px);
+		background-size: 24px 24px;
+		clip-path: polygon(
+			0 calc(100% - var(--secondary-divider-height)),
+			100% calc(100% - var(--secondary-divider-height) - var(--divider-slant)),
+			100% calc(100% - var(--divider-slant)),
+			0 100%
+		);
 		content: "";
 	}
 
@@ -628,6 +732,10 @@ const colors = [
 	.portrait-window {
 		position: relative;
 		z-index: 2;
+	}
+
+	.portrait-window {
+		z-index: 21;
 	}
 
 	.eyebrow {
@@ -785,6 +893,9 @@ const colors = [
 	}
 
 	.identity-section {
+		position: relative;
+		z-index: 1;
+		padding-top: clamp(190px, 22vw, 280px);
 		background: var(--pink);
 	}
 
@@ -892,6 +1003,43 @@ const colors = [
 		transform: rotate(-1deg);
 	}
 
+	.secondary-palette {
+		max-width: 1180px;
+		margin: clamp(48px, 7vw, 88px) auto 0;
+	}
+
+	.secondary-palette-heading {
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+		gap: 24px;
+		margin-bottom: 20px;
+	}
+
+	.secondary-palette-heading h3,
+	.secondary-palette-heading p {
+		margin: 0;
+	}
+
+	.secondary-palette-heading h3 {
+		font-family: var(--font-display);
+		font-size: clamp(1.8rem, 4vw, 3.8rem);
+		letter-spacing: -0.055em;
+		line-height: 0.95;
+	}
+
+	.secondary-palette-heading p {
+		max-width: 430px;
+		font-size: 0.9rem;
+		font-weight: 700;
+		line-height: 1.4;
+		text-align: right;
+	}
+
+	.secondary-palette-grid {
+		grid-template-columns: repeat(4, minmax(0, 1fr));
+	}
+
 	.section-supporting {
 		margin: 0;
 		padding: clamp(26px, 4vw, 42px);
@@ -944,6 +1092,10 @@ const colors = [
 	.color-pink .color-fill { background: var(--pink); }
 	.color-blue .color-fill { background: var(--blue); }
 	.color-mint .color-fill { background: var(--mint); }
+	.color-grid-gray .color-fill { background: #383838; }
+	.color-signal-red .color-fill { background: #f55c66; }
+	.color-deep-teal .color-fill { background: #26798a; }
+	.color-warm-ochre .color-fill { background: #cc9504; }
 
 	.color-info {
 		display: flex;
@@ -1458,6 +1610,24 @@ const colors = [
 		margin: clamp(24px, 4vw, 40px) 0 0;
 		font-size: 1rem;
 		line-height: 1.45;
+	}
+
+	.dot-grid-preview {
+		display: grid;
+		background-color: #383838;
+		background-image: radial-gradient(circle, var(--black) 1.5px, transparent 1.6px);
+		background-size: 24px 24px;
+		place-items: center;
+	}
+
+	.dot-grid-preview span {
+		padding: 13px 20px;
+		border-radius: 999px;
+		background: var(--white);
+		box-shadow: 8px 10px 0 var(--black);
+		font-family: var(--font-display);
+		font-size: clamp(1.2rem, 2.7vw, 2rem);
+		letter-spacing: -0.035em;
 	}
 
 	.voice-section {
