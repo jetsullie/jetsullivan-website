@@ -37,9 +37,9 @@
 {"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch","level":"info"}
 {"message":"[200] /acting/ 12ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /api/media-entries/acting 0ms","label":null,"level":"info"}
-{"message":"[200] /acting/ 19ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /a{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+04] /api/content/site 0ms","label":null,"level":"info"}
 {"message":"[404] /api/media-entries/acting 0ms","label":null,"level":"info"}
 {"message":"[200] /acting/ 9ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
@@ -203,17 +203,17 @@
 {"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch",{"message":"src/{"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch",{"message":"src/{"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch",{"message":"src/{"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch",{"message":"src/{"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch",{"message":"src/{"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch",{"message":"src/{"message":"src/components/portfolio/PortfolioSectionPage.astro","label":"watch","level":"info"}
 {"message":"src/pages/about.astro","label":"watch","level":"info"}
 {"message":"src/pages/about.astro","label":"watch","level":"info"}
-evel":"info"}
-{"message":"src/pages/about.astro","label":"watch","level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+ndex=0&lang.css","label":"watch","level":"info"}
 {"message":"/src/pages/media.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/media.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-4] /api/media-entries/film 0ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /video/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /api/media-entries/video 0ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+age":"[200] / 1ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
 {"message":"[200] /film/ 2ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
@@ -589,3 +589,42 @@ evel":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
 {"message":"[200] / 1ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"[200] / 18ms","label":null,"level":"info"}
+{"message":"[200] / 18ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 2ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 3ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 1ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 1ms","label":null,"level":"info"}
+{"message":"[200] / 1ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /gear/ 3ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /api/gear 1ms","label":null,"level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"[200] / 4ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /gear/ 6ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
+{"message":"[404] /api/gear 0ms","label":null,"level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"[200] / 17ms","label":null,"level":"info"}
+{"message":"[200] /gear/ 20ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 2ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /api/gear 0ms","label":null,"level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"[200] / 13ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /gear/ 6ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /api/gear 0ms","label":null,"level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"[200] / 4ms","label":null,"level":"info"}
+{"message":"[200] /gear/ 5ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
+{"message":"[404] /api/gear 1ms","label":null,"level":"info"}

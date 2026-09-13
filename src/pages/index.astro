@@ -47,7 +47,7 @@ const backgroundWindows = [
 		<meta property="og:site_name" content={name} />
 		<meta property="og:title" content={pageTitle} />
 		<meta property="og:description" content={pageDescription} />
-		<link rel="icon" type="image/png" sizes="512x512" href="/brand-center-favicon.png" />
+		<link rel="icon" type="image/png" sizes="512x512" href="/favicon-profile.png" />
 		<title>{pageTitle}</title>
 		<script is:inline>
 			window.addEventListener("load", () => {
@@ -57,8 +57,7 @@ const backgroundWindows = [
 		<noscript><style>body.home-layout-pending { visibility: visible !important; }</style></noscript>
 	</head>
 
-	<!-- Remove `brand-guide-home-preview` to restore the previous homepage presentation. -->
-	<body class="home-layout-pending brand-guide-home-preview">
+	<body class="home-layout-pending">
 		<SiteMenu />
 
 		<form class="search-bar" action="/" method="get" role="search">
@@ -145,7 +144,7 @@ const backgroundWindows = [
 					<span class="location-box" aria-hidden="true">
 						<span class="selection-cursor"></span>
 					</span>
-					<span class="location-name" data-site-location="short">Austin, TX</span>
+					<span class="location-name">Austin, TX</span>
 					<span class="location-roles">Actor · Filmmaker · Videographer · Content Creator</span>
 				</div>
 
@@ -248,7 +247,6 @@ const backgroundWindows = [
 				<h2 id="about-heading">Who is Jet?</h2>
 				<div class="section-layout">
 					<div class="glass-panel" data-motion-depth="counter">
-						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>
 							My name is Jet Sullivan, and I am a Moody Honors Radio-Television-Film
 							senior student at the University of Texas at Austin. I am an actor,
@@ -281,7 +279,6 @@ const backgroundWindows = [
 				<h2 id="media-heading">News and Media</h2>
 				<div class="section-layout section-layout-reverse">
 					<div class="glass-panel" data-motion-depth="counter">
-						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>
 							See what’s new with Jet—from featured projects and interviews to press
 							coverage and moments from behind the scenes.
@@ -317,7 +314,6 @@ const backgroundWindows = [
 				<h2 id="contact-heading">Contact Jet?</h2>
 				<div class="section-layout">
 					<div class="glass-panel" data-motion-depth="counter">
-						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>
 							Have a project, role, collaboration, or story in mind? Reach out to Jet
 							and start the conversation.
@@ -338,11 +334,13 @@ const backgroundWindows = [
 			<div class="footer-content">
 				<p class="footer-name">Jet Sullivan</p>
 				<span aria-hidden="true"></span>
-				<p class="footer-location" data-site-location="long">Austin, Texas</p>
+				<p class="footer-location">Austin, Texas</p>
 			</div>
 		</footer>
 
 		<PageMotion />
+	</body>
+</html>
 
 <style>
 	:root {
@@ -731,16 +729,14 @@ const backgroundWindows = [
 	}
 
 	.surname-line {
-		--surname-fit-size: 1em;
 		position: relative;
 		width: max-content;
-		font-size: var(--surname-fit-size);
 	}
 
 	.canvas.surname-does-not-fit .surname-line {
-		position: relative;
-		visibility: visible;
-		pointer-events: auto;
+		position: absolute;
+		visibility: hidden;
+		pointer-events: none;
 	}
 
 	.portrait {
@@ -2742,319 +2738,11 @@ const backgroundWindows = [
 	}
 </style>
 
-<!-- Brand Center homepage preview: intentionally isolated for a clean rollback. -->
-<style id="brand-guide-home-preview">
-	:global(body.brand-guide-home-preview) .canvas {
-		background-color: #383838;
-		background-image: radial-gradient(circle, var(--black) 1.5px, transparent 1.6px);
-		background-size: 24px 24px;
-	}
-
-	:global(body.brand-guide-home-preview) .canvas::before {
-		top: auto;
-		right: -11%;
-		bottom: -32%;
-		left: auto;
-		width: min(62vw, 920px);
-		height: auto;
-		aspect-ratio: 1;
-		border: 0;
-		border-radius: 50%;
-		background: var(--yellow);
-		box-shadow: none;
-		-webkit-backdrop-filter: none;
-		backdrop-filter: none;
-	}
-
-	:global(body.brand-guide-home-preview) .top-frame {
-		background: var(--black);
-	}
-
-	/* Temporary comparison: keep the floating tabs available, but hide the layer. */
-	:global(body.brand-guide-home-preview) .background-windows {
-		display: none;
-	}
-
-	:global(body.brand-guide-home-preview) .background-window {
-		border-color: rgb(255 255 255 / 20%);
-		background: rgb(56 56 56 / 68%);
-		box-shadow:
-			inset 0 1px 0 rgb(255 255 255 / 16%),
-			0 8px 20px rgb(0 0 0 / 12%);
-		color: rgb(255 255 255 / 42%);
-		-webkit-backdrop-filter: blur(8px);
-		backdrop-filter: blur(8px);
-	}
-
-	:global(body.brand-guide-home-preview) .background-window .mini-dots i,
-	:global(body.brand-guide-home-preview) .background-window .mini-dots i:nth-child(2),
-	:global(body.brand-guide-home-preview) .background-window .mini-dots i:nth-child(3) {
-		background: #8d9294;
-	}
-
-	:global(body.brand-guide-home-preview) .name-word {
-		color: var(--white);
-		-webkit-text-stroke: 0;
-		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
-			rgb(0 0 0 / 24%);
-	}
-
-	:global(body.brand-guide-home-preview) .hero h1 {
-		gap: clamp(10px, 1.1vw, 18px);
-		letter-spacing: -0.035em;
-	}
-
-	:global(body.brand-guide-home-preview) .location {
-		color: var(--white);
-		font-family: var(--font-display);
-		letter-spacing: -0.045em;
-		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
-			rgb(0 0 0 / 24%);
-	}
-
-	:global(body.brand-guide-home-preview) .location-box {
-		border-color: var(--white);
-	}
-
-	:global(body.brand-guide-home-preview) .selection-cursor {
-		background: var(--white);
-	}
-
-	:global(body.brand-guide-home-preview) .location-roles {
-		color: var(--white);
-		font-family: var(--font-body);
-		font-weight: 700;
-		letter-spacing: 0.02em;
-		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
-			rgb(0 0 0 / 24%);
-	}
-
-	:global(body.brand-guide-home-preview) .work-card {
-		border-color: rgb(255 255 255 / 58%);
-		border-radius: 25px;
-		background: var(--black);
-		box-shadow: 12px 15px 0 rgb(0 0 0 / 15%);
-		text-shadow: none;
-	}
-
-	:global(body.brand-guide-home-preview) .work-card-icon,
-	:global(body.brand-guide-home-preview) .work-card-label {
-		text-shadow: none;
-		filter: none;
-	}
-
-	:global(body.brand-guide-home-preview) .card-media .work-card-icon,
-	:global(body.brand-guide-home-preview) .card-media .work-card-label {
-		color: var(--blue);
-	}
-
-	:global(body.brand-guide-home-preview) .card-directing .work-card-icon,
-	:global(body.brand-guide-home-preview) .card-directing .work-card-label {
-		color: var(--pink);
-	}
-
-	:global(body.brand-guide-home-preview) .card-film .work-card-icon,
-	:global(body.brand-guide-home-preview) .card-film .work-card-label {
-		color: var(--yellow);
-	}
-
-	:global(body.brand-guide-home-preview) .card-video .work-card-icon,
-	:global(body.brand-guide-home-preview) .card-video .work-card-label {
-		color: var(--mint);
-	}
-
-	:global(body.brand-guide-home-preview) .work-card:hover {
-		background: var(--black);
-		transform: translateY(3px) scale(0.99);
-	}
-
-	:global(body.brand-guide-home-preview) .card-media:hover {
-		box-shadow:
-			12px 15px 0 rgb(0 0 0 / 15%),
-			0 0 34px rgb(147 233 249 / 82%);
-	}
-
-	:global(body.brand-guide-home-preview) .card-directing:hover {
-		box-shadow:
-			12px 15px 0 rgb(0 0 0 / 15%),
-			0 0 34px rgb(253 191 191 / 84%);
-	}
-
-	:global(body.brand-guide-home-preview) .card-film:hover {
-		box-shadow:
-			12px 15px 0 rgb(0 0 0 / 15%),
-			0 0 34px rgb(239 218 74 / 86%);
-	}
-
-	:global(body.brand-guide-home-preview) .card-video:hover {
-		box-shadow:
-			12px 15px 0 rgb(0 0 0 / 15%),
-			0 0 34px rgb(124 245 181 / 84%);
-	}
-
-	:global(body.brand-guide-home-preview) .about-section {
-		background: var(--pink);
-	}
-
-	:global(body.brand-guide-home-preview) .media-section {
-		background: var(--mint);
-	}
-
-	:global(body.brand-guide-home-preview) .contact-section {
-		background: var(--blue);
-	}
-
-	:global(body.brand-guide-home-preview) .home-section::before,
-	:global(body.brand-guide-home-preview) .home-section::after {
-		border-color: rgb(255 255 255 / 54%);
-		background: rgb(255 255 255 / 18%);
-		box-shadow:
-			inset 0 1px 0 rgb(255 255 255 / 46%),
-			12px 16px 0 rgb(37 37 37 / 8%);
-	}
-
-	:global(body.brand-guide-home-preview) .section-kicker {
-		font-family: var(--font-display);
-		font-size: clamp(0.78rem, 1vw, 0.94rem);
-		letter-spacing: 0.15em;
-	}
-
-	:global(body.brand-guide-home-preview) .home-section h2 {
-		letter-spacing: -0.055em;
-		text-transform: none;
-	}
-
-	:global(body.brand-guide-home-preview) .glass-panel {
-		padding: 15px;
-		border: 0;
-		border-radius: 25px;
-		outline: 0;
-		background: var(--white);
-		box-shadow: 14px 18px 0 rgb(37 37 37 / 12%);
-		-webkit-backdrop-filter: none;
-		backdrop-filter: none;
-	}
-
-	:global(body.brand-guide-home-preview) .glass-panel > .window-dots {
-		position: static;
-		display: flex;
-		gap: 5px;
-		height: 22px;
-		padding-left: 2px;
-	}
-
-	:global(body.brand-guide-home-preview) .glass-panel > .window-dots i {
-		width: 7px;
-		height: 7px;
-		border: 0;
-		background: var(--black);
-		box-shadow: none;
-	}
-
-	:global(body.brand-guide-home-preview) .glass-panel > .window-dots i:nth-child(2) {
-		opacity: 0.5;
-	}
-
-	:global(body.brand-guide-home-preview) .glass-panel > .window-dots i:nth-child(3) {
-		opacity: 0.2;
-	}
-
-	:global(body.brand-guide-home-preview) .glass-panel p {
-		display: grid;
-		min-height: 150px;
-		padding: clamp(26px, 4vw, 42px);
-		border-radius: 16px;
-		background: var(--black);
-		color: var(--white);
-		font-family: var(--font-display);
-		font-size: clamp(1.05rem, 1.5vw, 1.3rem);
-		font-weight: 900;
-		line-height: 1.35;
-		place-items: center;
-		text-align: center;
-	}
-
-	:global(body.brand-guide-home-preview) .section-tab {
-		border-radius: 25px;
-		background: var(--black);
-		box-shadow: 14px 18px 0 rgb(37 37 37 / 13%);
-	}
-
-	:global(body.brand-guide-home-preview) .section-tab-action {
-		color: var(--white);
-	}
-
-	:global(body.brand-guide-home-preview) .section-divider {
-		background: var(--black);
-	}
-
-	:global(body.brand-guide-home-preview) .hero-divider::after {
-		display: none;
-	}
-
-	:global(body.brand-guide-home-preview) .site-footer {
-		background-color: #383838;
-		background-image: radial-gradient(
-			circle,
-			var(--black) 1.5px,
-			transparent 1.6px
-		);
-		background-size: 24px 24px;
-	}
-
-	:global(body.brand-guide-home-preview) .footer-name {
-		letter-spacing: -0.035em;
-	}
-
-	@media (max-width: 900px) {
-		:global(body.brand-guide-home-preview) .canvas::before {
-			right: -26%;
-			bottom: -15%;
-			left: auto;
-			width: min(80vw, 660px);
-			height: auto;
-			border-radius: 50%;
-			background: var(--yellow);
-		}
-
-	}
-
-	@media (max-width: 650px), (max-height: 500px) and (max-width: 950px) {
-		:global(body.brand-guide-home-preview) .canvas::before {
-			top: auto;
-			right: -35%;
-			bottom: -8%;
-			left: auto;
-			display: block;
-			width: 105vw;
-			height: auto;
-			border: 0;
-			border-radius: 50%;
-			background: var(--yellow);
-			box-shadow: none;
-		}
-
-		:global(body.brand-guide-home-preview) .hero h1 {
-			color: var(--white);
-		}
-
-		:global(body.brand-guide-home-preview) .location {
-			color: var(--white);
-		}
-
-		:global(body.brand-guide-home-preview) .work-card {
-			box-shadow: 8px 10px 0 rgb(37 37 37 / 14%);
-		}
-	}
-
-</style>
-
 <script>
 	const responsiveCanvas = document.querySelector<HTMLElement>(".canvas");
 	const surnameLine = document.querySelector<HTMLElement>(".surname-line");
-	const surnameWord = surnameLine?.querySelector<HTMLElement>(".name-word");
 
-	if (responsiveCanvas && surnameLine && surnameWord) {
+	if (responsiveCanvas && surnameLine) {
 		const compactLayout = window.matchMedia(
 			"(max-width: 650px), (max-height: 500px) and (max-width: 950px)",
 		);
@@ -3065,26 +2753,14 @@ const backgroundWindows = [
 				responsiveCanvas.clientWidth -
 				Number.parseFloat(canvasStyle.paddingLeft) -
 				Number.parseFloat(canvasStyle.paddingRight);
-			surnameLine.style.setProperty("--surname-fit-size", "1em");
-
-			if (compactLayout.matches) {
-				surnameLine.style.removeProperty("--surname-fit-size");
-				responsiveCanvas.classList.add("surname-does-not-fit");
-				return;
-			}
-
 			const shouldCheckFit =
 				window.innerWidth <= 1200 ||
 				window.innerWidth / Math.max(window.innerHeight, 1) < 1.45;
-			const naturalWidth = surnameWord.getBoundingClientRect().width;
-			const fitScale = shouldCheckFit && naturalWidth > availableWidth
-				? Math.max(0.1, (availableWidth - 2) / naturalWidth)
-				: 1;
-			surnameLine.style.setProperty("--surname-fit-size", `${fitScale}em`);
+			const surnameFits = surnameLine.offsetWidth <= availableWidth + 8;
 
 			responsiveCanvas.classList.toggle(
 				"surname-does-not-fit",
-				fitScale < 1,
+				compactLayout.matches || (shouldCheckFit && !surnameFits),
 			);
 		};
 
@@ -3316,12 +2992,6 @@ const backgroundWindows = [
 				href: "/socials/",
 				description: "Find Jet across social platforms.",
 				keywords: ["social media", "instagram", "youtube", "tiktok"],
-			},
-			{
-				title: "Gear",
-				href: "/gear/",
-				description: "Explore the equipment and kits Jet works with.",
-				keywords: ["equipment", "camera", "audio", "lighting", "kit"],
 			},
 			{
 				title: "Acting",
@@ -3702,11 +3372,6 @@ const backgroundWindows = [
 		searchBar.addEventListener("submit", (event) => {
 			event.preventDefault();
 			const query = normalizeSearchText(searchInput.value);
-
-			if (query === "brand center" || query === "brandcenter") {
-				window.location.assign("/brand-center/");
-				return;
-			}
 
 			if (query === "admin") {
 				window.location.assign("/login/");
@@ -4111,6 +3776,4 @@ const backgroundWindows = [
 	});
 
 </script>
-	</body>
-</html>
 <!-- Trigger Cloudflare Preview deployment -->
