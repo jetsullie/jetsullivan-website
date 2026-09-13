@@ -174,18 +174,20 @@ const windows = [
 	.yellow-panel {
 		position: absolute;
 		z-index: 1;
-		top: 23%;
-		bottom: -3%;
-		left: 4%;
-		width: 52%;
-		border: 1px solid rgb(255 255 255 / 58%);
-		border-radius: 24px;
-		outline: 1px solid rgb(255 255 255 / 16%);
-		outline-offset: -3px;
-		background: rgb(226 252 238 / 68%);
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px);
+		top: 4%;
+		right: -12%;
+		bottom: auto;
+		left: auto;
+		width: min(58vw, 860px);
+		height: auto;
+		aspect-ratio: 1;
+		border: 0;
+		border-radius: 50%;
+		outline: 0;
+		background: var(--mint);
+		box-shadow: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
 	}
 
 	.floaters { position: absolute; z-index: 0; inset: 0; overflow: hidden; pointer-events: none; }
@@ -521,7 +523,6 @@ const windows = [
 	@media (max-width: 820px) {
 		:root { --media-footer-gap: 48px; }
 		.page { padding: 128px 22px var(--media-footer-gap); }
-		.yellow-panel { top: 28%; left: 14px; width: calc(100% - 28px); }
 		.home-window { top: 64px; left: 22px; width: 142px; height: 78px; padding: 12px; border-radius: 22px; }
 		.home-window .dots { gap: 4px; }
 		.dots i { width: 7px; height: 7px; }

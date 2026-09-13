@@ -14,6 +14,8 @@ interface Props {
 	accentTop: string;
 	accent: string;
 	accentBottom: string;
+	shape: "acting" | "film" | "video";
+	shapeColor: string;
 	headingCardHref?: string;
 	headingCardLabel?: string;
 	headingCardForeground?: string;
@@ -29,6 +31,8 @@ const {
 	accentTop,
 	accent,
 	accentBottom,
+	shape,
+	shapeColor,
 	headingCardHref,
 	headingCardLabel,
 	headingCardForeground,
@@ -36,13 +40,6 @@ const {
 
 const hasHeadingCard = Boolean(headingCardHref && headingCardLabel);
 
-const windows = Array.from({ length: 20 }, (_, index) => ({
-	x: (index * 17 + 3) % 94,
-	y: (index * 29 + 8) % 88,
-	w: 38 + (index % 7) * 10,
-	h: 31 + (index % 6) * 8,
-	symbol: ["+", "○", "✦", "×", "◇", "▶", "⌁", "●"][index % 8],
-}));
 ---
 
 <!doctype html>
@@ -59,26 +56,10 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		<main
 			class="page"
 			data-motion-root
-			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--heading-card-foreground:${headingCardForeground || accent};`}
+			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--heading-card-foreground:${headingCardForeground || accent};--shape-color:${shapeColor};`}
 		>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
-			<div class="accent-panel" data-motion-depth="counter" aria-hidden="true"></div>
-
-			<div class="floaters" data-motion-bounds aria-hidden="true">
-				{
-					windows.map((item, index) => (
-						<span
-							class="mini-window"
-							data-motion-float
-							style={`--x:${item.x}%;--y:${item.y}%;--w:${item.w}px;--h:${item.h}px;--delay:-${index * 0.34}s;`}
-						>
-							<span class="mini-dots"><i></i><i></i><i></i></span>
-							<span>{item.symbol}</span>
-						</span>
-					))
-				}
-			</div>
-
+			<span class={`section-shape section-shape-${shape}`} aria-hidden="true"></span>
 			<SiteMenu showHomeButton />
 
 			<section
@@ -88,15 +69,14 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				aria-labelledby="page-heading"
 			>
 				<p class="eyebrow">{eyebrow}</p>
-				{
-					hasHeadingCard ? (
-						<div class="heading-lockup">
-							<h1 id="page-heading">{heading}</h1>
-							<a
-								class="heading-card"
-								href={headingCardHref}
-								aria-label={`View ${headingCardLabel} page`}
-							>
+				<div class="heading-lockup">
+					<h1 id="page-heading">{heading}</h1>
+					{hasHeadingCard && (
+						<a
+							class="heading-card"
+							href={headingCardHref}
+							aria-label={`View ${headingCardLabel} page`}
+						>
 								<svg
 									class="heading-card-icon"
 									viewBox="0 0 32 32"
@@ -106,13 +86,10 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 									<rect x="6" y="4" width="20" height="24" rx="3" />
 									<path d="M11 11h10M11 16h10M11 21h7" />
 								</svg>
-								<span class="heading-card-label">{headingCardLabel}</span>
-							</a>
-						</div>
-					) : (
-						<h1 id="page-heading">{heading}</h1>
-					)
-				}
+							<span class="heading-card-label">{headingCardLabel}</span>
+						</a>
+					)}
+				</div>
 				<p class="introduction">{description}</p>
 				<p class="sr-only" data-entry-status aria-live="polite">
 					Loading {title.toLowerCase()} posts…
@@ -496,30 +473,6 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		min-height: 54px; background: var(--black); pointer-events: none;
 	}
 	.top-frame { top: -5vw; transform: rotate(-3deg); }
-	.accent-panel {
-		position: absolute; z-index: 1; top: 23%; bottom: -3%; left: 50%;
-		width: min(76vw, 1050px); border: 1px solid rgb(255 255 255 / 58%);
-		border-radius: 24px;
-		outline: 1px solid rgb(255 255 255 / 16%);
-		outline-offset: -3px;
-		background: color-mix(in srgb, var(--accent) 28%, rgb(255 255 255 / 68%));
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px); transform: translateX(-50%);
-	}
-	.floaters { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-	.mini-window {
-		position: absolute; top: var(--y); left: var(--x); display: grid;
-		width: var(--w); height: var(--h); border: 1px solid rgb(255 255 255 / 45%);
-		border-radius: clamp(5px, .7vw, 14px); background: rgb(156 166 170 / 20%);
-		box-shadow: inset 0 1px 0 rgb(255 255 255 / 34%), 0 5px 14px rgb(37 37 37 / 5%);
-		color: rgb(37 37 37 / 25%); font: 900 .7rem var(--display);
-		backdrop-filter: blur(3px); place-items: center;
-	}
-	.mini-dots { position: absolute; top: 6px; left: 7px; display: flex; gap: 3px; }
-	.mini-dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--pink); }
-	.mini-dots i:nth-child(2), .dots i:nth-child(2) { background: var(--yellow); }
-	.mini-dots i:nth-child(3), .dots i:nth-child(3) { background: var(--mint); }
 	.home-window {
 		position: absolute; z-index: 12; top: clamp(70px, 8vh, 105px); left: clamp(28px, 5vw, 82px);
 		display: grid; grid-template: auto 1fr / auto 1fr; gap: 8px 12px;
@@ -553,6 +506,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	.eyebrow {
 		margin: 0 auto clamp(12px, 2vh, 24px); font-size: clamp(.78rem, 1.1vw, 1rem);
 		font-weight: 900; letter-spacing: .16em; text-align: center; text-transform: uppercase;
+		color: var(--shape-color);
 	}
 	h1 {
 		margin: 0; font: 950 clamp(4rem, 13vw, 13rem)/.72 var(--display);
@@ -560,6 +514,9 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	}
 	.heading-lockup {
 		position: relative;
+		display: inline-flex;
+		align-items: center;
+		gap: clamp(18px, 3vw, 42px);
 		width: max-content;
 		max-width: 100%;
 		margin: 0 auto;
@@ -567,6 +524,27 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 	.heading-lockup h1 {
 		position: relative;
 		z-index: 1;
+	}
+	.section-shape {
+		position: absolute;
+		top: 4%;
+		right: -12%;
+		z-index: 1;
+		width: min(58vw, 860px);
+		aspect-ratio: 1;
+		background: var(--shape-color);
+		box-shadow: none;
+	}
+	.section-shape-acting {
+		border: clamp(13px, 10.77vw, 160px) solid var(--shape-color);
+		background: transparent;
+		transform: rotate(18deg) scale(0.594);
+	}
+	.section-shape-film {
+		clip-path: polygon(50% 0%, 61% 29%, 94% 18%, 72% 46%, 100% 66%, 65% 64%, 61% 100%, 43% 70%, 13% 91%, 28% 57%, 0% 39%, 36% 35%);
+	}
+	.section-shape-video {
+		clip-path: polygon(14% 5%, 91% 50%, 14% 95%);
 	}
 	.heading-card {
 		position: absolute;
@@ -587,7 +565,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		outline-offset: -3px;
 		background: rgb(255 255 255 / 64%);
 		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
-		color: #252525;
+		color: #44494a;
 		font: 900 .86rem/1 var(--display);
 		letter-spacing: .045em;
 		white-space: nowrap;
@@ -614,7 +592,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		stroke-width: 2.5;
 	}
 	.heading-card-label {
-		color: inherit;
+		color: var(--heading-card-foreground);
 	}
 	.heading-card:hover,
 	.heading-card:focus-visible {
@@ -994,7 +972,6 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			min-height: 100svh;
 			padding: 128px 22px var(--portfolio-footer-gap);
 		}
-		.accent-panel { top: 28%; width: calc(100% - 28px); }
 		.home-window { top: 64px; left: 22px; width: 142px; height: 78px; padding: 12px; border-radius: 22px; }
 		.dots { gap: 4px; } .dots i { width: 7px; height: 7px; }
 		.arrow { font-size: 1.8rem; } .home-window > span:last-child { font-size: .72rem; }

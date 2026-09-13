@@ -46,7 +46,6 @@ const backgroundWindows = [
 		<BrandPageTheme />
 		<main class="about-page" data-motion-root>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
-			<div class="yellow-panel" data-motion-depth="counter" aria-hidden="true"></div>
 
 			<div class="background-windows" data-motion-bounds>
 				{
@@ -253,24 +252,6 @@ const backgroundWindows = [
 	.top-frame {
 		top: -5vw;
 		transform: rotate(-3deg);
-	}
-
-	.yellow-panel {
-		position: absolute;
-		z-index: 1;
-		top: 23%;
-		bottom: -3%;
-		left: 50%;
-		width: min(76vw, 1050px);
-		border: 1px solid rgb(255 255 255 / 58%);
-		border-radius: 24px;
-		outline: 1px solid rgb(255 255 255 / 16%);
-		outline-offset: -3px;
-		background: rgb(255 235 239 / 68%);
-		box-shadow: 0 8px 28px rgb(37 37 37 / 14%);
-		-webkit-backdrop-filter: blur(12px);
-		backdrop-filter: blur(12px);
-		transform: translateX(-50%);
 	}
 
 	.background-windows {
@@ -672,12 +653,6 @@ const backgroundWindows = [
 
 		.about-page {
 			padding: 128px 22px var(--about-footer-gap);
-		}
-
-		.yellow-panel {
-			top: 28%;
-			left: 50%;
-			width: calc(100% - 28px);
 		}
 
 		.home-window {
