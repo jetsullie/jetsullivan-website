@@ -1,4 +1,6 @@
 ---
+import PageMotion from "../components/common/PageMotion.astro";
+
 const colors = [
 	{ name: "Jet Black", value: "#252525", className: "black" },
 	{ name: "Studio White", value: "#FFFFFF", className: "white" },
@@ -35,12 +37,12 @@ const colors = [
 			<p>Brand Center</p>
 		</header>
 
-		<main id="brand-content">
+		<main id="brand-content" data-motion-root data-motion-speed="0.8">
 			<section class="hero" aria-labelledby="brand-heading">
-				<div class="hero-shape hero-shape-one" aria-hidden="true"></div>
-				<div class="hero-shape hero-shape-two" aria-hidden="true"></div>
+				<div class="hero-shape hero-shape-one" data-motion-depth="far-a" aria-hidden="true"></div>
+				<div class="hero-shape hero-shape-two" data-motion-depth="far-b" aria-hidden="true"></div>
 
-				<div class="hero-copy">
+				<div class="hero-copy" data-motion-depth="scene">
 					<p class="eyebrow">The official guide</p>
 					<h1 id="brand-heading"><span>JET</span><span>SULLIVAN</span></h1>
 					<p class="hero-intro">
@@ -49,7 +51,7 @@ const colors = [
 					</p>
 				</div>
 
-				<figure class="portrait-window">
+				<figure class="portrait-window" data-motion-depth="deep">
 					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 					<div class="portrait-frame">
 						<picture>
@@ -64,14 +66,14 @@ const colors = [
 			</section>
 
 			<section class="section identity-section" aria-labelledby="identity-heading">
-				<div class="section-heading">
+				<div class="section-heading" data-motion-depth="scene">
 					<p class="section-number">01</p>
 					<div>
 						<p class="eyebrow" id="identity-heading">Identity</p>
 					</div>
 				</div>
 
-				<div class="identity-grid">
+				<div class="identity-grid" data-motion-depth="counter">
 					<article class="wordmark-card wordmark-primary">
 						<p class="card-label">Primary treatment</p>
 						<p class="wordmark">JET SULLIVAN</p>
@@ -82,7 +84,7 @@ const colors = [
 					</article>
 				</div>
 
-				<div class="usage-notes">
+				<div class="usage-notes" data-motion-depth="deep">
 					<article class="note-window identity-note">
 						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>Full name.</p>
@@ -99,14 +101,14 @@ const colors = [
 			</section>
 
 			<section class="section palette-section" aria-labelledby="palette-heading">
-				<div class="section-heading">
+				<div class="section-heading" data-motion-depth="scene">
 					<p class="section-number">02</p>
 					<div>
 						<p class="eyebrow" id="palette-heading">Color</p>
 					</div>
 				</div>
 
-				<div class="palette-grid">
+				<div class="palette-grid" data-motion-depth="counter">
 					{
 						colors.map((color) => (
 							<button
@@ -125,7 +127,7 @@ const colors = [
 						))
 					}
 				</div>
-				<div class="note-window palette-note">
+				<div class="note-window palette-note" data-motion-depth="deep">
 					<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 					<p class="section-supporting">
 						The colors are bright and vibrant and keep the site feeling bold.
@@ -135,14 +137,14 @@ const colors = [
 			</section>
 
 			<section class="section type-section" aria-labelledby="type-heading">
-				<div class="section-heading">
+				<div class="section-heading" data-motion-depth="scene">
 					<p class="section-number">03</p>
 					<div>
 						<p class="eyebrow" id="type-heading">Typography</p>
 					</div>
 				</div>
 
-				<div class="type-grid">
+				<div class="type-grid" data-motion-depth="counter">
 					<article class="type-card display-type">
 						<div class="type-meta">
 							<p>Display</p>
@@ -166,14 +168,14 @@ const colors = [
 			</section>
 
 			<section class="section graphic-section" aria-labelledby="graphic-heading">
-				<div class="section-heading">
+				<div class="section-heading" data-motion-depth="scene">
 					<p class="section-number">04</p>
 					<div>
 						<p class="eyebrow" id="graphic-heading">Graphic language</p>
 					</div>
 				</div>
 
-				<div class="design-details">
+				<div class="design-details" data-motion-depth="counter">
 					<details class="design-detail">
 						<summary>
 							<span class="detail-number">01</span>
@@ -322,14 +324,14 @@ const colors = [
 			</section>
 
 			<section class="section voice-section" aria-labelledby="voice-heading">
-				<div class="section-heading">
+				<div class="section-heading" data-motion-depth="scene">
 					<p class="section-number">05</p>
 					<div>
 						<p class="eyebrow" id="voice-heading">Voice &amp; expression</p>
 					</div>
 				</div>
 
-				<div class="voice-grid">
+				<div class="voice-grid" data-motion-depth="counter">
 					<article>
 						<span>01</span>
 						<h3>Clear</h3>
@@ -349,14 +351,14 @@ const colors = [
 			</section>
 
 			<section class="section assets-section" aria-labelledby="assets-heading">
-				<div class="section-heading">
+				<div class="section-heading" data-motion-depth="scene">
 					<p class="section-number">06</p>
 					<div>
 						<p class="eyebrow" id="assets-heading">Assets</p>
 					</div>
 				</div>
 
-				<div class="asset-grid">
+				<div class="asset-grid" data-motion-depth="counter">
 					<a class="asset-card asset-photo" href="/jet-portrait-background.PNG" download>
 						<span class="asset-preview">
 							<img src="/jet-portrait-background.PNG" alt="" />
@@ -403,6 +405,8 @@ const colors = [
 			<p>Jet Sullivan · Brand Center</p>
 			<p>Direct-access resource</p>
 		</footer>
+
+		<PageMotion />
 	</body>
 </html>
 
