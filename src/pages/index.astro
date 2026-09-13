@@ -3388,6 +3388,11 @@ const backgroundWindows = [
 			event.preventDefault();
 			const query = normalizeSearchText(searchInput.value);
 
+			if (query === "brand center" || query === "brandcenter") {
+				window.location.assign("/brand-center/");
+				return;
+			}
+
 			if (query === "admin") {
 				window.location.assign("/login/");
 				return;

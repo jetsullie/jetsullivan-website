@@ -60,3 +60,5 @@ ll,"level":"info"}
 {"message":"[200] /brand-center/ 2ms","label":null,"level":"info"}
 {"message":"src/components/common/PageMotion.astro","label":"watch","level":"info"}
 {"message":"[200] /brand-center/ 8ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 3ms","label":null,"level":"info"}
