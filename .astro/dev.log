@@ -2,266 +2,54 @@
 {"message":"Generated 0ms","label":"types","level":"info"}
 {"message":"connected.","label":"vite","level":"info"}
 {"message":"Port 4321 is in use, trying another one...","label":"vite","level":"info"}
-{"message":" astro  v7.1.3 ready in 631 ms\n┃ Local    http://localhost:4322/\n┃ Network  use --host to expose","label":"SKIP_FORMAT","level":"info"}
-{"message":"watching for file changes...","label":null,"level":"info"}
-{"message":"[200] /brainstorm 21ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 19ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 19ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 14ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 14ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 25ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 25ms","label":null,"level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 36ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 36ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot set properties of null (setting 'textContent')\n > renderTutorialStep ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1752:28\n > startTutorial ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1769:2\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot set properties of null (setting 'textContent')\n > renderTutorialStep ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1752:28\n > startTutorial ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1769:2\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 12ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 12ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot set properties of null (setting 'textContent')\n > renderTutorialStep ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1753:28\n > startTutorial ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1770:2\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot set properties of null (setting 'textContent')\n > renderTutorialStep ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1753:28\n > startTutorial ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1770:2\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 4ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1844:14\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1844:14\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 12ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 12ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1847:14\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1847:14\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 18ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 18ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1853:14\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1853:14\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 12ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 12ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1854:14\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1854:14\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1856:14\n","label":"vite","level":"error"}
-{"message":"[Unhandled error] TypeError: Cannot read properties of null (reading 'addEventListener')\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1856:14\n","label":"vite","level":"error"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 14ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 14ms","label":null,"level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 14ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 14ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[Unhandled error] TypeError: target.matches is not a function\n > ../../../../../src/pages/brainstorm.astro?astro=&type=script&index=0&lang.ts=:1702:13\n","label":"vite","level":"error"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 4ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] / 16ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 11ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 11ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 10ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 10ms","label":null,"level":"info"}
-{"message":"/src/pages/brainstorm.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 3ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 11ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 11ms","label":null,"level":"info"}
-{"message":"src/pages/brainstorm.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 35ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 35ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
-{"message":"[200] / 2ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"src/pages/index.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 5ms","label":null,"level":"info"}
-{"message":"[200] / 14ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"src/pages/index.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 10ms","label":null,"level":"info"}
-{"message":"[200] / 22ms","label":null,"level":"info"}
-{"message":"[200] / 22ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 6ms","label":null,"level":"info"}
-{"message":"src/pages/contact.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 6ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 7ms","label":null,"level":"info"}
-{"message":"src/pages/contact.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 9ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 7ms","label":null,"level":"info"}
-{"message":"/src/pages/contact.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/contact.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"/src/pages/contact.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] /contact/ 3ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 2ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 1ms","label":null,"level":"info"}
-{"message":"/src/components/common/SiteMenu.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 18ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 33ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 6ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"src/pages/index.astro","label":"watch","level":"info"}
-{"message":"src/pages/contact.astro","label":"watch","level":"info"}
-{"message":"[200] /brainstorm 5ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 9ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
-{"message":"[200] / 15ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /login/ 6ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /admin/ 9ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/credits 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/acting-credits 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/interviews 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/content/about 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/featured 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/behind-the-scenes 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/press 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/acting 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/film 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/video 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media 0ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[200] / 2ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 447ms","label":null,"level":"info"}
+{"message":"Port 4322 is in use, trying another one...","label":"vite","level":"info"}
+{"message":"Port 4323 is in use, trying another one...","label":"vite","level":"info"}
+{"message":" astro  v7.1.3 ready in 728 ms\n┃ Local    http://localhost:4324/\n┃ Network  use --host to expose","label":"SKIP_FORMAT",{"message":"[200] /brand-center/ 18ms","label":null,"level":"info"}
+ll,"level":"info"}
+{"message":"[200] /brand-center/ 16ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 2ms","label":null,"level":"info"}
+{"message":"[200] / 17ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 2ms","label":null,"level":"info"}
-{"message":"[200] / 5ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 90ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 3ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 4ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 9ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 2ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 2ms","label":null,"level":"info"}
+{"message":"[console.error] Astro Error while running audit's match function: TypeError: Failed to fetch","label":"vite","level":"error"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 10ms","label":null,"level":"info"}
+{"message":"/src/pages/brand-center.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 4ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 8ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 1ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 7ms","label":null,"level":"info"}
+{"message":"/src/pages/brand-center.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"/src/pages/brand-center.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 12ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 9ms","label":null,"level":"info"}
+{"message":"/src/pages/brand-center.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"/src/pages/brand-center.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 3ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 11ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 3ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 15ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 9ms","label":null,"level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 7ms","label":null,"level":"info"}
+{"message":"[200] / 13ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
 {"message":"[200] / 2ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 15ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
-{"message":"[200] / 6ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 3ms","label":null,"level":"info"}
-{"message":"[200] / 5ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 2ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 3ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 1ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 3ms","label":null,"level":"info"}
-{"message":"[200] / 5ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 3ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 3ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"/src/components/common/SiteMenu.astro?astro&type=style&index=0&lang.css","label":"watch","level":"info"}
-{"message":"[200] / 4ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /admin/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/credits 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/acting-credits 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/content/about 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/featured 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/interviews 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/behind-the-scenes 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/press 1ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/acting 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/film 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/video 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] / 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /contact/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[200] /admin/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/credits 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/acting-credits 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/content/site 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/content/about 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/interviews 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/featured 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/behind-the-scenes 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/press 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/acting 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/film 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media-entries/video 0ms","label":null,"level":"info"}
-{"message":"[404] /admin/api/media 0ms","label":null,"level":"info"}
-{"message":"[200] /brainstorm/ 1ms","label":null,"level":"info"}
-{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"src/pages/index.astro","label":"watch","level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"src/pages/brand-center.astro","label":"watch","level":"info"}
+{"message":"[200] /brand-center/ 7ms","label":null,"level":"info"}
+{"message":"[200] /brand-center/ 1ms","label":null,"level":"info"}
