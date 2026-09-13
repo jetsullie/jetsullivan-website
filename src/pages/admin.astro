@@ -420,6 +420,64 @@ const adminWindows = [
 				<div id="media-entry-list" class="entry-list"></div>
 			</section>
 
+			<section aria-labelledby="gear-editor-title">
+				<h2 id="gear-editor-title">Gear</h2>
+				<p class="section-intro">
+					Add equipment you own, rate it, describe how you use it, and list every
+					part included in the kit. Each public Gear card expands to fit the full
+					description and parts list.
+				</p>
+				<form id="gear-form" enctype="multipart/form-data">
+					<input id="gear-id" name="id" type="hidden" />
+					<div class="field-grid">
+						<label class="field field-wide">
+							<span>Gear name</span>
+							<input id="gear-name" name="name" type="text" maxlength="120" autocomplete="off" required />
+						</label>
+
+						<label class="field">
+							<span>Category</span>
+							<input id="gear-category" name="category" type="text" maxlength="80" placeholder="Camera, audio, lighting…" />
+						</label>
+
+						<label class="field">
+							<span>Rating out of 5</span>
+							<input id="gear-rating" name="rating" type="number" min="0.5" max="5" step="0.5" value="5" required />
+						</label>
+
+						<label class="field">
+							<span>Product photo</span>
+							<input id="gear-image" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required />
+							<small id="gear-image-current">JPEG, PNG, WebP, or AVIF. Maximum 15 MB.</small>
+						</label>
+
+						<label class="field">
+							<span>Photo description</span>
+							<input id="gear-image-alt" name="imageAlt" type="text" maxlength="180" placeholder="Describe the uploaded photo" />
+						</label>
+
+						<label class="field field-wide">
+							<span>Description</span>
+							<textarea id="gear-description" name="description" maxlength="20000" required></textarea>
+						</label>
+
+						<label class="field field-wide">
+							<span>Parts in the kit</span>
+							<textarea id="gear-kit-parts" class="compact-textarea" name="kitParts" placeholder="One part per line"></textarea>
+							<small>Enter one part per line. Blank lines are ignored.</small>
+						</label>
+					</div>
+
+					<div class="actions">
+						<button id="gear-submit" type="submit">Add gear</button>
+						<button id="gear-cancel" class="secondary-button" type="button" hidden>Cancel edit</button>
+						<output id="gear-status" aria-live="polite"></output>
+					</div>
+				</form>
+
+				<div id="gear-list" class="gear-admin-list"></div>
+			</section>
+
 			<section aria-labelledby="media-editor-title">
 				<h2 id="media-editor-title">Website media library</h2>
 				<p class="section-intro">
@@ -488,6 +546,18 @@ const adminWindows = [
 					<button id="media-delete-submit" class="danger-button" value="confirm">
 						Delete everywhere
 					</button>
+				</div>
+			</form>
+		</dialog>
+
+		<dialog id="gear-delete-dialog" class="delete-confirm-dialog">
+			<form method="dialog">
+				<p class="dialog-eyebrow">Confirm deletion</p>
+				<h2>Delete this gear item?</h2>
+				<p id="gear-delete-message"></p>
+				<div class="dialog-actions">
+					<button class="secondary-button" value="cancel">Keep gear</button>
+					<button id="gear-delete-submit" class="danger-button" value="confirm">Delete gear</button>
 				</div>
 			</form>
 		</dialog>
@@ -796,6 +866,23 @@ const adminWindows = [
 		document.querySelector<HTMLElement>("#media-delete-message");
 	const mediaDeleteSubmit =
 		document.querySelector<HTMLButtonElement>("#media-delete-submit");
+	const gearForm = document.querySelector<HTMLFormElement>("#gear-form");
+	const gearId = document.querySelector<HTMLInputElement>("#gear-id");
+	const gearName = document.querySelector<HTMLInputElement>("#gear-name");
+	const gearCategory = document.querySelector<HTMLInputElement>("#gear-category");
+	const gearRating = document.querySelector<HTMLInputElement>("#gear-rating");
+	const gearImage = document.querySelector<HTMLInputElement>("#gear-image");
+	const gearImageAlt = document.querySelector<HTMLInputElement>("#gear-image-alt");
+	const gearImageCurrent = document.querySelector<HTMLElement>("#gear-image-current");
+	const gearDescription = document.querySelector<HTMLTextAreaElement>("#gear-description");
+	const gearKitParts = document.querySelector<HTMLTextAreaElement>("#gear-kit-parts");
+	const gearSubmit = document.querySelector<HTMLButtonElement>("#gear-submit");
+	const gearCancel = document.querySelector<HTMLButtonElement>("#gear-cancel");
+	const gearStatus = document.querySelector<HTMLOutputElement>("#gear-status");
+	const gearList = document.querySelector<HTMLElement>("#gear-list");
+	const gearDeleteDialog = document.querySelector<HTMLDialogElement>("#gear-delete-dialog");
+	const gearDeleteMessage = document.querySelector<HTMLElement>("#gear-delete-message");
+	const gearDeleteSubmit = document.querySelector<HTMLButtonElement>("#gear-delete-submit");
 
 	type MediaSection =
 		| "featured"
@@ -825,7 +912,7 @@ const adminWindows = [
 	};
 
 	type MediaReference = {
-		section: MediaSection;
+		section: MediaSection | "gear";
 		entryId: string;
 		title: string;
 		role: string;
@@ -840,6 +927,19 @@ const adminWindows = [
 		contentType: string;
 		managed: boolean;
 		usedBy: MediaReference[];
+	};
+
+	type GearItem = {
+		id: string;
+		name: string;
+		category: string;
+		rating: number;
+		description: string;
+		kitParts: string[];
+		imageUrl?: string | null;
+		imageAlt?: string | null;
+		createdAt?: string;
+		updatedAt?: string;
 	};
 
 	type CreditFilm = {
@@ -877,6 +977,8 @@ const adminWindows = [
 	let editingAttachmentName = "";
 	let pendingDeleteEntry: MediaEntry | null = null;
 	let pendingDeleteMedia: MediaItem | null = null;
+	let editingGearHasImage = false;
+	let pendingDeleteGear: GearItem | null = null;
 	let pendingDeleteCredit: {
 		category: CreditCategory;
 		deleteCategory: (category: CreditCategory) => Promise<void>;
@@ -1990,6 +2092,214 @@ const adminWindows = [
 		}
 	});
 
+	const resetGearForm = () => {
+		if (!gearForm) return;
+		gearForm.reset();
+		editingGearHasImage = false;
+		if (gearId) gearId.value = "";
+		if (gearRating) gearRating.value = "5";
+		if (gearImage) gearImage.required = true;
+		if (gearImageCurrent) {
+			gearImageCurrent.textContent =
+				"JPEG, PNG, WebP, or AVIF. Maximum 15 MB.";
+		}
+		if (gearSubmit) gearSubmit.textContent = "Add gear";
+		if (gearCancel) gearCancel.hidden = true;
+	};
+
+	const startEditingGear = (item: GearItem) => {
+		if (
+			!gearForm ||
+			!gearId ||
+			!gearName ||
+			!gearCategory ||
+			!gearRating ||
+			!gearImageAlt ||
+			!gearDescription ||
+			!gearKitParts
+		) {
+			return;
+		}
+
+		gearForm.reset();
+		gearId.value = item.id;
+		gearName.value = item.name;
+		gearCategory.value = item.category;
+		gearRating.value = String(item.rating);
+		gearImageAlt.value = item.imageAlt || "";
+		gearDescription.value = item.description;
+		gearKitParts.value = Array.isArray(item.kitParts)
+			? item.kitParts.join("\n")
+			: "";
+		editingGearHasImage = Boolean(item.imageUrl);
+		if (gearImage) {
+			gearImage.value = "";
+			gearImage.required = !editingGearHasImage;
+		}
+		if (gearImageCurrent) {
+			gearImageCurrent.textContent = editingGearHasImage
+				? "The current photo will remain unless you choose a replacement."
+				: "This item needs a product photo before it can be saved.";
+		}
+		if (gearSubmit) gearSubmit.textContent = "Update gear";
+		if (gearCancel) gearCancel.hidden = false;
+		if (gearStatus) gearStatus.textContent = `Editing “${item.name}”.`;
+		gearForm.scrollIntoView({ behavior: "smooth", block: "center" });
+		gearName.focus({ preventScroll: true });
+	};
+
+	const renderGearItems = (items: GearItem[]) => {
+		if (!gearList) return;
+		gearList.replaceChildren();
+
+		if (!items.length) {
+			const empty = document.createElement("p");
+			empty.className = "entry-empty";
+			empty.textContent = "No gear has been added yet.";
+			gearList.append(empty);
+			return;
+		}
+
+		for (const item of items) {
+			const card = document.createElement("article");
+			const content = document.createElement("div");
+			const category = document.createElement("p");
+			const title = document.createElement("h3");
+			const rating = document.createElement("p");
+			const description = document.createElement("p");
+			const kit = document.createElement("p");
+			const actions = document.createElement("div");
+			const edit = document.createElement("button");
+			const remove = document.createElement("button");
+
+			card.className = "gear-admin-card";
+			content.className = "gear-admin-content";
+			category.className = "gear-admin-category";
+			category.textContent = item.category || "Gear";
+			title.textContent = item.name;
+			rating.className = "gear-admin-rating";
+			rating.textContent = `★ ${Number(item.rating).toFixed(1)} / 5`;
+			description.className = "gear-admin-description";
+			description.textContent = item.description;
+			kit.className = "gear-admin-parts";
+			kit.textContent = `${item.kitParts?.length || 0} ${
+				item.kitParts?.length === 1 ? "part" : "parts"
+			} listed`;
+			actions.className = "entry-card-actions";
+
+			if (item.imageUrl) {
+				const image = document.createElement("img");
+				image.src = item.imageUrl;
+				image.alt = item.imageAlt || item.name;
+				image.loading = "lazy";
+				card.append(image);
+			}
+
+			edit.type = "button";
+			edit.className = "secondary-button";
+			edit.textContent = "Edit";
+			edit.addEventListener("click", () => startEditingGear(item));
+
+			remove.type = "button";
+			remove.className = "danger-button";
+			remove.textContent = "Delete";
+			remove.addEventListener("click", () => {
+				pendingDeleteGear = item;
+				if (gearDeleteMessage) {
+					gearDeleteMessage.textContent = `“${item.name}” and its public Gear card will be removed.`;
+				}
+				gearDeleteDialog?.showModal();
+			});
+
+			actions.append(edit, remove);
+			content.append(category, title, rating, description, kit, actions);
+			card.append(content);
+			gearList.append(card);
+		}
+	};
+
+	const loadGear = async (successMessage = "") => {
+		if (!gearStatus) return;
+		gearStatus.textContent = "Loading gear…";
+		try {
+			const response = await fetch("/admin/api/gear", {
+				credentials: "same-origin",
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			const result = await response.json();
+			const items = Array.isArray(result.items) ? result.items : [];
+			renderGearItems(items);
+			gearStatus.textContent = successMessage;
+		} catch (error) {
+			gearStatus.textContent =
+				error instanceof Error ? error.message : "Could not load gear.";
+		}
+	};
+
+	gearCancel?.addEventListener("click", () => {
+		resetGearForm();
+		if (gearStatus) gearStatus.textContent = "Edit cancelled.";
+	});
+
+	gearForm?.addEventListener("submit", async (event) => {
+		event.preventDefault();
+		if (!gearForm || !gearStatus || !gearId) return;
+		const isEditing = Boolean(gearId.value);
+		gearStatus.textContent = isEditing ? "Updating gear…" : "Adding gear…";
+		if (gearSubmit) gearSubmit.disabled = true;
+		if (gearCancel) gearCancel.disabled = true;
+
+		try {
+			const response = await fetch("/admin/api/gear", {
+				method: isEditing ? "PUT" : "POST",
+				credentials: "same-origin",
+				body: new FormData(gearForm),
+			});
+			if (!response.ok) throw new Error(await readError(response));
+			resetGearForm();
+			await Promise.all([
+				loadGear(isEditing ? "Gear updated." : "Gear added."),
+				loadMedia(),
+			]);
+		} catch (error) {
+			gearStatus.textContent =
+				error instanceof Error ? error.message : "Could not save gear.";
+		} finally {
+			if (gearSubmit) gearSubmit.disabled = false;
+			if (gearCancel) gearCancel.disabled = false;
+		}
+	});
+
+	gearDeleteDialog?.addEventListener("close", async () => {
+		if (
+			gearDeleteDialog.returnValue !== "confirm" ||
+			!pendingDeleteGear ||
+			!gearStatus
+		) {
+			pendingDeleteGear = null;
+			return;
+		}
+
+		const item = pendingDeleteGear;
+		pendingDeleteGear = null;
+		if (gearDeleteSubmit) gearDeleteSubmit.disabled = true;
+		gearStatus.textContent = `Deleting “${item.name}”…`;
+		try {
+			const response = await fetch(
+				`/admin/api/gear?id=${encodeURIComponent(item.id)}`,
+				{ method: "DELETE", credentials: "same-origin" },
+			);
+			if (!response.ok) throw new Error(await readError(response));
+			if (gearId?.value === item.id) resetGearForm();
+			await loadGear("Gear deleted.");
+		} catch (error) {
+			gearStatus.textContent =
+				error instanceof Error ? error.message : "Could not delete gear.";
+		} finally {
+			if (gearDeleteSubmit) gearDeleteSubmit.disabled = false;
+		}
+	});
+
 	const loadSiteLocation = async () => {
 		if (!siteLocationCity || !siteLocationRegion || !siteLocationRegionShort || !siteLocationStatus) return;
 		siteLocationStatus.textContent = "Loading…";
@@ -2181,7 +2491,7 @@ const adminWindows = [
 		pendingDeleteMedia = item;
 		mediaDeleteDialog.returnValue = "";
 		const usageWarning = item.usedBy.length
-			? ` It is currently used by ${item.usedBy.length} ${item.usedBy.length === 1 ? "post" : "posts"}; deleting it will remove the file from those posts.`
+			? ` It is currently used by ${item.usedBy.length} site ${item.usedBy.length === 1 ? "item" : "items"}; deleting it will remove the file from those items.`
 			: "";
 		mediaDeleteMessage.textContent =
 			`Permanently delete “${item.name}” from the website?${usageWarning} This cannot be undone.`;
@@ -2234,7 +2544,7 @@ const adminWindows = [
 			const status = document.createElement("strong");
 			status.className = "media-status-badge";
 			if (item.usedBy.length) {
-				status.textContent = `Used by ${item.usedBy.length} ${item.usedBy.length === 1 ? "post" : "posts"}`;
+				status.textContent = `Used by ${item.usedBy.length} site ${item.usedBy.length === 1 ? "item" : "items"}`;
 				status.classList.add("is-assigned");
 			} else if (item.managed) {
 				status.textContent = "Stored orphan";
@@ -2379,9 +2689,11 @@ const adminWindows = [
 	});
 
 	resetMediaEntryForm();
+	resetGearForm();
 	void loadSiteLocation();
 	void loadBiography();
 	void loadMediaEntries();
+	void loadGear();
 	void loadMedia();
 
 	const adminSymbolPool = [
@@ -2510,13 +2822,13 @@ const adminWindows = [
 		min-width: 320px;
 		min-height: 100vh;
 		overflow-x: clip;
-		background-color: #f3f3f3;
+		background-color: #383838;
 		background-image: radial-gradient(
 			circle,
-			rgb(68 73 74 / 22%) 1.5px,
+			var(--black) 1.5px,
 			transparent 1.7px
 		);
-		background-size: 28px 28px;
+		background-size: 24px 24px;
 		color: var(--admin-gray);
 		font-family: var(--body);
 	}
@@ -2551,15 +2863,15 @@ const adminWindows = [
 		width: 54px;
 		height: 54px;
 		padding: 0;
-		border: 1px solid rgb(68 73 74 / 10%);
+		border: 1px solid rgb(255 255 255 / 14%);
 		border-radius: clamp(8px, 1vw, 16px);
 		outline: 1px solid rgb(255 255 255 / 19%);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 30%);
+		background: rgb(56 56 56 / 64%);
 		box-shadow:
 			inset 0 1px 0 rgb(255 255 255 / 36%),
 			0 8px 22px rgb(37 37 37 / 4.5%);
-		color: var(--admin-gray);
+		color: rgb(255 255 255 / 44%);
 		font-size: 1.25rem;
 		line-height: 1;
 		-webkit-backdrop-filter: blur(9px);
@@ -2572,7 +2884,7 @@ const adminWindows = [
 	}
 
 	.admin-mini-window:hover {
-		background: rgb(255 255 255 / 38%);
+		background: rgb(56 56 56 / 78%);
 		box-shadow:
 			inset 0 1px 0 rgb(255 255 255 / 41%),
 			0 8px 22px rgb(37 37 37 / 4.5%),
@@ -2631,14 +2943,15 @@ const adminWindows = [
 		font-weight: 900;
 		letter-spacing: .18em;
 		text-transform: uppercase;
+		color: var(--yellow);
 	}
 	h1 {
 		margin: 0;
 		font: 950 clamp(5rem, 14vw, 12rem)/.72 var(--display);
 		letter-spacing: -.06em;
 		text-transform: uppercase;
-		color: var(--admin-gray);
-		text-shadow: 0 2px 0 rgb(255 255 255 / 72%);
+		color: var(--white);
+		text-shadow: 8px 8px 0 rgb(37 37 37 / 62%);
 	}
 	header a, button {
 		border: 1px solid rgb(68 73 74 / 20%);
@@ -2689,8 +3002,8 @@ const adminWindows = [
 		border-radius: 18px;
 		outline: 1px solid rgb(255 255 255 / 20%);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 68%);
-		box-shadow: 0 10px 26px rgb(37 37 37 / 10%);
+		background: var(--white);
+		box-shadow: 7px 7px 0 var(--black);
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
 	}
@@ -2699,17 +3012,15 @@ const adminWindows = [
 		position: relative;
 		margin-top: clamp(24px, 4vh, 42px);
 		padding: 44px clamp(24px, 4vw, 52px) 42px;
-		border: 1px solid rgb(68 73 74 / 22%);
+		border: 6px solid var(--white);
 		border-radius: clamp(28px, 4vw, 48px);
 		outline: 1px solid rgb(255 255 255 / 52%);
 		outline-offset: -3px;
-		background: rgb(255 255 255 / 68%);
-		box-shadow:
-			inset 0 1px 0 rgb(255 255 255 / 82%),
-			0 18px 44px rgb(37 37 37 / 12%);
+		background: var(--white);
+		box-shadow: 12px 12px 0 var(--black);
 		color: var(--admin-gray);
-		-webkit-backdrop-filter: blur(14px);
-		backdrop-filter: blur(14px);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
 	}
 	.site-location-section {
 		overflow: hidden;
@@ -3325,6 +3636,61 @@ const adminWindows = [
 			0 12px 28px rgb(0 0 0 / 12%),
 			0 0 22px rgb(68 73 74 / 12%);
 	}
+	.gear-admin-list {
+		display: grid;
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		gap: 16px;
+		margin-top: 34px;
+	}
+	.gear-admin-card {
+		display: grid;
+		grid-template-columns: minmax(110px, .65fr) minmax(0, 1.35fr);
+		gap: 18px;
+		min-width: 0;
+		padding: 16px;
+		border: 1px solid rgb(68 73 74 / 18%);
+		border-radius: 24px;
+		background: rgb(255 255 255 / 54%);
+		box-shadow: 7px 7px 0 rgb(37 37 37 / 16%);
+	}
+	.gear-admin-card > img {
+		width: 100%;
+		height: 100%;
+		min-height: 170px;
+		border-radius: 17px;
+		object-fit: cover;
+	}
+	.gear-admin-content {
+		display: flex;
+		flex-direction: column;
+		min-width: 0;
+	}
+	.gear-admin-content h3 {
+		margin: 2px 0 5px;
+		font: 900 clamp(1.1rem, 2vw, 1.45rem) / 1.08 var(--display);
+		overflow-wrap: anywhere;
+	}
+	.gear-admin-category,
+	.gear-admin-rating,
+	.gear-admin-parts {
+		margin: 0;
+		font-size: .74rem;
+		font-weight: 900;
+		letter-spacing: .065em;
+		text-transform: uppercase;
+	}
+	.gear-admin-category { color: rgb(37 37 37 / 62%); }
+	.gear-admin-rating { color: #8b7713; }
+	.gear-admin-description {
+		display: -webkit-box;
+		margin: 12px 0;
+		overflow: hidden;
+		font-size: .9rem;
+		line-height: 1.45;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 4;
+	}
+	.gear-admin-parts { margin-bottom: 14px; }
 	.entry-admin-card img {
 		width: 100%;
 		aspect-ratio: 16 / 9;
@@ -3563,7 +3929,8 @@ const adminWindows = [
 	}
 		.delete-confirm-dialog #delete-confirm-message,
 		.delete-confirm-dialog #credit-delete-message,
-		.delete-confirm-dialog #media-delete-message {
+		.delete-confirm-dialog #media-delete-message,
+		.delete-confirm-dialog #gear-delete-message {
 		margin: 0 auto;
 		max-width: 390px;
 		font-size: 1.02rem;
@@ -3653,7 +4020,8 @@ const adminWindows = [
 			padding: 36px 24px 34px;
 			border-radius: 30px;
 		}
-			.entry-admin-grid {
+			.entry-admin-grid,
+			.gear-admin-list {
 				grid-template-columns: 1fr;
 			}
 			.credit-category-admin-list {
@@ -3724,6 +4092,8 @@ const adminWindows = [
 			flex-direction: column;
 		}
 		.media-list { grid-template-columns: 1fr; }
+		.gear-admin-card { grid-template-columns: 1fr; }
+		.gear-admin-card > img { max-height: 300px; }
 		.media-name-form { grid-template-columns: 1fr; }
 		.section-divider { --divider-height: 108px; }
 		.site-footer {

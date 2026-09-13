@@ -1,6 +1,7 @@
 ---
 import SiteMenu from "../common/SiteMenu.astro";
 import PageMotion from "../common/PageMotion.astro";
+import BrandPageTheme from "../common/BrandPageTheme.astro";
 
 interface Props {
 	metaDescription: string;
@@ -59,7 +60,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		<link rel="icon" type="image/png" href="/brand-center-favicon.png" />
 		<title>{documentTitle}</title>
 	</head>
-	<body>
+	<body class="brand-system">
+		<BrandPageTheme />
 		<main
 			class="page"
 			data-motion-root

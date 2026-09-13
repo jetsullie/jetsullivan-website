@@ -1,6 +1,7 @@
 ---
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
+import BrandPageTheme from "../components/common/BrandPageTheme.astro";
 
 const backgroundWindows = [
 	{ x: 2, y: 16, w: 38, h: 31, symbol: "+", font: 8 },
@@ -39,7 +40,8 @@ const backgroundWindows = [
 		<title>Contact Jet Sullivan</title>
 	</head>
 
-	<body>
+	<body class="brand-system">
+		<BrandPageTheme />
 		<main class="contact-page" data-motion-root>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="yellow-panel" data-motion-depth="counter" aria-hidden="true"></div>

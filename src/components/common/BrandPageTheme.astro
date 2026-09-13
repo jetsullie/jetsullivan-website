@@ -1,0 +1,167 @@
+<style is:global>
+	:root {
+		--brand-grid-gray: #383838;
+		--brand-jet-black: #252525;
+		--brand-studio-white: #fff;
+		--brand-spotlight-yellow: #efda4a;
+		--brand-sky-blue: #93e9f9;
+		--brand-soft-pink: #fdbfbf;
+		--brand-fresh-mint: #7cf5b5;
+	}
+
+	body.brand-system {
+		background: var(--brand-jet-black);
+		color: var(--brand-studio-white);
+	}
+
+	body.brand-system :is(.page, .collection-page, .about-page, .contact-page, .login-page) {
+		background-color: var(--brand-grid-gray);
+		background-image: radial-gradient(
+			circle,
+			var(--brand-jet-black) 1.45px,
+			transparent 1.6px
+		);
+		background-size: 24px 24px;
+		color: var(--brand-studio-white);
+	}
+
+	body.brand-system :is(.top-frame, .section-divider, .site-footer) {
+		background: var(--brand-jet-black);
+	}
+
+	body.brand-system :is(.yellow-panel, .blue-panel, .accent-panel) {
+		border-color: rgb(255 255 255 / 16%);
+		outline: 0;
+		box-shadow: 10px 10px 0 rgb(37 37 37 / 20%);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	body.brand-system .yellow-panel { background: rgb(239 218 74 / 88%); }
+	body.brand-system .blue-panel { background: rgb(147 233 249 / 88%); }
+	body.brand-system .about-page .yellow-panel { background: rgb(253 191 191 / 86%); }
+	body.brand-system .contact-page .yellow-panel { background: rgb(147 233 249 / 86%); }
+	body.brand-system .page .yellow-panel { background: rgb(124 245 181 / 84%); }
+	body.brand-system .accent-panel {
+		background: color-mix(in srgb, var(--accent) 88%, transparent);
+	}
+
+	body.brand-system :is(
+		.about-content,
+		.contact-content,
+		.content,
+		.collection-content,
+		.login-hero
+	) h1 {
+		color: var(--brand-studio-white);
+		text-shadow: 8px 8px 0 rgb(37 37 37 / 46%);
+	}
+
+	body.brand-system :is(.eyebrow, .heading-card-label) {
+		color: var(--brand-spotlight-yellow);
+	}
+
+	body.brand-system :is(.background-windows, .floaters) {
+		opacity: .72;
+	}
+
+	body.brand-system .mini-window {
+		border-color: rgb(255 255 255 / 16%);
+		background: rgb(56 56 56 / 66%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 12%),
+			5px 5px 0 rgb(37 37 37 / 16%);
+		color: rgb(255 255 255 / 46%);
+		-webkit-backdrop-filter: blur(7px);
+		backdrop-filter: blur(7px);
+	}
+
+	body.brand-system .about-page .background-windows {
+		opacity: .64;
+	}
+
+	body.brand-system .about-page .mini-window:not(.interactive-window) {
+		background: rgb(56 56 56 / 58%);
+		color: rgb(255 255 255 / 36%);
+	}
+
+	body.brand-system .mini-dots i {
+		border: 0;
+		background: #8d9294;
+		box-shadow: none;
+	}
+
+	body.brand-system :is(
+		.story-window,
+		.info-window,
+		.details-window,
+		.login-card,
+		.status-card,
+		.entry-card
+	) {
+		border: 6px solid var(--brand-studio-white);
+		outline: 0;
+		background: var(--brand-studio-white);
+		box-shadow: 11px 11px 0 var(--brand-jet-black);
+		color: var(--brand-jet-black);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	body.brand-system :is(.story-window, .info-window, .details-window, .login-card) {
+		border-radius: 28px;
+	}
+
+	body.brand-system .window-dots i,
+	body.brand-system .dots i {
+		background: #8d9294;
+	}
+
+	body.brand-system .window-dots i:nth-child(2),
+	body.brand-system .dots i:nth-child(2) { background: #8d9294; }
+	body.brand-system .window-dots i:nth-child(3),
+	body.brand-system .dots i:nth-child(3) { background: #8d9294; }
+
+	body.brand-system :is(.public-media .media-tab, .heading-card) {
+		border-color: rgb(255 255 255 / 18%);
+		background: rgb(37 37 37 / 88%);
+		box-shadow: 7px 7px 0 rgb(37 37 37 / 26%);
+	}
+
+	body.brand-system .credit-card {
+		border: 6px solid var(--brand-studio-white);
+		outline: 0;
+		box-shadow: 11px 11px 0 var(--brand-jet-black);
+	}
+
+	body.brand-system .footer-content {
+		color: var(--brand-studio-white);
+	}
+
+	@media (max-width: 600px) {
+		body.brand-system :is(
+			.about-content,
+			.contact-content,
+			.content,
+			.collection-content,
+			.login-hero
+		) h1 {
+			text-shadow: 5px 5px 0 rgb(37 37 37 / 46%);
+		}
+		body.brand-system :is(
+			.story-window,
+			.info-window,
+			.details-window,
+			.login-card,
+			.status-card,
+			.entry-card
+		) {
+			border-width: 4px;
+			box-shadow: 8px 8px 0 var(--brand-jet-black);
+		}
+		body.brand-system .credit-card {
+			border-width: 4px;
+			box-shadow: 8px 8px 0 var(--brand-jet-black);
+		}
+	}
+</style>

@@ -1,6 +1,7 @@
 ---
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
+import BrandPageTheme from "../components/common/BrandPageTheme.astro";
 
 const pageTitle = "About Jet Sullivan";
 
@@ -41,7 +42,8 @@ const backgroundWindows = [
 		<title>{pageTitle}</title>
 	</head>
 
-	<body>
+	<body class="brand-system">
+		<BrandPageTheme />
 		<main class="about-page" data-motion-root>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="yellow-panel" data-motion-depth="counter" aria-hidden="true"></div>

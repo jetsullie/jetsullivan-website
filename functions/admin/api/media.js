@@ -6,6 +6,7 @@ import {
 	validateMediaAttachment,
 	writeMediaEntry,
 } from "../../_shared/media-entries.js";
+import { readGearItems, writeGearItem } from "../../_shared/gear.js";
 
 const maxUploadBytes = 100 * 1024 * 1024;
 const MEDIA_NAMES_KEY = "media-library:names";
@@ -42,12 +43,16 @@ const writeNameOverrides = async (kv, names) => {
 
 const readEntryGroups = async (kv) => {
 	if (!kv) return [];
-	return Promise.all(
+	const mediaGroups = await Promise.all(
 		[...MEDIA_ENTRY_SECTIONS].map(async (section) => ({
 			section,
 			entries: await readMediaEntries(kv, section),
 		})),
 	);
+	return [
+		...mediaGroups,
+		{ section: "gear", entries: await readGearItems(kv) },
+	];
 };
 
 const buildReferenceMap = (groups) => {
@@ -64,8 +69,8 @@ const buildReferenceMap = (groups) => {
 			add(entry.imageKey, {
 				section: group.section,
 				entryId: entry.id,
-				title: entry.title || "Untitled post",
-				role: "Primary photo",
+				title: entry.title || entry.name || "Untitled item",
+				role: group.section === "gear" ? "Gear photo" : "Primary photo",
 			});
 			add(entry.attachmentKey, {
 				section: group.section,
@@ -82,6 +87,7 @@ const updateReferencesForRename = async (kv, groups, key, displayName) => {
 	if (!kv) return 0;
 	let updated = 0;
 	for (const group of groups) {
+		if (group.section === "gear") continue;
 		for (const entry of group.entries) {
 			if (entry.attachmentKey !== key) continue;
 			await writeMediaEntry(kv, group.section, {
@@ -103,6 +109,18 @@ const clearReferencesForDelete = async (kv, groups, key) => {
 			const clearsImage = entry.imageKey === key;
 			const clearsAttachment = entry.attachmentKey === key;
 			if (!clearsImage && !clearsAttachment) continue;
+
+			if (group.section === "gear") {
+				await writeGearItem(kv, {
+					...entry,
+					imageKey: null,
+					imageType: null,
+					imageAlt: null,
+					updatedAt: new Date().toISOString(),
+				});
+				updated += 1;
+				continue;
+			}
 
 			await writeMediaEntry(kv, group.section, {
 				...entry,

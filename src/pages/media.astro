@@ -1,6 +1,7 @@
 ---
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
+import BrandPageTheme from "../components/common/BrandPageTheme.astro";
 
 const windows = [
 	[3, 17, 42, 34, "▶"], [10, 48, 52, 40, "○"], [17, 8, 46, 38, "✦"],
@@ -22,7 +23,8 @@ const windows = [
 		<link rel="icon" type="image/png" href="/brand-center-favicon.png" />
 		<title>Media — Jet Sullivan</title>
 	</head>
-	<body>
+	<body class="brand-system">
+		<BrandPageTheme />
 		<main class="page" data-motion-root>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="yellow-panel" data-motion-depth="counter" aria-hidden="true"></div>
