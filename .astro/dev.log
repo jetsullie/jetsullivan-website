@@ -112,3 +112,11 @@
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
 {"message":"[200] / 4ms","label":null,"level":"info"}
 {"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[200] /gear/ 3ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"[404] /api/gear 0ms","label":null,"level":"info"}
+{"message":"[200] / 3ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
+{"message":"src/pages/gear.astro","label":"watch","level":"info"}
+{"message":"[200] / 5ms","label":null,"level":"info"}
+{"message":"[404] /api/content/site 0ms","label":null,"level":"info"}
