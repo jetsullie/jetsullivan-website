@@ -143,6 +143,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 </html>
 
 <script>
+	import { createArrow } from "../../scripts/arrow";
 	import { setupPostDialog } from "../../scripts/post-dialog";
 
 	interface MediaEntry {
@@ -270,7 +271,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			symbol.className = "file-preview-symbol";
 			kind.className = "file-preview-kind";
 			filename.className = "file-preview-name";
-			symbol.textContent = isAudio ? "♪" : isPdf ? "PDF" : "↗";
+			if (isAudio || isPdf) symbol.textContent = isAudio ? "♪" : "PDF";
+			else symbol.append(createArrow());
 			kind.textContent = isAudio ? "Audio" : isPdf ? "PDF" : "File";
 			filename.textContent = name;
 			frame.append(symbol, kind, filename);
@@ -297,7 +299,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			fallback.href = attachmentUrl.href;
 			fallback.target = "_blank";
 			fallback.rel = "noopener noreferrer";
-			fallback.textContent = `Open ${name} in a new tab ↗`;
+			fallback.textContent = `Open ${name} in a new tab`;
+			fallback.append(" ", createArrow());
 			frame.classList.add("pdf-attachment");
 			frame.append(viewer, fallback);
 			return frame;
@@ -308,7 +311,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		fileLink.target = "_blank";
 		fileLink.rel = "noopener noreferrer";
 		fileLink.className = "attachment-file";
-		fileLink.textContent = `Open ${name} ↗`;
+		fileLink.textContent = `Open ${name}`;
+			fileLink.append(" ", createArrow());
 		frame.classList.add("file-attachment");
 		frame.append(fileLink);
 		return frame;
@@ -419,7 +423,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			const link = document.createElement("a");
 			link.href = destination.href;
 			link.className = "entry-link";
-			link.textContent = `${resolvedCtaLabel} ↗`;
+			link.textContent = `${resolvedCtaLabel}`;
+			link.append(" ", createArrow());
 			if (destination.origin !== window.location.origin) {
 				link.target = "_blank";
 				link.rel = "noopener noreferrer";

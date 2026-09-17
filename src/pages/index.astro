@@ -1,4 +1,5 @@
 ---
+import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 
@@ -123,7 +124,7 @@ const backgroundWindows = [
 							style={`--x:${item.x}%; --y:${item.y}%; --w:${item.w}px; --h:${item.h}px; --symbol-size:${item.font}px;`}
 						>
 							<span class="mini-dots"><i></i><i></i><i></i></span>
-							<span class="mini-symbol">{item.symbol}</span>
+							<span class="mini-symbol">{item.symbol === "↗" ? <Arrow /> : item.symbol}</span>
 						</div>
 					))
 				}
@@ -264,7 +265,7 @@ const backgroundWindows = [
 								<span class="paper-copy"><i></i><i></i><i></i><i></i><i></i></span>
 							</span>
 						</span>
-						<span class="section-tab-action">Meet Jet <span aria-hidden="true">↗</span></span>
+						<span class="section-tab-action">Meet Jet <Arrow /></span>
 					</a>
 				</div>
 			</div>
@@ -300,7 +301,7 @@ const backgroundWindows = [
 								</span>
 							</span>
 						</span>
-						<span class="section-tab-action">View Media <span aria-hidden="true">↗</span></span>
+						<span class="section-tab-action">View Media <Arrow /></span>
 					</a>
 				</div>
 			</div>
@@ -326,7 +327,7 @@ const backgroundWindows = [
 					<a class="section-tab contact-tab" href="/contact/" data-motion-depth="deep">
 						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<span class="contact-plane" aria-hidden="true"></span>
-						<span class="section-tab-action">Contact Jet <span aria-hidden="true">↗</span></span>
+						<span class="section-tab-action">Contact Jet <Arrow /></span>
 					</a>
 				</div>
 			</div>
@@ -1273,6 +1274,7 @@ const backgroundWindows = [
 	}
 
 	:global(.search-suggestion-arrow) {
+		font-size: 26px;
 		display: grid;
 		width: 30px;
 		height: 30px;
@@ -2992,6 +2994,7 @@ const backgroundWindows = [
 </style>
 
 <script>
+	import { createArrow } from "../scripts/arrow";
 	const responsiveCanvas = document.querySelector<HTMLElement>(".canvas");
 	const surnameLine = document.querySelector<HTMLElement>(".surname-line");
 	const surnameWord = surnameLine?.querySelector<HTMLElement>(".name-word");
@@ -3517,14 +3520,7 @@ const backgroundWindows = [
 					const title = document.createElement("strong");
 					const description = document.createElement("small");
 					const arrow = document.createElement("span");
-					const arrowIcon = document.createElementNS(
-						"http://www.w3.org/2000/svg",
-						"svg",
-					);
-					const arrowPath = document.createElementNS(
-						"http://www.w3.org/2000/svg",
-						"path",
-					);
+					const arrowIcon = createArrow("right");
 
 					result.id = `site-search-result-${index}`;
 					result.className = "search-suggestion";
@@ -3545,10 +3541,7 @@ const backgroundWindows = [
 					description.textContent = destination.description;
 					arrow.className = "search-suggestion-arrow";
 					arrow.setAttribute("aria-hidden", "true");
-					arrowIcon.setAttribute("viewBox", "0 0 26 20");
 					arrowIcon.setAttribute("focusable", "false");
-					arrowPath.setAttribute("d", "M3 10H23M16 3L23 10L16 17");
-					arrowIcon.append(arrowPath);
 					arrow.append(arrowIcon);
 
 					copy.append(title, description);

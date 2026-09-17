@@ -1,0 +1,8 @@
+---
+import { arrowPath, arrowAngles, arrowStyle, type ArrowDirection } from "../../scripts/arrow";
+interface Props { direction?: ArrowDirection; class?: string; size?: string; }
+const { direction = "northeast", class: className = "", size } = Astro.props;
+---
+<svg class:list={["site-arrow", className]} viewBox="0 0 26 26" aria-hidden="true" focusable="false" style={`${arrowStyle}${size ? `;font-size:${size}` : ""}`}>
+	<path d={arrowPath} transform={`translate(0 3) rotate(${arrowAngles[direction]} 13 10)`} />
+</svg>

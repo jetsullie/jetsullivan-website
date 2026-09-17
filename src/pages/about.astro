@@ -1,4 +1,5 @@
 ---
+import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 import BrandPageTheme from "../components/common/BrandPageTheme.astro";
@@ -57,7 +58,7 @@ const backgroundWindows = [
 							style={`--x:${item.x}%; --y:${item.y}%; --w:${item.w}px; --h:${item.h}px; --symbol-size:${item.font}px;`}
 						>
 							<span class="mini-dots"><i></i><i></i><i></i></span>
-							<span class="mini-symbol">{item.symbol}</span>
+							<span class="mini-symbol">{item.symbol === "↗" ? <Arrow /> : item.symbol}</span>
 						</span>
 					))
 				}

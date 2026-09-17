@@ -577,6 +577,7 @@ const adminWindows = [
 </html>
 
 <script>
+	import { createArrow } from "../scripts/arrow";
 	import {
 		BIOGRAPHY_MAX_LENGTH,
 		biographyDocumentFromText,
@@ -1238,11 +1239,11 @@ const adminWindows = [
 			button.type = "button";
 			button.className = "secondary-button credit-film-row-button";
 		}
-		moveUp.textContent = "↑";
+		moveUp.append(createArrow("up"));
 		moveUp.title = `Move ${itemName} up`;
 		moveUp.setAttribute("aria-label", `Move this ${itemName} up`);
 		moveUp.dataset.creditRowUp = "true";
-		moveDown.textContent = "↓";
+		moveDown.append(createArrow("down"));
 		moveDown.title = `Move ${itemName} down`;
 		moveDown.setAttribute("aria-label", `Move this ${itemName} down`);
 		moveDown.dataset.creditRowDown = "true";
@@ -1444,7 +1445,7 @@ const adminWindows = [
 					anchor.target = "_blank";
 					anchor.rel = "noopener noreferrer";
 					arrow.setAttribute("aria-hidden", "true");
-					arrow.textContent = " ↗";
+					arrow.append(" ", createArrow());
 					anchor.append(filmName, arrow);
 					item.append(anchor);
 				} else {
@@ -1919,7 +1920,8 @@ const adminWindows = [
 					preview.href = entry.link;
 					preview.target = "_blank";
 					preview.rel = "noopener noreferrer";
-					preview.textContent = "Open link ↗";
+					preview.textContent = "Open link";
+					preview.append(" ", createArrow());
 					actions.append(preview);
 				}
 				if (entry.attachmentUrl) {
@@ -1927,7 +1929,8 @@ const adminWindows = [
 					attachmentLink.href = entry.attachmentUrl;
 					attachmentLink.target = "_blank";
 					attachmentLink.rel = "noopener noreferrer";
-					attachmentLink.textContent = `Open ${entry.attachmentName || "attachment"} ↗`;
+					attachmentLink.textContent = `Open ${entry.attachmentName || "attachment"}`;
+					attachmentLink.append(" ", createArrow());
 					actions.append(attachmentLink);
 				}
 
@@ -2589,7 +2592,8 @@ const adminWindows = [
 			open.href = item.url;
 			open.target = "_blank";
 			open.rel = "noopener noreferrer";
-			open.textContent = "Open file ↗";
+			open.textContent = "Open file";
+			open.append(" ", createArrow());
 			copy.type = "button";
 			copy.className = "secondary-button";
 			copy.textContent = "Copy URL";

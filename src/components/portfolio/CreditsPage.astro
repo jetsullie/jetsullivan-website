@@ -111,6 +111,7 @@ const {
 </html>
 
 <script>
+	import { createArrow } from "../../scripts/arrow";
 	type CreditFilm = {
 		id: string;
 		name: string;
@@ -317,7 +318,7 @@ const {
 		link.append(copy);
 		arrow.className = "outbound-arrow";
 		arrow.setAttribute("aria-hidden", "true");
-		arrow.textContent = "↗";
+		arrow.append(createArrow());
 		link.append(arrow);
 		item.append(link);
 		return item;

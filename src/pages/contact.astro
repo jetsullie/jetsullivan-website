@@ -1,4 +1,5 @@
 ---
+import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 import BrandPageTheme from "../components/common/BrandPageTheme.astro";
@@ -55,7 +56,7 @@ const backgroundWindows = [
 							style={`--x:${item.x}%; --y:${item.y}%; --w:${item.w}px; --h:${item.h}px; --symbol-size:${item.font}px;`}
 						>
 							<span class="mini-dots"><i></i><i></i><i></i></span>
-							<span class="mini-symbol">{item.symbol}</span>
+							<span class="mini-symbol">{item.symbol === "↗" ? <Arrow /> : item.symbol}</span>
 						</span>
 					))
 				}
@@ -82,7 +83,7 @@ const backgroundWindows = [
 									<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="3"></rect><path d="m4.5 7 7.5 6 7.5-6"></path></svg>
 								</span>
 								<span class="email-copy"><small>Email</small><strong>contact@jetsullivan.com</strong></span>
-								<svg class="email-arrow" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 18 18 6M9 6h9v9"></path></svg>
+								<Arrow class="email-arrow" size="24px" />
 							</a>
 							<div class="copy-row">
 								<button id="copy-email" type="button" data-email="contact@jetsullivan.com">

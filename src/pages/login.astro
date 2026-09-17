@@ -1,4 +1,5 @@
 ---
+import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 import BrandPageTheme from "../components/common/BrandPageTheme.astro";
@@ -36,7 +37,7 @@ const backgroundWindows = Array.from({ length: 22 }, (_, index) => ({
 							data-motion-float
 							style={`--x:${item.x}%;--y:${item.y}%;--size:${item.size}px;--delay:-${index * 0.27}s;`}
 						>
-							<span>{item.symbol}</span>
+							<span>{item.symbol === "↗" ? <Arrow /> : item.symbol}</span>
 						</span>
 					))
 				}
@@ -71,9 +72,7 @@ const backgroundWindows = Array.from({ length: 22 }, (_, index) => ({
 
 					<a class="login-button" href="/admin/">
 						<span>Enter admin</span>
-						<svg viewBox="0 0 28 20" aria-hidden="true">
-							<path d="M3 10h21M17 3l7 7-7 7" />
-						</svg>
+						<Arrow direction="right" size="26px" />
 					</a>
 
 					<p class="security-note">

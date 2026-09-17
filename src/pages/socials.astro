@@ -1,4 +1,5 @@
 ---
+import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 
@@ -87,7 +88,7 @@ const socialLinks = [
 							style={`--x:${item.x}%;--y:${item.y}%;--w:${item.w}px;--h:${item.h}px;--delay:-${index * 0.31}s;`}
 						>
 							<span class="mini-dots"><i></i><i></i><i></i></span>
-							<span>{item.symbol}</span>
+							<span>{item.symbol === "↗" ? <Arrow /> : item.symbol}</span>
 						</span>
 					))
 				}
@@ -213,7 +214,7 @@ const socialLinks = [
 								</span>
 								<span class="social-copy">
 									<strong>{link.name}</strong>
-									<small>{link.type} ↗</small>
+									<small>{link.type} <Arrow /></small>
 								</span>
 							</a>
 						))

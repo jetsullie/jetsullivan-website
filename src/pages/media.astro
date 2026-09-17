@@ -1,4 +1,5 @@
 ---
+import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 import BrandPageTheme from "../components/common/BrandPageTheme.astro";
@@ -37,7 +38,7 @@ const windows = [
 						style={`--x:${item[0]}%;--y:${item[1]}%;--w:${item[2]}px;--h:${item[3]}px;--delay:-${index * 0.37}s;`}
 					>
 						<span class="mini-dots"><i></i><i></i><i></i></span>
-						<span>{item[4]}</span>
+						<span>{item[4] === "↗" ? <Arrow /> : item[4]}</span>
 					</span>
 				))}
 			</div>
