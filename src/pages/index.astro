@@ -47,7 +47,7 @@ const backgroundWindows = [
 		<meta property="og:site_name" content={name} />
 		<meta property="og:title" content={pageTitle} />
 		<meta property="og:description" content={pageDescription} />
-		<link rel="icon" type="image/png" sizes="512x512" href="/favicon-profile.png" />
+		<link rel="icon" type="image/png" sizes="512x512" href="/brand-center-favicon.png" />
 		<title>{pageTitle}</title>
 		<script is:inline>
 			window.addEventListener("load", () => {
@@ -57,7 +57,8 @@ const backgroundWindows = [
 		<noscript><style>body.home-layout-pending { visibility: visible !important; }</style></noscript>
 	</head>
 
-	<body class="home-layout-pending">
+	<!-- Remove `brand-guide-home-preview` to restore the previous homepage presentation. -->
+	<body class="home-layout-pending brand-guide-home-preview">
 		<SiteMenu />
 
 		<form class="search-bar" action="/" method="get" role="search">
@@ -144,7 +145,7 @@ const backgroundWindows = [
 					<span class="location-box" aria-hidden="true">
 						<span class="selection-cursor"></span>
 					</span>
-					<span class="location-name">Austin, TX</span>
+					<span class="location-name" data-site-location="short">Austin, TX</span>
 					<span class="location-roles">Actor · Filmmaker · Videographer · Content Creator</span>
 				</div>
 
@@ -247,6 +248,7 @@ const backgroundWindows = [
 				<h2 id="about-heading">Who is Jet?</h2>
 				<div class="section-layout">
 					<div class="glass-panel" data-motion-depth="counter">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>
 							My name is Jet Sullivan, and I am a Moody Honors Radio-Television-Film
 							senior student at the University of Texas at Austin. I am an actor,
@@ -279,6 +281,7 @@ const backgroundWindows = [
 				<h2 id="media-heading">News and Media</h2>
 				<div class="section-layout section-layout-reverse">
 					<div class="glass-panel" data-motion-depth="counter">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>
 							See what’s new with Jet—from featured projects and interviews to press
 							coverage and moments from behind the scenes.
@@ -314,6 +317,7 @@ const backgroundWindows = [
 				<h2 id="contact-heading">Contact Jet?</h2>
 				<div class="section-layout">
 					<div class="glass-panel" data-motion-depth="counter">
+						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
 						<p>
 							Have a project, role, collaboration, or story in mind? Reach out to Jet
 							and start the conversation.
@@ -334,13 +338,11 @@ const backgroundWindows = [
 			<div class="footer-content">
 				<p class="footer-name">Jet Sullivan</p>
 				<span aria-hidden="true"></span>
-				<p class="footer-location">Austin, Texas</p>
+				<p class="footer-location" data-site-location="long">Austin, Texas</p>
 			</div>
 		</footer>
 
 		<PageMotion />
-	</body>
-</html>
 
 <style>
 	:root {
@@ -557,6 +559,7 @@ const backgroundWindows = [
 		line-height: 1;
 		text-decoration: none;
 		transform: translateX(96px);
+		translate: 48px 0;
 	}
 
 	.location-name {
@@ -729,14 +732,16 @@ const backgroundWindows = [
 	}
 
 	.surname-line {
+		--surname-fit-size: 1em;
 		position: relative;
 		width: max-content;
+		font-size: var(--surname-fit-size);
 	}
 
 	.canvas.surname-does-not-fit .surname-line {
-		position: absolute;
-		visibility: hidden;
-		pointer-events: none;
+		position: relative;
+		visibility: visible;
+		pointer-events: auto;
 	}
 
 	.portrait {
@@ -1099,8 +1104,7 @@ const backgroundWindows = [
 			transform 280ms cubic-bezier(0.34, 1.4, 0.64, 1);
 	}
 
-	.search-bar:not(.is-open):not(.is-closing):not(.suppress-hover):hover,
-	.search-bar.is-open:focus-within {
+	.search-bar:not(.is-open):not(.is-closing):not(.suppress-hover):hover {
 		box-shadow:
 			0 8px 28px rgb(37 37 37 / 14%),
 			0 0 18px rgb(255 255 255 / 38%);
@@ -1119,7 +1123,6 @@ const backgroundWindows = [
 		width: min(50vw, 690px);
 		overflow: visible;
 		background: var(--control-glass-surface);
-		animation: search-open-glow 2.8s ease-in-out infinite;
 	}
 
 	.search-bar:not(.is-open) {
@@ -1129,22 +1132,6 @@ const backgroundWindows = [
 	.search-bar.is-closing {
 		background: var(--control-glass-surface);
 		box-shadow: var(--control-glass-shadow);
-	}
-
-	.search-bar.is-closing::after {
-		position: absolute;
-		z-index: 0;
-		top: 50%;
-		left: 31px;
-		width: 46px;
-		height: 46px;
-		border: 2px solid rgb(147 233 249 / 48%);
-		border-radius: 50%;
-		box-shadow: 0 0 12px rgb(147 233 249 / 24%);
-		content: "";
-		pointer-events: none;
-		transform: translate(-50%, -50%) scale(0.12);
-		animation: search-close-ripple 390ms ease-out forwards;
 	}
 
 	.search-toggle {
@@ -1178,7 +1165,7 @@ const backgroundWindows = [
 	}
 
 	.search-input::placeholder {
-		color: rgb(37 37 37 / 55%);
+		color: #555;
 	}
 
 	.search-input::-webkit-search-cancel-button {
@@ -1253,11 +1240,11 @@ const backgroundWindows = [
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
 		animation:
-			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
-			search-open-glow 2.8s ease-in-out var(--search-glow-delay, 0ms) infinite;
+			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both;
 		transition: background-color 150ms ease;
 	}
 
+	:global(.search-suggestion:focus-visible),
 	:global(.search-suggestion:hover),
 	:global(.search-suggestion.is-active) {
 		background: var(--control-glass-surface-active);
@@ -1271,7 +1258,7 @@ const backgroundWindows = [
 
 	:global(.search-suggestion strong) {
 		overflow: hidden;
-		font: 800 0.96rem/1.2 var(--font-body);
+		font: 800 1.05rem/1.3 var(--font-body);
 		letter-spacing: -0.01em;
 		text-overflow: ellipsis;
 		white-space: nowrap;
@@ -1279,8 +1266,8 @@ const backgroundWindows = [
 
 	:global(.search-suggestion small) {
 		overflow: hidden;
-		color: rgb(37 37 37 / 62%);
-		font: 650 0.72rem/1.25 var(--font-body);
+		color: #454545;
+		font: 650 0.85rem/1.4 var(--font-body);
 		text-overflow: ellipsis;
 		white-space: nowrap;
 	}
@@ -1318,8 +1305,7 @@ const backgroundWindows = [
 		-webkit-backdrop-filter: blur(12px);
 		backdrop-filter: blur(12px);
 		animation:
-			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both,
-			search-open-glow 2.8s ease-in-out var(--search-glow-delay, 0ms) infinite;
+			search-suggestion-cascade var(--suggestion-duration, 330ms) cubic-bezier(0.22, 1, 0.36, 1) var(--suggestion-delay, 55ms) both;
 	}
 
 	.search-close span {
@@ -1341,30 +1327,6 @@ const backgroundWindows = [
 		transform: rotate(90deg);
 	}
 
-	@keyframes search-open-glow {
-		0%,
-		100% {
-			box-shadow:
-				0 8px 28px rgb(37 37 37 / 14%),
-				0 0 18px rgb(147 233 249 / 48%),
-				0 0 38px rgb(147 233 249 / 20%);
-		}
-
-		33% {
-			box-shadow:
-				0 8px 28px rgb(37 37 37 / 14%),
-				0 0 20px rgb(253 191 191 / 52%),
-				0 0 42px rgb(253 191 191 / 22%);
-		}
-
-		66% {
-			box-shadow:
-				0 8px 28px rgb(37 37 37 / 14%),
-				0 0 20px rgb(124 245 181 / 50%),
-				0 0 42px rgb(124 245 181 / 20%);
-		}
-	}
-
 	@keyframes search-suggestion-cascade {
 		0% {
 			opacity: 0;
@@ -1374,22 +1336,6 @@ const backgroundWindows = [
 		100% {
 			opacity: 1;
 			transform: translateY(0);
-		}
-	}
-
-	@keyframes search-close-ripple {
-		0% {
-			opacity: 0.8;
-			transform: translate(-50%, -50%) scale(0.12);
-		}
-
-		68% {
-			opacity: 0.32;
-		}
-
-		100% {
-			opacity: 0;
-			transform: translate(-50%, -50%) scale(1.32);
 		}
 	}
 
@@ -2738,11 +2684,319 @@ const backgroundWindows = [
 	}
 </style>
 
+<!-- Brand Center homepage preview: intentionally isolated for a clean rollback. -->
+<style id="brand-guide-home-preview">
+	:global(body.brand-guide-home-preview) .canvas {
+		background-color: #383838;
+		background-image: radial-gradient(circle, var(--black) 1.5px, transparent 1.6px);
+		background-size: 24px 24px;
+	}
+
+	:global(body.brand-guide-home-preview) .canvas::before {
+		top: auto;
+		right: -11%;
+		bottom: -32%;
+		left: auto;
+		width: min(62vw, 920px);
+		height: auto;
+		aspect-ratio: 1;
+		border: 0;
+		border-radius: 50%;
+		background: var(--yellow);
+		box-shadow: none;
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	:global(body.brand-guide-home-preview) .top-frame {
+		background: var(--black);
+	}
+
+	/* Temporary comparison: keep the floating tabs available, but hide the layer. */
+	:global(body.brand-guide-home-preview) .background-windows {
+		display: none;
+	}
+
+	:global(body.brand-guide-home-preview) .background-window {
+		border-color: rgb(255 255 255 / 20%);
+		background: rgb(56 56 56 / 68%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 16%),
+			0 8px 20px rgb(0 0 0 / 12%);
+		color: rgb(255 255 255 / 42%);
+		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(8px);
+	}
+
+	:global(body.brand-guide-home-preview) .background-window .mini-dots i,
+	:global(body.brand-guide-home-preview) .background-window .mini-dots i:nth-child(2),
+	:global(body.brand-guide-home-preview) .background-window .mini-dots i:nth-child(3) {
+		background: #8d9294;
+	}
+
+	:global(body.brand-guide-home-preview) .name-word {
+		color: var(--white);
+		-webkit-text-stroke: 0;
+		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
+			rgb(0 0 0 / 24%);
+	}
+
+	:global(body.brand-guide-home-preview) .hero h1 {
+		gap: clamp(10px, 1.1vw, 18px);
+		letter-spacing: -0.035em;
+	}
+
+	:global(body.brand-guide-home-preview) .location {
+		color: var(--white);
+		font-family: var(--font-display);
+		letter-spacing: -0.045em;
+		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
+			rgb(0 0 0 / 24%);
+	}
+
+	:global(body.brand-guide-home-preview) .location-box {
+		border-color: var(--white);
+	}
+
+	:global(body.brand-guide-home-preview) .selection-cursor {
+		background: var(--white);
+	}
+
+	:global(body.brand-guide-home-preview) .location-roles {
+		color: var(--white);
+		font-family: var(--font-body);
+		font-weight: 700;
+		letter-spacing: 0.02em;
+		text-shadow: clamp(7px, 1vw, 14px) clamp(9px, 1.3vw, 18px) 0
+			rgb(0 0 0 / 24%);
+	}
+
+	:global(body.brand-guide-home-preview) .work-card {
+		border-color: rgb(255 255 255 / 58%);
+		border-radius: 25px;
+		background: var(--black);
+		box-shadow: 12px 15px 0 rgb(0 0 0 / 15%);
+		text-shadow: none;
+	}
+
+	:global(body.brand-guide-home-preview) .work-card-icon,
+	:global(body.brand-guide-home-preview) .work-card-label {
+		text-shadow: none;
+		filter: none;
+	}
+
+	:global(body.brand-guide-home-preview) .card-media .work-card-icon,
+	:global(body.brand-guide-home-preview) .card-media .work-card-label {
+		color: var(--blue);
+	}
+
+	:global(body.brand-guide-home-preview) .card-directing .work-card-icon,
+	:global(body.brand-guide-home-preview) .card-directing .work-card-label {
+		color: var(--pink);
+	}
+
+	:global(body.brand-guide-home-preview) .card-film .work-card-icon,
+	:global(body.brand-guide-home-preview) .card-film .work-card-label {
+		color: var(--yellow);
+	}
+
+	:global(body.brand-guide-home-preview) .card-video .work-card-icon,
+	:global(body.brand-guide-home-preview) .card-video .work-card-label {
+		color: var(--mint);
+	}
+
+	:global(body.brand-guide-home-preview) .work-card:hover {
+		background: var(--black);
+		transform: translateY(3px) scale(0.99);
+	}
+
+	:global(body.brand-guide-home-preview) .card-media:hover {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(147 233 249 / 82%);
+	}
+
+	:global(body.brand-guide-home-preview) .card-directing:hover {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(253 191 191 / 84%);
+	}
+
+	:global(body.brand-guide-home-preview) .card-film:hover {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(239 218 74 / 86%);
+	}
+
+	:global(body.brand-guide-home-preview) .card-video:hover {
+		box-shadow:
+			12px 15px 0 rgb(0 0 0 / 15%),
+			0 0 34px rgb(124 245 181 / 84%);
+	}
+
+	:global(body.brand-guide-home-preview) .about-section {
+		background: var(--pink);
+	}
+
+	:global(body.brand-guide-home-preview) .media-section {
+		background: var(--mint);
+	}
+
+	:global(body.brand-guide-home-preview) .contact-section {
+		background: var(--blue);
+	}
+
+	:global(body.brand-guide-home-preview) .home-section::before,
+	:global(body.brand-guide-home-preview) .home-section::after {
+		border-color: rgb(255 255 255 / 54%);
+		background: rgb(255 255 255 / 18%);
+		box-shadow:
+			inset 0 1px 0 rgb(255 255 255 / 46%),
+			12px 16px 0 rgb(37 37 37 / 8%);
+	}
+
+	:global(body.brand-guide-home-preview) .section-kicker {
+		font-family: var(--font-display);
+		font-size: clamp(0.78rem, 1vw, 0.94rem);
+		letter-spacing: 0.15em;
+	}
+
+	:global(body.brand-guide-home-preview) .home-section h2 {
+		letter-spacing: -0.055em;
+		text-transform: none;
+	}
+
+	:global(body.brand-guide-home-preview) .glass-panel {
+		padding: 15px;
+		border: 0;
+		border-radius: 25px;
+		outline: 0;
+		background: var(--white);
+		box-shadow: 14px 18px 0 rgb(37 37 37 / 12%);
+		-webkit-backdrop-filter: none;
+		backdrop-filter: none;
+	}
+
+	:global(body.brand-guide-home-preview) .glass-panel > .window-dots {
+		position: static;
+		display: flex;
+		gap: 5px;
+		height: 22px;
+		padding-left: 2px;
+	}
+
+	:global(body.brand-guide-home-preview) .glass-panel > .window-dots i {
+		width: 7px;
+		height: 7px;
+		border: 0;
+		background: var(--black);
+		box-shadow: none;
+	}
+
+	:global(body.brand-guide-home-preview) .glass-panel > .window-dots i:nth-child(2) {
+		opacity: 0.5;
+	}
+
+	:global(body.brand-guide-home-preview) .glass-panel > .window-dots i:nth-child(3) {
+		opacity: 0.2;
+	}
+
+	:global(body.brand-guide-home-preview) .glass-panel p {
+		display: grid;
+		min-height: 150px;
+		padding: clamp(26px, 4vw, 42px);
+		border-radius: 16px;
+		background: var(--black);
+		color: var(--white);
+		font-family: var(--font-display);
+		font-size: clamp(1.05rem, 1.5vw, 1.3rem);
+		font-weight: 900;
+		line-height: 1.35;
+		place-items: center;
+		text-align: center;
+	}
+
+	:global(body.brand-guide-home-preview) .section-tab {
+		border-radius: 25px;
+		background: var(--black);
+		box-shadow: 14px 18px 0 rgb(37 37 37 / 13%);
+	}
+
+	:global(body.brand-guide-home-preview) .section-tab-action {
+		color: var(--white);
+	}
+
+	:global(body.brand-guide-home-preview) .section-divider {
+		background: var(--black);
+	}
+
+	:global(body.brand-guide-home-preview) .hero-divider::after {
+		display: none;
+	}
+
+	:global(body.brand-guide-home-preview) .site-footer {
+		background-color: #383838;
+		background-image: radial-gradient(
+			circle,
+			var(--black) 1.5px,
+			transparent 1.6px
+		);
+		background-size: 24px 24px;
+	}
+
+	:global(body.brand-guide-home-preview) .footer-name {
+		letter-spacing: -0.035em;
+	}
+
+	@media (max-width: 900px) {
+		:global(body.brand-guide-home-preview) .canvas::before {
+			right: -26%;
+			bottom: -15%;
+			left: auto;
+			width: min(80vw, 660px);
+			height: auto;
+			border-radius: 50%;
+			background: var(--yellow);
+		}
+
+	}
+
+	@media (max-width: 650px), (max-height: 500px) and (max-width: 950px) {
+		:global(body.brand-guide-home-preview) .canvas::before {
+			top: auto;
+			right: -35%;
+			bottom: -8%;
+			left: auto;
+			display: block;
+			width: 105vw;
+			height: auto;
+			border: 0;
+			border-radius: 50%;
+			background: var(--yellow);
+			box-shadow: none;
+		}
+
+		:global(body.brand-guide-home-preview) .hero h1 {
+			color: var(--white);
+		}
+
+		:global(body.brand-guide-home-preview) .location {
+			color: var(--white);
+		}
+
+		:global(body.brand-guide-home-preview) .work-card {
+			box-shadow: 8px 10px 0 rgb(37 37 37 / 14%);
+		}
+	}
+
+</style>
+
 <script>
 	const responsiveCanvas = document.querySelector<HTMLElement>(".canvas");
 	const surnameLine = document.querySelector<HTMLElement>(".surname-line");
+	const surnameWord = surnameLine?.querySelector<HTMLElement>(".name-word");
 
-	if (responsiveCanvas && surnameLine) {
+	if (responsiveCanvas && surnameLine && surnameWord) {
 		const compactLayout = window.matchMedia(
 			"(max-width: 650px), (max-height: 500px) and (max-width: 950px)",
 		);
@@ -2753,14 +3007,26 @@ const backgroundWindows = [
 				responsiveCanvas.clientWidth -
 				Number.parseFloat(canvasStyle.paddingLeft) -
 				Number.parseFloat(canvasStyle.paddingRight);
+			surnameLine.style.setProperty("--surname-fit-size", "1em");
+
+			if (compactLayout.matches) {
+				surnameLine.style.removeProperty("--surname-fit-size");
+				responsiveCanvas.classList.add("surname-does-not-fit");
+				return;
+			}
+
 			const shouldCheckFit =
 				window.innerWidth <= 1200 ||
 				window.innerWidth / Math.max(window.innerHeight, 1) < 1.45;
-			const surnameFits = surnameLine.offsetWidth <= availableWidth + 8;
+			const naturalWidth = surnameWord.getBoundingClientRect().width;
+			const fitScale = shouldCheckFit && naturalWidth > availableWidth
+				? Math.max(0.1, (availableWidth - 2) / naturalWidth)
+				: 1;
+			surnameLine.style.setProperty("--surname-fit-size", `${fitScale}em`);
 
 			responsiveCanvas.classList.toggle(
 				"surname-does-not-fit",
-				compactLayout.matches || (shouldCheckFit && !surnameFits),
+				fitScale < 1,
 			);
 		};
 
@@ -3025,10 +3291,22 @@ const backgroundWindows = [
 				keywords: ["videographer", "camera", "content", "production"],
 			},
 			{
+				title: "Gear",
+				href: "/gear/",
+				description: "Browse cameras, audio, lighting, and production kits.",
+				keywords: ["gear", "equipment", "kit", "tools"],
+			},
+			{
 				title: "Brainstorm",
 				href: "/brainstorm/",
 				description: "Build a living map of connected ideas.",
 				keywords: ["ideas", "thoughts", "mind map", "notes", "creative"],
+			},
+			{
+				title: "Brand Center",
+				href: "/brand-center/",
+				description: "Explore Jet Sullivan's visual identity guide.",
+				keywords: ["brand", "branding", "identity", "colors", "assets", "style guide", "design guide", "brand centre", "logo", "typography", "palette"],
 			},
 		];
 
@@ -3040,7 +3318,6 @@ const backgroundWindows = [
 		let activeResultIndex = -1;
 		let hasRenderedSuggestions = false;
 		let suggestionsReady = false;
-		let searchOpenedAt = 0;
 		let renderedSuggestionLimit = 0;
 		const reducedSearchMotion = window.matchMedia(
 			"(prefers-reduced-motion: reduce)",
@@ -3202,10 +3479,6 @@ const backgroundWindows = [
 			const suggestionDelayStep = useOpeningCascade ? 55 : 18;
 			const maximumSuggestionCount = getMaximumSuggestionCount();
 			renderedSuggestionLimit = maximumSuggestionCount;
-			const searchGlowDelay =
-				searchOpenedAt > 0
-					? -Math.max(0, performance.now() - searchOpenedAt)
-					: 0;
 			const rankedDestinations = publicDestinations
 				.map((destination, order) => ({
 					destination,
@@ -3231,10 +3504,6 @@ const backgroundWindows = [
 				emptyMessage.style.setProperty(
 					"--suggestion-delay",
 					`${suggestionStartDelay}ms`,
-				);
-				emptyMessage.style.setProperty(
-					"--search-glow-delay",
-					`${searchGlowDelay}ms`,
 				);
 				emptyMessage.textContent = "No matching page yet. Try another search.";
 				searchSuggestions.append(emptyMessage);
@@ -3271,10 +3540,6 @@ const backgroundWindows = [
 						"--suggestion-duration",
 						`${suggestionDuration}ms`,
 					);
-					result.style.setProperty(
-						"--search-glow-delay",
-						`${searchGlowDelay}ms`,
-					);
 					copy.className = "search-suggestion-copy";
 					title.textContent = destination.title;
 					description.textContent = destination.description;
@@ -3310,7 +3575,6 @@ const backgroundWindows = [
 
 			if (isOpen) {
 				suggestionsReady = false;
-				if (!wasOpen) searchOpenedAt = performance.now();
 				searchBar.classList.remove("is-closing", "suppress-hover");
 				searchBar.classList.add("is-open");
 				window.dispatchEvent(new CustomEvent("site-search:opened"));
@@ -3321,7 +3585,6 @@ const backgroundWindows = [
 				}, reducedSearchMotion.matches ? 0 : 420);
 			} else {
 				suggestionsReady = false;
-				searchOpenedAt = 0;
 				hideSuggestions();
 				searchBar.classList.remove("is-open", "is-closing");
 				if (wasOpen) {
@@ -3372,6 +3635,11 @@ const backgroundWindows = [
 		searchBar.addEventListener("submit", (event) => {
 			event.preventDefault();
 			const query = normalizeSearchText(searchInput.value);
+
+			if (query === "brand center" || query === "brandcenter") {
+				window.location.assign("/brand-center/");
+				return;
+			}
 
 			if (query === "admin") {
 				window.location.assign("/login/");
@@ -3776,4 +4044,6 @@ const backgroundWindows = [
 	});
 
 </script>
+	</body>
+</html>
 <!-- Trigger Cloudflare Preview deployment -->

@@ -31,11 +31,12 @@ import PageMotion from "../components/common/PageMotion.astro";
 					A closer look at the equipment, kits, and tools I use to make things.
 				</p>
 			</header>
+			<div class="section-divider hero-divider" aria-hidden="true"></div>
 
-			<section class="gear-section" aria-labelledby="collection-title" data-motion-depth="deep">
+			<section class="gear-section" aria-labelledby="collection-title" >
 				<div class="section-heading">
 					<p class="section-number">01</p>
-					<h2 id="collection-title">The collection</h2>
+					<div><h2 id="collection-title">The collection</h2><p class="collection-intro">Browse by category. Open a card for a closer look.</p></div>
 				</div>
 				<div id="gear-list" class="gear-list" aria-live="polite" aria-busy="true">
 					<div class="gear-message">
@@ -98,13 +99,16 @@ import PageMotion from "../components/common/PageMotion.astro";
 		const stars = document.createElement("span");
 		const score = document.createElement("span");
 		wrapper.className = "gear-rating";
-		wrapper.setAttribute("aria-label", `${rating.toFixed(1)} out of 5 stars`);
+		wrapper.setAttribute("aria-label", `Current condition: ${rating.toFixed(1)} out of 5`);
 		stars.className = "rating-stars";
 		stars.setAttribute("aria-hidden", "true");
 		stars.style.setProperty("--rating", String(rating));
 		stars.textContent = "★★★★★";
 		score.textContent = `${rating.toFixed(1)} / 5`;
-		wrapper.append(stars, score);
+		const label = document.createElement("span");
+		label.className = "condition-label";
+		label.textContent = "Current condition";
+		wrapper.append(label, stars, score);
 		return wrapper;
 	};
 
@@ -116,7 +120,28 @@ import PageMotion from "../components/common/PageMotion.astro";
 		}
 
 		const fragment = document.createDocumentFragment();
-		items.forEach((item, index) => {
+		const groups = new Map<string, { label: string; items: GearItem[] }>();
+		for (const item of items) {
+			const label = item.category?.trim() || "Gear";
+			const key = label.toLocaleLowerCase();
+			if (!groups.has(key)) groups.set(key, { label, items: [] });
+			groups.get(key)!.items.push(item);
+		}
+		[...groups.values()].sort((a, b) => a.label.localeCompare(b.label)).forEach((group, groupIndex) => {
+			const section = document.createElement("section");
+			section.className = "gear-category";
+			const categoryHeading = document.createElement("h3");
+			categoryHeading.id = `gear-category-${groupIndex}`;
+			categoryHeading.textContent = group.label;
+			section.setAttribute("aria-labelledby", categoryHeading.id);
+			const count = document.createElement("span");
+			count.textContent = `${group.items.length} ${group.items.length === 1 ? "item" : "items"}`;
+			categoryHeading.append(count);
+			const grid = document.createElement("div");
+			grid.className = "gear-grid";
+			section.append(categoryHeading, grid);
+			fragment.append(section);
+		group.items.sort((a, b) => a.name.localeCompare(b.name)).forEach((item, index) => {
 			const details = document.createElement("details");
 			const summary = document.createElement("summary");
 			const number = document.createElement("span");
@@ -138,16 +163,27 @@ import PageMotion from "../components/common/PageMotion.astro";
 			heading.append(name, category);
 			toggle.className = "gear-toggle";
 			toggle.setAttribute("aria-hidden", "true");
-			summary.append(number, heading, createRating(item.rating), toggle);
+			const preview = document.createElement("span");
+			preview.className = "gear-preview";
+			if (item.imageUrl) {
+				const thumbnail = document.createElement("img");
+				thumbnail.src = item.imageUrl;
+				thumbnail.alt = item.imageAlt || item.name;
+				thumbnail.loading = "lazy";
+				thumbnail.addEventListener("error", () => { thumbnail.remove(); preview.append(number); });
+				preview.append(thumbnail);
+			} else preview.append(number);
+			category.textContent = "View details";
+			summary.append(createDots(), preview, heading, toggle);
 
 			body.className = "gear-body";
 			copy.className = "gear-copy";
 			description.className = "gear-description";
 			description.textContent = item.description;
-			copy.append(description);
+			copy.append(createRating(item.rating), description);
 
 			if (Array.isArray(item.kitParts) && item.kitParts.length) {
-				const partsHeading = document.createElement("h3");
+				const partsHeading = document.createElement("h4");
 				const parts = document.createElement("ul");
 				partsHeading.textContent = "What’s in the kit";
 				parts.className = "gear-parts";
@@ -159,20 +195,31 @@ import PageMotion from "../components/common/PageMotion.astro";
 				copy.append(partsHeading, parts);
 			}
 
-			if (item.imageUrl) {
-				const imageWindow = document.createElement("figure");
-				const image = document.createElement("img");
-				imageWindow.className = "gear-image-window";
-				image.src = item.imageUrl;
-				image.alt = item.imageAlt || item.name;
-				image.loading = "lazy";
-				imageWindow.append(createDots(), image);
-				body.append(imageWindow);
-			}
-
 			body.append(copy);
 			details.append(summary, body);
-			fragment.append(details);
+			grid.append(details);
+			let animation: Animation | undefined;
+			summary.addEventListener("click", (event) => {
+				event.preventDefault();
+				const closing = details.dataset.expanded === "true";
+				details.dataset.expanded = String(!closing);
+				const start = details.getBoundingClientRect().height;
+				animation?.cancel();
+				details.open = true;
+				const borderHeight = details.offsetHeight - details.clientHeight;
+				const end = closing ? summary.getBoundingClientRect().height + borderHeight : details.getBoundingClientRect().height;
+				category.textContent = closing ? "View details" : "Close details";
+				if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+					details.open = !closing;
+					return;
+				}
+				animation = details.animate({ height: [`${start}px`, `${end}px`] }, {
+					duration: 360, easing: "cubic-bezier(.22, 1, .36, 1)",
+				});
+				animation.onfinish = () => { details.open = !closing; animation = undefined; };
+			});
+		});
+
 		});
 
 		gearList.replaceChildren(fragment);
@@ -289,7 +336,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 		line-height: 1.45;
 		text-shadow: 3px 3px 0 rgb(37 37 37 / 40%);
 	}
-	.gear-section { margin-top: clamp(120px, 16vw, 220px); }
+	.gear-section { margin-top: 0; }
 	.section-heading {
 		display: grid;
 		grid-template-columns: auto minmax(0, 1fr);
@@ -309,46 +356,28 @@ import PageMotion from "../components/common/PageMotion.astro";
 		text-transform: uppercase;
 		text-shadow: 7px 7px 0 rgb(37 37 37 / 32%);
 	}
-	.gear-list { display: grid; gap: 24px; }
-	.gear-card,
-	.gear-message {
-		border: 6px solid var(--studio-white);
-		border-radius: 28px;
-		background: var(--studio-white);
-		box-shadow: 12px 12px 0 var(--jet-black);
-		color: var(--jet-black);
-		overflow: clip;
-	}
-	.gear-summary {
-		display: grid;
-		grid-template-columns: auto minmax(0, 1fr) auto auto;
-		gap: clamp(15px, 3vw, 34px);
-		align-items: center;
-		min-height: 128px;
-		padding: clamp(22px, 4vw, 38px);
-		border-radius: 21px;
-		background: var(--studio-white);
-		cursor: pointer;
-		list-style: none;
-	}
+	.collection-intro { margin: 22px 0 0; font-size: 1.1rem; line-height: 1.5; }
+	.gear-list { display: grid; gap: clamp(48px, 7vw, 88px); }
+	.gear-category h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 16px; margin: 0 0 24px; padding-bottom: 16px; border-bottom: 1px solid #ffffff40; font: 900 clamp(1.5rem, 3vw, 2.3rem)/1.2 var(--display); overflow-wrap: anywhere; }
+	.gear-category h3 > span { color: var(--sky-blue); font: 700 .9rem/1.4 var(--body); }
+	.gear-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: 28px; }
+	.gear-card, .gear-message { min-width: 0; border: 4px solid white; border-radius: 24px; background: white; color: var(--jet-black); box-shadow: 0 16px 32px #0003, 6px 6px 0 #25252580; overflow: clip; }
+	.gear-card { transition: box-shadow 180ms ease; }
+	.gear-card:hover { box-shadow: 0 20px 40px #0004, 6px 6px 0 var(--sky-blue); }
+	.gear-summary { position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 14px; aspect-ratio: 1; padding: 18px; cursor: pointer; list-style: none; }
 	.gear-summary::-webkit-details-marker { display: none; }
-	.gear-summary:focus-visible { outline: 4px solid var(--sky-blue); outline-offset: -7px; }
-	.gear-number {
-		color: var(--sky-blue);
-		font: 900 clamp(1.25rem, 3vw, 2rem) / 1 var(--display);
-	}
-	.gear-title { display: grid; gap: 5px; min-width: 0; }
-	.gear-title strong {
-		font: 900 clamp(1.35rem, 4vw, 2.6rem) / 1 var(--display);
-		overflow-wrap: anywhere;
-	}
-	.gear-title small {
-		font-size: .78rem;
-		font-weight: 900;
-		letter-spacing: .085em;
-		text-transform: uppercase;
-	}
-	.gear-rating { display: flex; gap: 10px; align-items: center; font-weight: 900; white-space: nowrap; }
+	.gear-summary:focus-visible { outline: 3px solid #252525; outline-offset: -5px; border-radius: 20px; }
+	.gear-summary .window-dots { display: flex; gap: 5px; }
+	.gear-preview { display: grid; min-width: 0; min-height: 0; place-items: center; overflow: hidden; border-radius: 12px; background: #f1f3f3; }
+	.gear-preview img { width: 100%; height: 100%; min-height: 0; object-fit: contain; }
+	.gear-number { color: #252525; font: 900 4rem/1 var(--display); }
+	.gear-title { display: grid; gap: 7px; padding-right: 48px; }
+	.gear-title strong { font: 900 clamp(1.05rem, 1.7vw, 1.4rem)/1.15 var(--display); overflow-wrap: anywhere; }
+	.gear-title small { color: #555; font-size: .85rem; }
+	.gear-summary .gear-toggle { position: absolute; right: 14px; bottom: 18px; width: 36px; height: 36px; }
+
+	.condition-label { flex-basis: 100%; font-weight: 900; }
+	.gear-rating { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; font-weight: 900; white-space: nowrap; }
 	.rating-stars {
 		position: relative;
 		color: rgb(37 37 37 / 16%);
@@ -386,47 +415,20 @@ import PageMotion from "../components/common/PageMotion.astro";
 	}
 	.gear-toggle::after { transform: translate(-50%, -50%) rotate(90deg); }
 	.gear-card[open] .gear-toggle::after { transform: translate(-50%, -50%) rotate(0); }
-	.gear-card[open] .gear-summary { background: var(--sky-blue); }
-	.gear-body {
-		display: grid;
-		grid-template-columns: minmax(260px, .85fr) minmax(0, 1.15fr);
-		gap: clamp(26px, 5vw, 64px);
-		padding: clamp(14px, 3vw, 28px) clamp(22px, 4vw, 40px) clamp(34px, 5vw, 58px);
-		background: var(--studio-white);
-	}
-	.gear-image-window {
-		position: relative;
-		margin: 0;
-		padding: 31px 10px 10px;
-		border-radius: 21px;
-		background: var(--jet-black);
-		box-shadow: 8px 8px 0 var(--soft-pink);
-	}
-	.gear-image-window .window-dots {
-		position: absolute;
-		top: 12px;
-		left: 14px;
-		display: flex;
-		gap: 5px;
-	}
-	.gear-image-window img {
-		display: block;
-		width: 100%;
-		max-height: 520px;
-		border-radius: 14px;
-		object-fit: contain;
-		background: var(--grid-gray);
-	}
+	.gear-card[open] .gear-preview { background: var(--sky-blue); }
+	.gear-body { padding: 8px 20px 26px; }
+	.gear-copy .gear-rating { margin-bottom: 20px; font-size: .85rem; }
+
 	.gear-copy { min-width: 0; }
 	.gear-description {
 		margin: 0;
-		font-size: clamp(1.05rem, 2vw, 1.3rem);
+		font-size: 1rem;
 		font-weight: 650;
 		line-height: 1.55;
 		white-space: pre-wrap;
 		overflow-wrap: anywhere;
 	}
-	.gear-copy h3 {
+	.gear-copy h4 {
 		margin: 34px 0 14px;
 		font: 900 clamp(1.4rem, 3vw, 2rem) / 1 var(--display);
 		text-transform: uppercase;
@@ -469,6 +471,14 @@ import PageMotion from "../components/common/PageMotion.astro";
 		transform: skewY(-2.5deg);
 		transform-origin: left top;
 	}
+	.section-divider.hero-divider {
+		height: 2px;
+		margin: clamp(48px, 7vw, 88px) auto;
+		width: min(1160px, 100%);
+		background: #ffffff30;
+		transform: none;
+	}
+
 	.site-footer { padding: 68px max(24px, 5vw) 50px; background: var(--jet-black); }
 	.footer-content {
 		display: grid;
@@ -484,31 +494,28 @@ import PageMotion from "../components/common/PageMotion.astro";
 	.footer-content p:last-child { text-align: right; }
 	.footer-content > span { width: 8px; height: 8px; border-radius: 50%; background: var(--sky-blue); }
 
+	@media (max-width: 1000px) {
+		.gear-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+	}
+
 	@media (max-width: 760px) {
 		.gear-page { padding-top: 150px; }
 		.sky-circle { top: 140px; right: -105px; width: 330px; }
 		.gear-hero h1 { font-size: clamp(5.3rem, 28vw, 8.5rem); }
-		.gear-summary { grid-template-columns: auto minmax(0, 1fr) auto; }
-		.gear-rating { grid-column: 2; justify-self: start; }
-		.gear-toggle { grid-column: 3; grid-row: 1 / span 2; }
-		.gear-body { grid-template-columns: 1fr; }
-		.gear-image-window { max-width: 560px; }
 		.footer-content { grid-template-columns: 1fr; text-align: center; }
 		.footer-content p:last-child { text-align: center; }
 		.footer-content > span { justify-self: center; }
+	}
+
+	@media (max-width: 580px) {
+		.gear-grid { grid-template-columns: 1fr; }
 	}
 
 	@media (max-width: 480px) {
 		.gear-page { padding-inline: 19px; }
 		.gear-hero h1 { letter-spacing: -.09em; }
 		.section-heading { gap: 13px; }
-		.gear-card { border-width: 4px; border-radius: 23px; box-shadow: 8px 8px 0 var(--jet-black); }
-		.gear-summary { gap: 11px; min-height: 112px; padding: 19px 15px; }
-		.gear-title strong { font-size: 1.2rem; }
-		.gear-rating { gap: 7px; font-size: .78rem; }
 		.rating-stars { font-size: .82rem; }
-		.gear-toggle { width: 38px; height: 38px; }
-		.gear-body { padding: 10px 16px 34px; }
 	}
 
 	@media (prefers-reduced-motion: reduce) {

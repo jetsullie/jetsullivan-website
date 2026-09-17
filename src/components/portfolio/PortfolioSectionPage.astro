@@ -59,7 +59,7 @@ const hasHeadingCard = Boolean(headingCardHref && headingCardLabel);
 			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--heading-card-foreground:${headingCardForeground || accent};--shape-color:${shapeColor};`}
 		>
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
-			<span class={`section-shape section-shape-${shape}`} aria-hidden="true"></span>
+			<span class={`section-shape section-shape-${shape}`} data-motion-depth="counter" aria-hidden="true"></span>
 			<SiteMenu showHomeButton />
 
 			<section
@@ -534,6 +534,9 @@ const hasHeadingCard = Boolean(headingCardHref && headingCardLabel);
 		aspect-ratio: 1;
 		background: var(--shape-color);
 		box-shadow: none;
+	}
+	@media (max-width: 760px) {
+		.section-shape { top: 8%; right: -48%; width: 118vw; }
 	}
 	.section-shape-acting {
 		border: clamp(13px, 10.77vw, 160px) solid var(--shape-color);
