@@ -383,6 +383,40 @@ const secondaryColors = [
 							</div>
 						</div>
 					</details>
+
+					<details class="design-detail">
+						<summary>
+							<span class="detail-number">07</span>
+							<span class="detail-title">
+								<strong>Icons &amp; mini graphics</strong>
+								<small>Actions · Tabs · Interface symbols</small>
+							</span>
+							<span class="detail-toggle" aria-hidden="true"></span>
+						</summary>
+						<div class="detail-content">
+							<div class="detail-copy">
+								<p>
+									Icons use the same bold, rounded construction as the site’s back arrow.
+									Simple geometry keeps every plus, arrow, and small graphic legible at a
+									glance and consistent with the display typography.
+								</p>
+								<ul>
+									<li>Build on a 26 × 26 view box with a 4px stroke.</li>
+									<li>Use round caps and round joins; avoid thin-line icons.</li>
+									<li>Prefer one clear symbol with minimal internal detail.</li>
+									<li>Use Jet Black on light colors and Studio White on dark colors.</li>
+									<li>Keep symbols optically centered with equal visual weight.</li>
+									<li>Place action icons inside circles, pills, or floating tabs when emphasis is needed.</li>
+								</ul>
+							</div>
+							<div class="pattern-preview icon-language-preview" aria-hidden="true">
+								<span class="icon-swatch icon-swatch-plus"><svg viewBox="0 0 26 26"><path d="M13 3V23M3 13H23"></path></svg></span>
+								<span class="icon-swatch icon-swatch-arrow"><svg viewBox="0 0 26 26"><path d="M23 10H3M10 3L3 10L10 17" transform="translate(0 3) rotate(135 13 10)"></path></svg></span>
+								<span class="icon-swatch icon-swatch-grid"><svg viewBox="0 0 26 26"><path d="M6 6H6.1M13 6H13.1M20 6H20.1M6 13H6.1M13 13H13.1M20 13H20.1M6 20H6.1M13 20H13.1M20 20H20.1"></path></svg></span>
+								<strong>4 PX / ROUND / BOLD</strong>
+							</div>
+						</div>
+					</details>
 				</div>
 			</section>
 
@@ -1629,6 +1663,49 @@ const secondaryColors = [
 		font-family: var(--font-display);
 		font-size: clamp(1.2rem, 2.7vw, 2rem);
 		letter-spacing: -0.035em;
+	}
+
+	.icon-language-preview {
+		display: grid;
+		grid-template-columns: repeat(3, 72px);
+		align-content: center;
+		justify-content: center;
+		gap: 18px;
+		background-color: var(--yellow);
+		background-image: radial-gradient(circle, rgb(37 37 37 / 26%) 1.4px, transparent 1.6px);
+		background-size: 24px 24px;
+	}
+
+	.icon-swatch {
+		display: grid;
+		width: 72px;
+		height: 72px;
+		border: 5px solid var(--black);
+		border-radius: 50%;
+		background: var(--white);
+		box-shadow: 7px 7px 0 var(--black);
+		place-items: center;
+	}
+
+	.icon-swatch:nth-child(2) { background: var(--pink); }
+	.icon-swatch:nth-child(3) { background: var(--mint); }
+
+	.icon-swatch svg {
+		width: 38px;
+		height: 38px;
+		fill: none;
+		stroke: var(--black);
+		stroke-width: 4;
+		stroke-linecap: round;
+		stroke-linejoin: round;
+	}
+
+	.icon-language-preview > strong {
+		grid-column: 1 / -1;
+		margin-top: 14px;
+		font: 900 .72rem var(--font-display);
+		letter-spacing: .16em;
+		text-align: center;
 	}
 
 	.voice-section {
