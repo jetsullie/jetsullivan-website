@@ -72,6 +72,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 </html>
 
 <script>
+	import { revealCollectionValue } from '../scripts/collection-value-roll';
 	type GearItem = {
 		id: string;
 		name: string;
@@ -351,6 +352,7 @@ import PageMotion from "../components/common/PageMotion.astro";
       ? `Based on ${summary.valuedItemCount} of ${summary.itemCount} items. Items without a value are excluded.`
       : 'Across the entire collection.';
     panel.hidden = false;
+    if (summary.valuedItemCount) revealCollectionValue(amount);
   };
 
 	if (gearList) {
