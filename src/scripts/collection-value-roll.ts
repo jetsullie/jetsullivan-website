@@ -82,8 +82,9 @@ export function revealCollectionValue(amount: HTMLElement) {
         : parseFloat(position[0]) || 0;
       for (const reel of reels) {
         const rect = reel.getBoundingClientRect();
+        const glyphLeft = reel.querySelector('.value-roll-symbol')!.getBoundingClientRect().left;
         reel.style.setProperty('--roll-gradient-size', `${gradientWidth}px ${bounds.height}px`);
-        reel.style.setProperty('--roll-gradient-position', `${offset - (rect.left - bounds.left)}px ${-(rect.top - bounds.top)}px`);
+        reel.style.setProperty('--roll-gradient-position', `${offset - (glyphLeft - bounds.left)}px ${-(rect.top - bounds.top)}px`);
       }
     };
     paintGradient();
