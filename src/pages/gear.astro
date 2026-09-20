@@ -49,6 +49,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 					<div data-motion-depth="scene"><p class="eyebrow">Take a closer look</p><h2 id="collection-title" tabindex="-1">The collection</h2></div>
 					<p data-motion-depth="counter">Choose a category, then open a card.<br />Every rating shows the gear’s current condition.</p>
 				</div>
+				<div id="gear-value-summary" class="gear-value-summary" aria-live="polite" hidden><span>Estimated collection value · USD</span><strong></strong><small></small></div>
 				<div id="gear-list" class="gear-list" aria-live="polite" aria-busy="true">
 					<div class="gear-message">
 						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -338,18 +339,38 @@ import PageMotion from "../components/common/PageMotion.astro";
 		gearList.setAttribute("aria-busy", "false");
 	};
 
+  const renderGearValue = (summary?: { totalValue: number; valuedItemCount: number; itemCount: number; currency: string }) => {
+    const panel = document.querySelector<HTMLElement>('#gear-value-summary');
+    if (!panel || !summary || !Number.isFinite(summary.totalValue)) return;
+    const amount = panel.querySelector<HTMLElement>('strong')!;
+    const note = panel.querySelector<HTMLElement>('small')!;
+    amount.textContent = summary.valuedItemCount
+      ? new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(summary.totalValue)
+      : 'Not yet estimated';
+    note.textContent = summary.valuedItemCount < summary.itemCount
+      ? `Based on ${summary.valuedItemCount} of ${summary.itemCount} items. Items without a value are excluded.`
+      : 'Across the entire collection.';
+    panel.hidden = false;
+  };
+
 	if (gearList) {
 		fetch("/api/gear")
 			.then((response) => {
 				if (!response.ok) throw new Error("Gear request failed");
 				return response.json();
 			})
-			.then((result) => renderGear(Array.isArray(result.items) ? result.items : []))
+			.then((result) => { renderGear(Array.isArray(result.items) ? result.items : []); renderGearValue(result.summary); })
 			.catch(() => renderMessage("The collection couldn’t load. Please refresh to try again."));
 	}
 </script>
 
 <style is:global>
+.gear-value-summary { margin: 0 0 28px; padding: clamp(20px, 4vw, 32px); border: 1px solid #25252526; border-radius: 18px; background: #fff; color: #252525; }
+.gear-value-summary[hidden] { display: none; }
+.gear-value-summary > span { display: block; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.gear-value-summary > strong { display: block; margin: 10px 0; font-size: clamp(1.7rem, 4vw, 3rem); line-height: 1.15; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.gear-value-summary > small { display: block; line-height: 1.5; color: #555; }
+
 	:root {
 		--jet-black: #252525;
 		--studio-white: #fff;

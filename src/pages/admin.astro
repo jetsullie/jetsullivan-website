@@ -445,6 +445,8 @@ const adminWindows = [
 							<input id="gear-rating" name="rating" type="number" min="0.5" max="5" step="0.5" value="5" required />
 						</label>
 
+						<label class="field"><span>Estimated value (USD, optional)</span><input id="gear-value" name="estimatedValue" type="number" min="0" max="999999999.99" step="0.01" placeholder="0.00" /><small>Included in the collection total only. For a kit, enter the value of the entire kit. Leave blank if unknown.</small></label>
+
 						<label class="field">
 							<span>Product photo</span>
 							<input id="gear-image" name="image" type="file" accept="image/jpeg,image/png,image/webp,image/avif" required />
@@ -871,6 +873,7 @@ const adminWindows = [
 	const gearId = document.querySelector<HTMLInputElement>("#gear-id");
 	const gearName = document.querySelector<HTMLInputElement>("#gear-name");
 	const gearCategory = document.querySelector<HTMLInputElement>("#gear-category");
+	const gearValue = document.querySelector<HTMLInputElement>("#gear-value");
 	const gearRating = document.querySelector<HTMLInputElement>("#gear-rating");
 	const gearImage = document.querySelector<HTMLInputElement>("#gear-image");
 	const gearImageAlt = document.querySelector<HTMLInputElement>("#gear-image-alt");
@@ -931,6 +934,7 @@ const adminWindows = [
 	};
 
 	type GearItem = {
+		estimatedValue?: number | null;
 		id: string;
 		name: string;
 		category: string;
@@ -2129,6 +2133,7 @@ const adminWindows = [
 		gearName.value = item.name;
 		gearCategory.value = item.category;
 		gearRating.value = String(item.rating);
+		if (gearValue) gearValue.value = item.estimatedValue == null ? "" : String(item.estimatedValue);
 		gearImageAlt.value = item.imageAlt || "";
 		gearDescription.value = item.description;
 		gearKitParts.value = Array.isArray(item.kitParts)

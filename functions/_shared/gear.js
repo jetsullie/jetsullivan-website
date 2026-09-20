@@ -1,3 +1,4 @@
+import { parseEstimatedValue, storedEstimatedValue } from "./gear-value.js";
 import {
 	MediaEntryRequestError,
 	mediaImageUrl,
@@ -40,6 +41,7 @@ export const readGearPayload = async (request) => {
 		name: readTextField(form, "name"),
 		category: readTextField(form, "category"),
 		rating: readTextField(form, "rating"),
+		estimatedValue: readTextField(form, "estimatedValue"),
 		description: readTextField(form, "description"),
 		kitParts: readTextField(form, "kitParts"),
 		imageAlt: readTextField(form, "imageAlt"),
@@ -53,6 +55,9 @@ export const validateGearMetadata = (payload) => {
 	const description = payload.description.trim();
 	const imageAlt = payload.imageAlt.trim().replace(/\s+/g, " ");
 	const rating = Number(payload.rating);
+	let estimatedValue;
+	try { estimatedValue = parseEstimatedValue(payload.estimatedValue); }
+	catch (error) { throw new MediaEntryRequestError(error.message); }
 	const kitParts = payload.kitParts
 		.split(/\r?\n/)
 		.map((part) => part.trim().replace(/\s+/g, " "))
@@ -88,6 +93,7 @@ export const validateGearMetadata = (payload) => {
 		name,
 		category: category || "Gear",
 		rating,
+		estimatedValue,
 		description,
 		kitParts,
 		imageAlt: imageAlt || `${name} owned by Jet Sullivan`,
@@ -192,6 +198,7 @@ export const toGearResponse = (item, { admin = false } = {}) => ({
 	imageUrl: mediaImageUrl(item.imageKey),
 	...(admin
 		? {
+				estimatedValue: storedEstimatedValue(item),
 				imageKey: stringOrNull(item.imageKey),
 				imageType: stringOrNull(item.imageType),
 				updatedAt: stringOrEmpty(item.updatedAt),

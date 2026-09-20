@@ -1,3 +1,4 @@
+import { gearValueSummary } from "../_shared/gear-value.js";
 import {
 	readGearItems,
 	sortGearItems,
@@ -6,13 +7,14 @@ import {
 import { publicJson } from "../_shared/media-entries.js";
 
 export const onRequestGet = async ({ env }) => {
-	if (!env.CONTENT_KV) return publicJson({ items: [] });
+	if (!env.CONTENT_KV) return publicJson({ items: [], summary: gearValueSummary([]) });
 
 	try {
-		const items = sortGearItems(await readGearItems(env.CONTENT_KV)).map((item) =>
+		const storedItems = await readGearItems(env.CONTENT_KV);
+		const items = sortGearItems(storedItems).map((item) =>
 			toGearResponse(item),
 		);
-		return publicJson({ items });
+		return publicJson({ items, summary: gearValueSummary(storedItems) });
 	} catch (error) {
 		console.error("Could not load public gear.", error);
 		return publicJson(
