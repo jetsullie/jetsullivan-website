@@ -49,7 +49,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 					<div data-motion-depth="scene"><p class="eyebrow">Take a closer look</p><h2 id="collection-title" tabindex="-1">The collection</h2></div>
 					<p data-motion-depth="counter">Choose a category, then open a card.<br />Every rating shows the gear’s current condition.</p>
 				</div>
-				<div id="gear-value-summary" class="gear-value-summary" aria-live="polite" hidden><span>Estimated collection value · USD</span><strong></strong><small></small></div>
+				<div id="gear-value-summary" class="gear-value-summary" aria-live="polite" hidden><span class="eyebrow">ESTIMATED USD COLLECTION VALUE</span><strong></strong><small></small></div>
 				<div id="gear-list" class="gear-list" aria-live="polite" aria-busy="true">
 					<div class="gear-message">
 						<span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span>
@@ -365,11 +365,11 @@ import PageMotion from "../components/common/PageMotion.astro";
 </script>
 
 <style is:global>
-.gear-value-summary { margin: 0 0 28px; padding: clamp(20px, 4vw, 32px); border: 1px solid #25252526; border-radius: 18px; background: #fff; color: #252525; }
+.gear-value-summary { margin: 0; padding: clamp(28px, 4vw, 48px) var(--gutter) clamp(44px, 6vw, 72px); background: #ebe8e0; color: var(--jet-black); text-align: center; }
 .gear-value-summary[hidden] { display: none; }
-.gear-value-summary > span { display: block; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
-.gear-value-summary > strong { display: block; margin: 10px 0; font-size: clamp(1.7rem, 4vw, 3rem); line-height: 1.15; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-.gear-value-summary > small { display: block; line-height: 1.5; color: #555; }
+.gear-value-summary > .eyebrow { display: block; margin: 0 0 20px; }
+.gear-value-summary > strong { display: block; margin: 0; font: 900 clamp(2.3rem, 6vw, 4.5rem)/.95 var(--display); letter-spacing: -.055em; overflow-wrap: anywhere; }
+.gear-value-summary > small { display: block; max-width: 42ch; margin: 20px auto 0; font-size: .85rem; line-height: 1.5; }
 
 	:root {
 		--jet-black: #252525;
