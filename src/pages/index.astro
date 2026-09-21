@@ -1,7 +1,6 @@
 ---
 import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
-import PageMotion from "../components/common/PageMotion.astro";
 import HomeGlass from "../components/common/HomeGlass.astro";
 import "../styles/home.css";
 import "../styles/home-search.css";
@@ -9,11 +8,11 @@ import "../styles/home-search.css";
 const name = "Jet Sullivan";
 const pageTitle = `${name} — Actor, Content Creator, and Filmmaker`;
 const pageDescription = "Jet Sullivan is an Austin-based actor, producer, and content creator.";
+const titleCharacters = Array.from("JET SULLIVAN");
 const sections = [
  { id: "about", kicker: "THE PERSON BEHIND THE WORK", lead: "Who is", title: "JET?", tone: "mint", card: "About me.", action: "Meet Jet", href: "/about/", caption: "A little more about the person behind the camera.", copy: "My name is Jet Sullivan, and I am a Moody Honors Radio-Television-Film senior student at the University of Texas at Austin. I am an actor, producer, and videographer." },
  { id: "media", kicker: "IN THE SPOTLIGHT", lead: "News &", title: "MEDIA.", tone: "blue", card: "The latest.", action: "View media", href: "/media/", caption: "Projects, conversations, and a look behind the scenes.", copy: "See what’s new with Jet—from featured projects and interviews to press coverage and moments from behind the scenes." },
  { id: "gear", kicker: "BEHIND THE WORK", lead: "Tools for", title: "THE STORY.", tone: "pink", card: "My gear.", action: "Explore the gear", href: "/gear/", caption: "The cameras, sound, and light behind the stories.", copy: "Take a closer look at the equipment I work with. Explore the collection, see what’s in each kit, and find the tools that bring a project to life." },
- { id: "contact", kicker: "LET’S MAKE SOMETHING", lead: "Start a", title: "CONVERSATION.", tone: "blue", card: "Let’s talk.", action: "Contact Jet", href: "/contact/", caption: "A project, a role, or an idea. It starts with hello.", copy: "Have a project, role, collaboration, or story in mind? Reach out to Jet and start the conversation." },
 ];
 ---
 <!doctype html>
@@ -37,7 +36,13 @@ const sections = [
 	</head>
  <body class="home-page">
   <a class="home-skip" href="#main">Skip to content</a>
-  <SiteMenu />
+  <header class="home-header">
+   <a class="home-wordmark" href="/" aria-label="Jet Sullivan home">JET SULLIVAN<span>ACTOR · FILMMAKER · CREATOR</span></a>
+   <nav class="home-header-nav" aria-label="Featured pages">
+    <a href="/about/">About</a><a href="/media/">Media</a><a href="/gear/">Gear</a>
+    <a class="glow-button header-contact" href="/contact/">Let’s talk <Arrow /></a>
+   </nav>
+   <SiteMenu />
 		<form class="search-bar" action="/" method="get" role="search">
 			<button
 				class="search-toggle"
@@ -86,22 +91,24 @@ const sections = [
 			></div>
 			<p class="visually-hidden" data-search-status role="status" aria-live="polite"></p>
 		</form>
+  </header>
 
   <main id="main">
    <section class="canvas" data-motion-root aria-labelledby="page-title">
     <HomeGlass tone="blue" />
     <div class="hero-wrap">
-     <div class="hero-topline"><span class="eyebrow">ACTOR · FILMMAKER · CREATOR</span><span class="hero-location"><i aria-hidden="true"></i><span data-site-location="short">Austin, TX</span></span></div>
+     <h1 id="page-title" class="home-ink hero-name" data-home-shimmer aria-label="Jet Sullivan">
+      <span class="hero-name-layer hero-name-base" aria-hidden="true">{titleCharacters.map((character, index) => <span class="hero-letter" data-letter-index={index}>{character === " " ? "\u00a0" : character}</span>)}</span>
+     </h1>
      <div class="hero-composition">
       <div class="hero-copy">
-       <h1 id="page-title"><span>JET</span><span class="hero-surname">SULLIVAN</span></h1>
-       <p>On screen. Behind the camera.<br />Always here for a good story.</p>
-       <a class="hero-explore" href="#explore">Explore my work <Arrow direction="down" /></a>
+       <div class="location">
+        <span class="location-box"><button class="selection-cursor" type="button" aria-label="Drag to reveal Jet’s roles, or press Enter" aria-expanded="false" aria-controls="location-roles"><svg viewBox="0 0 36 36" aria-hidden="true"><path d="M5 3 31 19 20 21 15 32Z" /></svg></button></span>
+        <span class="location-name" data-site-location="short">Austin, TX</span>
+        <span class="location-roles" id="location-roles">Actor · Filmmaker · Content Creator</span>
+       </div>
       </div>
-      <div class="portrait-frame">
-       <img class="portrait" data-portrait-trigger src="/jet-portrait.jpg" alt="Jet Sullivan" aria-label="Release camera emojis from Jet's portrait" role="button" tabindex="0" draggable="false" width="605" height="1816" fetchpriority="high" />
-       <div class="portrait-caption"><span>JET SULLIVAN</span><span>ACTOR & FILMMAKER</span></div>
-      </div>
+      <img class="portrait" data-portrait-trigger src="/jet-portrait.jpg" alt="Jet Sullivan" aria-label="Release camera emojis from Jet's portrait" role="button" tabindex="0" draggable="false" width="605" height="1816" fetchpriority="high" />
      </div>
     </div>
     <div class="portrait-emoji-layer" aria-hidden="true"></div>
@@ -109,7 +116,7 @@ const sections = [
    <div id="explore" class="work-band">
 		<div class="work-grid-stage hero-work-grid-stage">
 			<nav class="work-grid" aria-label="Explore Jet Sullivan's work">
-				<a class="work-card card-media" href="/socials/">
+				<a class="work-card glow-button card-media" href="/socials/">
 
 					<span class="work-card-icon social-icon" aria-hidden="true">
 						<svg viewBox="0 0 96 96" focusable="false">
@@ -118,7 +125,7 @@ const sections = [
 					</span>
 					<span class="work-card-label">Socials</span><span class="work-card-arrow" aria-hidden="true"><Arrow /></span>
 				</a>
-				<a class="work-card card-directing" href="/acting/">
+				<a class="work-card glow-button card-directing" href="/acting/">
 
 					<span class="work-card-icon acting-icon" aria-hidden="true">
 						<svg viewBox="0 0 96 96" focusable="false">
@@ -137,7 +144,7 @@ const sections = [
 					</span>
 					<span class="work-card-label">Acting</span><span class="work-card-arrow" aria-hidden="true"><Arrow /></span>
 				</a>
-				<a class="work-card card-film" href="/film/">
+				<a class="work-card glow-button card-film" href="/film/">
 
 					<span class="work-card-icon slate-icon" aria-hidden="true">
 						<svg viewBox="0 0 96 96" focusable="false">
@@ -160,7 +167,7 @@ const sections = [
 					</span>
 					<span class="work-card-label">Film</span><span class="work-card-arrow" aria-hidden="true"><Arrow /></span>
 				</a>
-				<a class="work-card card-video" href="/video/">
+				<a class="work-card glow-button card-video" href="/video/">
 
 					<span class="work-card-icon camera-icon" aria-hidden="true">
 						<svg viewBox="0 0 96 96" focusable="false">
@@ -176,25 +183,41 @@ const sections = [
    </div>
    {sections.map((section, index) => (
     <section class:list={["home-section", `${section.id}-section`, `tone-${section.tone}`, {"section-light": index % 2 === 0, "section-reverse": index % 2 === 1}]} aria-labelledby={`${section.id}-heading`} data-motion-root>
-     <HomeGlass tone={section.tone} />
-     <div class="section-content">
+     <HomeGlass tone={section.tone} variant={section.id} />
+     <div class="section-content" data-home-motion="content">
       <div class="section-heading"><p class="eyebrow">{section.kicker}</p><h2 id={`${section.id}-heading`}>{section.lead}{" "}<span class="home-ink" data-home-shimmer>{section.title}</span></h2></div>
       <div class="section-layout">
        <div class="section-copy"><p>{section.copy}</p></div>
-       <a class="section-tab" href={section.href}>
-        <span class="eyebrow">{String(index+1).padStart(2,"0")} / {section.id.toUpperCase()}</span>
-        <strong>{section.card}</strong><span class="section-tab-description">{section.caption}</span>
-        <span class="section-tab-action">{section.action}<span class="action-circle"><Arrow /></span></span>
+       <div class:list={["section-action", {"gear-action": section.id === 'gear'}]}>
+        {section.id === 'gear' && <div class="home-gear-value" aria-labelledby="home-value-heading" aria-live="polite">
+         <p id="home-value-heading" class="eyebrow">ESTIMATED USD COLLECTION VALUE</p>
+         <strong data-home-gear-amount data-state="pending">Loading collection value…</strong>
+         <small data-home-gear-note>From the gear collection.</small>
+        </div>}
+       <a class="section-tab glow-button" href={section.href}>
+        <svg class="section-button-icon" viewBox="0 0 96 96" fill="currentColor" aria-hidden="true">
+         {section.id === 'about' ? <path d="M48 12a16 16 0 1 1 0 32 16 16 0 0 1 0-32ZM16 82c1.5-23 12-35 32-35s30.5 12 32 35Z" /> : section.id === 'media' ? <path fill-rule="evenodd" d="M18 10h60a8 8 0 0 1 8 8v60a8 8 0 0 1-8 8H18a8 8 0 0 1-8-8V18a8 8 0 0 1 8-8Zm6 14v8h48v-8Zm0 20v26h22V44Zm32 0v6h16v-6Zm0 12v6h16v-6Zm0 12v6h16v-6Z" /> : <><rect x="9" y="27" width="58" height="44" rx="9" /><path d="M67 40 88 29v38L67 56Z" /></>}
+        </svg>
+        <strong>{section.id === 'about' ? 'About Me.' : section.id === 'media' ? 'Media' : 'My Gear.'}</strong>
+        <span class="section-button-arrow" aria-hidden="true"><Arrow /></span>
        </a>
+       </div>
       </div>
      </div>
     </section>
    ))}
+   <section class="home-section contact-section" aria-labelledby="contact-heading">
+    <HomeGlass tone="mint" variant="contact" />
+    <div class="section-content contact-content">
+     <div class="section-heading"><p class="eyebrow">LET’S MAKE SOMETHING</p><h2 id="contact-heading">Contact<span class="home-ink" data-home-shimmer>JET SULLIVAN</span></h2></div>
+     <a class="glow-button contact-cta" href="/contact/">Let’s make something <Arrow /></a><div class="contact-copy"><p>A project, a role, or a story worth sharing. Let’s bring it to life together.</p></div>
+    </div>
+   </section>
   </main>
   <footer class="site-footer"><a class="footer-name" href="/">Jet Sullivan</a><span data-site-location="long">Austin, Texas</span><a href="/contact/">Let’s make something. <Arrow /></a></footer>
-  <PageMotion />
  </body>
 </html>
 <script>
  import "../scripts/home";
+ import "../scripts/home-gear-value";
 </script>
