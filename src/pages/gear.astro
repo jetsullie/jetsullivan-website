@@ -67,6 +67,11 @@ import PageMotion from "../components/common/PageMotion.astro";
 			</div>
 		</footer>
 
+		<dialog id="gear-detail" class="gear-dialog" aria-labelledby="gear-detail-title">
+			<button class="gear-dialog-close" type="button" aria-label="Close gear details" autofocus><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
+			<header class="gear-dialog-heading"><span class="window-dots" aria-hidden="true"><i></i><i></i><i></i></span><p id="gear-detail-category" class="eyebrow"></p><h2 id="gear-detail-title"></h2></header>
+			<div class="gear-dialog-layout"><div class="gear-dialog-image"></div><div class="gear-dialog-information"></div></div>
+		</dialog>
 		<PageMotion />
 	</body>
 </html>
@@ -85,7 +90,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 	};
 
 	const gearList = document.querySelector<HTMLElement>("#gear-list");
-	const itemTargets = new Map<string, { card: HTMLDetailsElement; summary: HTMLElement; openCategory: (expanded: boolean) => void; openItem: (expanded: boolean) => void }>();
+	const itemTargets = new Map<string, (trigger: HTMLElement) => void>();
 
 	const createDots = () => {
 		const dots = document.createElement("span");
@@ -125,7 +130,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 		return wrapper;
 	};
 
-	// Keep native summary keyboard behavior while animating the two disclosure levels.
+	// Keep native summary keyboard behavior while animating categories.
 	const animateDisclosure = (details: HTMLDetailsElement, summary: HTMLElement, updateLabel: (expanded: boolean) => void) => {
 		let animation: Animation | undefined;
 		let expanded = false;
@@ -154,6 +159,63 @@ import PageMotion from "../components/common/PageMotion.astro";
 			updateLabel(next);
 		};
 	};
+
+	const gearDialog = document.querySelector<HTMLDialogElement>('#gear-detail')!;
+	const dialogTitle = gearDialog.querySelector<HTMLElement>('#gear-detail-title')!;
+	let dialogOpener: HTMLElement | null = null;
+	let closingDialog = false;
+	let previousOverflow = '';
+	const dialogMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+	const openGearDialog = (item: GearItem, trigger: HTMLElement, body: HTMLElement, accent: string) => {
+		if (gearDialog.open || closingDialog) return;
+		dialogOpener = trigger;
+		gearDialog.style.setProperty('--section-color', accent || '#fdbfbf');
+		dialogTitle.textContent = item.name;
+		gearDialog.querySelector('#gear-detail-category')!.textContent = item.category || 'Gear';
+		const imageArea = gearDialog.querySelector('.gear-dialog-image')!;
+		imageArea.replaceChildren();
+		if (item.imageUrl) {
+			const image = document.createElement('img');
+			image.alt = item.imageAlt || item.name;
+			image.src = item.imageUrl;
+			image.addEventListener('error', () => { image.remove(); imageArea.textContent = item.name; });
+			imageArea.append(image);
+		} else imageArea.textContent = item.name;
+		gearDialog.querySelector('.gear-dialog-information')!.replaceChildren(body.cloneNode(true));
+		previousOverflow = document.documentElement.style.overflow;
+		document.documentElement.style.overflow = 'hidden';
+		gearDialog.showModal();
+		gearDialog.scrollTop = 0;
+	};
+	const closeGearDialog = async () => {
+		if (!gearDialog.open || closingDialog) return;
+		closingDialog = true;
+		if (!dialogMotion.matches) {
+			await gearDialog.animate(
+				[{ opacity: 1, transform: 'translateY(0) scale(1)' }, { opacity: 0, transform: 'translateY(12px) scale(.98)' }],
+				{ duration: 160, easing: 'ease-in' },
+			).finished.catch(() => {});
+		}
+		gearDialog.close();
+		closingDialog = false;
+	};
+	gearDialog.querySelector('.gear-dialog-close')!.addEventListener('click', () => void closeGearDialog());
+	gearDialog.addEventListener('cancel', event => { event.preventDefault(); void closeGearDialog(); });
+	const outsideDialog = (event: MouseEvent) => {
+		const rect = gearDialog.getBoundingClientRect();
+		return event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom;
+	};
+	let backdropPress = false;
+	gearDialog.addEventListener('pointerdown', event => { backdropPress = event.target === gearDialog && outsideDialog(event); });
+	gearDialog.addEventListener('click', event => {
+		if (backdropPress && event.target === gearDialog && outsideDialog(event)) void closeGearDialog();
+		backdropPress = false;
+	});
+	gearDialog.addEventListener('close', () => {
+		document.documentElement.style.overflow = previousOverflow;
+		dialogOpener?.focus({ preventScroll: true });
+	});
 
 	const setupFeaturedGear = (items: GearItem[]) => {
 		const slides = items.filter((item) => item.imageUrl);
@@ -208,12 +270,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 			if (!current) return;
 			const target = itemTargets.get(current.id);
 			if (!target) return;
-			target.openCategory(true);
-			target.openItem(true);
-			requestAnimationFrame(() => {
-				target.summary.focus({ preventScroll: true });
-				target.card.scrollIntoView({ behavior: reducedMotion.matches ? "instant" : "smooth", block: "start" });
-			});
+			target(link);
 		});
 		new IntersectionObserver(([entry]) => { visible = entry.isIntersecting; }).observe(frame);
 		reducedMotion.addEventListener("change", () => { paused = reducedMotion.matches; updatePause(); });
@@ -266,13 +323,16 @@ import PageMotion from "../components/common/PageMotion.astro";
 			grid.className = "gear-grid";
 			grid.dataset.motionDepth = "counter";
 			section.append(categorySummary, grid);
-			const openCategory = animateDisclosure(section, categorySummary, (expanded) => {
+			animateDisclosure(section, categorySummary, (expanded) => {
 				count.textContent = `${group.items.length} ${group.items.length === 1 ? "item" : "items"} · ${expanded ? "Close category" : "Explore category"}`;
 			});
 			fragment.append(section);
 			group.items.sort((a, b) => a.name.localeCompare(b.name)).forEach((item, index) => {
-				const details = document.createElement("details");
-				const summary = document.createElement("summary");
+				const details = document.createElement("article");
+				const summary = document.createElement("button");
+				summary.type = "button";
+				summary.setAttribute("aria-haspopup", "dialog");
+				summary.setAttribute("aria-controls", "gear-detail");
 				const number = document.createElement("span");
 				const heading = document.createElement("span");
 				const name = document.createElement("strong");
@@ -325,12 +385,11 @@ import PageMotion from "../components/common/PageMotion.astro";
 				}
 
 				body.append(copy);
-				details.append(summary, body);
+				details.append(summary);
 				grid.append(details);
-				const openItem = animateDisclosure(details, summary, (expanded) => {
-					category.textContent = expanded ? "Close details" : "View details";
-				});
-				itemTargets.set(item.id, { card: details, summary, openCategory, openItem });
+				const openItem = (trigger: HTMLElement) => openGearDialog(item, trigger, body, getComputedStyle(section).getPropertyValue('--section-color').trim());
+				summary.addEventListener('click', () => openItem(summary));
+				itemTargets.set(item.id, openItem);
 			});
 
 		});
@@ -441,21 +500,20 @@ import PageMotion from "../components/common/PageMotion.astro";
 	.gear-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; gap: clamp(20px, 2.5vw, 34px); padding: 0 0 clamp(60px, 8vw, 110px); }
 	.gear-card { min-width: 0; border: 1px solid #ffffff94; border-radius: 25px; background: var(--jet-black); box-shadow: 12px 15px 0 #25252520; overflow: clip; scroll-margin-top: 110px; transition: transform 220ms ease, box-shadow 220ms ease; }
 	.gear-card:hover { transform: translateY(-4px); box-shadow: 12px 19px 0 #25252520; }
-	.gear-summary { position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; aspect-ratio: 1; padding: 18px; cursor: pointer; list-style: none; background: var(--jet-black); color: white; }
+	.gear-summary { width: 100%; border: 0; text-align: left; font: inherit; position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; gap: 16px; aspect-ratio: 1; padding: 18px; cursor: pointer; list-style: none; background: var(--jet-black); color: white; }
 	.gear-summary:focus-visible { outline: 3px solid var(--section-color); outline-offset: -6px; border-radius: 20px; }
 	.gear-preview { display: grid; place-items: center; min-width: 0; min-height: 0; overflow: hidden; border-radius: 12px; background: white; }
 	.gear-preview img { width: 100%; height: 100%; min-height: 0; object-fit: contain; background: white; }
 	.gear-number { font: 900 4rem/1 var(--display); color: #252525; }
 	.gear-title { color: var(--section-color); min-width: 0; padding-right: 40px; }
 	.gear-title strong { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; font: 900 clamp(1rem, 1.4vw, 1.25rem)/1.2 var(--display); overflow-wrap: anywhere; }
-	.gear-card[open] .gear-title strong { -webkit-line-clamp: unset; }
 	.gear-title small { display: block; margin-top: 8px; font-size: .8rem; color: white; }
 	.gear-toggle { position: relative; display: block; width: 48px; height: 48px; border-radius: 50%; background: var(--jet-black); }
 	.gear-summary .gear-toggle { position: absolute; right: 16px; bottom: 22px; width: 32px; height: 32px; background: white; }
 	.gear-toggle::before, .gear-toggle::after { content: ""; position: absolute; top: 50%; left: 50%; width: 14px; height: 2px; background: white; transform: translate(-50%, -50%); transition: transform 180ms ease; }
 	.gear-summary .gear-toggle::before, .gear-summary .gear-toggle::after { background: var(--jet-black); }
 	.gear-toggle::after { transform: translate(-50%, -50%) rotate(90deg); }
-	.gear-category[data-expanded="true"] > .category-summary .gear-toggle::after, .gear-card[data-expanded="true"] > .gear-summary .gear-toggle::after { transform: translate(-50%, -50%) rotate(0); }
+	.gear-category[data-expanded="true"] > .category-summary .gear-toggle::after { transform: translate(-50%, -50%) rotate(0); }
 	.gear-body { margin: 0 12px 12px; padding: 0 20px 28px; border-radius: 16px; background: white; }
 	.gear-copy { padding-top: 24px; }
 	.gear-rating { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; margin-bottom: 24px; font-size: .85rem; font-weight: 800; }
@@ -469,6 +527,24 @@ import PageMotion from "../components/common/PageMotion.astro";
 	.gear-message { padding: 60px var(--gutter) 100px; text-align: center; }
 	.gear-message .window-dots { justify-content: center; }
 	.gear-message p { font-size: 1.1rem; line-height: 1.6; }
+	.gear-dialog { --section-color: var(--soft-pink); width: min(1000px, 94vw); max-width: none; max-height: 90dvh; padding: 0; border: 1px solid #ffffff94; border-radius: 25px; background: var(--jet-black); color: white; box-shadow: 12px 15px 0 #0003, 0 30px 100px #0005; overflow: auto; overscroll-behavior: contain; }
+	.gear-dialog[open] { animation: gear-dialog-reveal 240ms ease-out; }
+	.gear-dialog::backdrop { background: #141c20b8; backdrop-filter: blur(7px); }
+	.gear-dialog-close { position: sticky; top: 16px; z-index: 2; display: grid; place-items: center; width: 44px; height: 44px; margin: 16px 18px 0 auto; border: 0; border-radius: 50%; background: white; color: var(--jet-black); cursor: pointer; }
+	.gear-dialog-close:focus-visible { outline: 3px solid var(--section-color); outline-offset: 4px; }
+	.gear-dialog-heading { padding: 0 32px 28px; }
+	.gear-dialog-heading .window-dots { margin-bottom: 22px; }
+	.gear-dialog-heading .eyebrow { margin-bottom: 12px; font-size: .7rem; }
+	.gear-dialog-heading h2 { margin: 0; padding-right: 12px; color: var(--section-color); font: 900 clamp(1.8rem, 3vw, 2.8rem)/1.08 var(--display); letter-spacing: -.055em; overflow-wrap: anywhere; }
+	.gear-dialog-layout { display: grid; grid-template-columns: 1fr 1.15fr; gap: 24px; padding: 0 24px 24px; }
+	.gear-dialog-image { display: grid; place-items: center; align-self: start; aspect-ratio: 1; min-width: 0; padding: 24px; border-radius: 16px; background: white; color: var(--jet-black); font: 900 1.8rem/1.2 var(--display); overflow-wrap: anywhere; }
+	.gear-dialog-image img { width: 100%; height: 100%; max-height: 420px; object-fit: contain; }
+	.gear-dialog-information { min-width: 0; }
+	.gear-dialog .gear-body { margin: 0; color: var(--jet-black); }
+	@keyframes gear-dialog-reveal { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+	@media(max-width:600px) { .gear-dialog-layout { grid-template-columns: 1fr; padding: 0 16px 16px; gap: 18px; } .gear-dialog-heading { padding: 0 24px 24px; } .gear-dialog-image { aspect-ratio: 4/3; max-height: 280px; } .gear-dialog-image img { max-height: 230px; } }
+	@media(prefers-reduced-motion:reduce) { .gear-dialog[open] { animation: none; } }
+
 	.site-footer { padding: 36px clamp(24px, 7vw, 110px); background: var(--jet-black); color: white; }
 	.footer-content { display: flex; align-items: center; justify-content: space-between; gap: 24px; max-width: 1180px; margin: auto; font-size: .75rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 	.footer-content p { margin: 0; }
