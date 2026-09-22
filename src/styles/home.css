@@ -1,3 +1,5 @@
+@import './title-motion.css';
+
 :root {
   --black:#252525;
   --white:#fff;
@@ -474,6 +476,12 @@ h1,h2,p {
 .home-header .search-bar { position:absolute; top:0; left:auto; right:76px; }
 .home-header .search-bar.is-open { width:min(690px,calc(100vw - 12vw - 76px)); background:#e4f5f0; }
 .hero-name.home-ink { position:relative; background:none; -webkit-text-fill-color:initial; overflow:visible; }
+.hero-name .hero-letter {
+  --name-blue-mix: clamp(0%, calc(var(--letter-light,0) * 160%), 100%);
+  background-image: linear-gradient(var(--letter-angle,103deg),
+    color-mix(in srgb, var(--white), var(--blue) var(--name-blue-mix)) var(--letter-divide,100%),
+    color-mix(in srgb, var(--black), var(--blue) var(--name-blue-mix)) var(--letter-divide,100%));
+}
 .hero-name.home-ink.is-visible { animation:hero-color-reveal 1.6s ease-out both; }
 @keyframes hero-color-reveal { from { filter:saturate(.65) brightness(1.15); } to { filter:saturate(1) brightness(1); } }
 /* Keep a generous drag target around a smaller, crisp pointer. */
@@ -502,9 +510,8 @@ h1,h2,p {
  .selection-cursor svg { width:32px; height:32px; }
 }
 @media(prefers-reduced-motion:reduce) { .hero-name.home-ink.is-visible { animation:none; } }
+@media(prefers-reduced-motion:reduce) { .hero-name .hero-letter:hover { --name-blue-mix:100%; } }
 
-.hero-name-layer { display:flex; width:100%; overflow:visible; }
-.hero-letter { display:inline-block; flex-shrink:0; padding:.12em .1em; margin:-.12em -.1em; color:#93e9f9; background:linear-gradient(var(--letter-angle,103deg),#93e9f9 var(--letter-divide,100%),#28788b var(--letter-divide,100%)); background-clip:text; -webkit-background-clip:text; -webkit-text-fill-color:transparent; transform:translate3d(var(--letter-x,0),var(--letter-y,0),0); filter:brightness(calc(1 + var(--letter-light,0) * .18)) drop-shadow(0 0 calc(var(--letter-light,0) * 14px) rgb(147 233 249 / calc(var(--letter-light,0) * .55))); }
 .gear-section .section-content { position:relative; z-index:2; }
 .section-action { display:contents; }
 .gear-action { display:flex; flex-direction:column; align-items:center; gap:24px; grid-column:2; grid-row:1/3; align-self:center; justify-self:end; width:min(100%,440px); min-width:0; container-type:inline-size; }
