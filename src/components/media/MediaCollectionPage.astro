@@ -1,4 +1,6 @@
 ---
+import HomeGlass from "../common/HomeGlass.astro";
+import SiteFooter from "../common/SiteFooter.astro";
 import SiteMenu from "../common/SiteMenu.astro";
 import PageMotion from "../common/PageMotion.astro";
 import PostDialog from "../common/PostDialog.astro";
@@ -58,6 +60,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			data-motion-root
 			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--accent-solid:${accentSolid};`}
 		>
+			<HomeGlass />
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="accent-panel" data-motion-depth="counter" aria-hidden="true"></div>
 
@@ -130,13 +133,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 
 		<div class="section-divider footer-divider" aria-hidden="true"></div>
 
-		<footer class="site-footer">
-			<div class="footer-content">
-				<p class="footer-name">Jet Sullivan</p>
-				<span aria-hidden="true"></span>
-				<p class="footer-location" data-site-location="long">Austin, Texas</p>
-			</div>
-		</footer>
+		<SiteFooter />
 
 		<PageMotion />
 	</body>

@@ -1,4 +1,6 @@
 ---
+import BrandPageTheme from "../components/common/BrandPageTheme.astro";
+import SiteFooter from "../components/common/SiteFooter.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 const resumePdf = "/Jet_Sullivan_Resume.pdf";
 ---
@@ -150,7 +152,8 @@ const resumePdf = "/Jet_Sullivan_Resume.pdf";
 		</style>
 	</head>
 
-	<body>
+	<body class="brand-system">
+		<BrandPageTheme />
 		<SiteMenu showHomeButton />
 		<main class="resume-page">
 			<header class="resume-header">
@@ -201,5 +204,6 @@ const resumePdf = "/Jet_Sullivan_Resume.pdf";
 				</a>
 			</p>
 		</main>
+		<SiteFooter />
 	</body>
 </html>

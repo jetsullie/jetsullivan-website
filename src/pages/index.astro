@@ -1,4 +1,5 @@
 ---
+import SiteFooter from "../components/common/SiteFooter.astro";
 import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import HomeGlass from "../components/common/HomeGlass.astro";
@@ -9,6 +10,7 @@ const name = "Jet Sullivan";
 const pageTitle = `${name} — Actor, Content Creator, and Filmmaker`;
 const pageDescription = "Jet Sullivan is an Austin-based actor, producer, and content creator.";
 const titleCharacters = Array.from("JET SULLIVAN");
+const letterColors = ["#93e9f9", "#fdbfbf", "#efda4a", "transparent", "#7cf5b5", "#c4b5fd", "#ffae80", "#a9d8ff", "#ff9dc7", "#b9ef8c", "#e4b6ff", "#98f5e1"];
 const sections = [
  { id: "about", kicker: "THE PERSON BEHIND THE WORK", lead: "Who is", title: "JET?", tone: "mint", card: "About me.", action: "Meet Jet", href: "/about/", caption: "A little more about the person behind the camera.", copy: "My name is Jet Sullivan, and I am a Moody Honors Radio-Television-Film senior student at the University of Texas at Austin. I am an actor, producer, and videographer." },
  { id: "media", kicker: "IN THE SPOTLIGHT", lead: "News &", title: "MEDIA.", tone: "blue", card: "The latest.", action: "View media", href: "/media/", caption: "Projects, conversations, and a look behind the scenes.", copy: "See what’s new with Jet—from featured projects and interviews to press coverage and moments from behind the scenes." },
@@ -98,7 +100,7 @@ const sections = [
     <HomeGlass tone="blue" />
     <div class="hero-wrap">
      <h1 id="page-title" class="home-ink hero-name" data-home-shimmer aria-label="Jet Sullivan">
-      <span class="hero-name-layer hero-name-base" aria-hidden="true">{titleCharacters.map((character, index) => <span class="hero-letter" data-letter-index={index}>{character === " " ? "\u00a0" : character}</span>)}</span>
+      <span class="hero-name-layer hero-name-base">{titleCharacters.map((character, index) => character === " " ? <span class="hero-letter" aria-hidden="true">{"\u00a0"}</span> : <button type="button" class="hero-letter" data-letter-index={index} data-pop-letter style={`--letter-color:${letterColors[index]};`} aria-label={`Pop letter ${character}`}>{character}</button>)}</span>
      </h1>
      <div class="hero-composition">
       <div class="hero-copy">
@@ -214,7 +216,7 @@ const sections = [
     </div>
    </section>
   </main>
-  <footer class="site-footer"><a class="footer-name" href="/">Jet Sullivan</a><span data-site-location="long">Austin, Texas</span><a href="/contact/">Let’s make something. <Arrow /></a></footer>
+  <SiteFooter />
  </body>
 </html>
 <script>

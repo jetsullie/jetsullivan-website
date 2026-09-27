@@ -1,4 +1,5 @@
 ---
+import SiteFooter from "../common/SiteFooter.astro";
 import SiteMenu from "../common/SiteMenu.astro";
 import HomeGlass from "../common/HomeGlass.astro";
 import Arrow from "../common/Arrow.astro";
@@ -57,7 +58,7 @@ const theme = themes[section];
    </section>
   </main>
   <PostDialog accentTop="#FFFFFF" accent={theme.color} accentBottom={theme.ink} accentSolid={theme.color} />
-  <footer class="site-footer"><div class="footer-content"><p class="footer-name">Jet Sullivan</p><p data-site-location="long">Austin, Texas</p></div></footer>
+  <SiteFooter />
  </body>
 </html>
 <script>

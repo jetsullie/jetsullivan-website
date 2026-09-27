@@ -1,3 +1,5 @@
+import { initializeTitlePop } from './title-pop';
+
 type SiteMotionOptions = {
  canvasSelector: string;
  titleSelector: string;
@@ -10,6 +12,7 @@ export function initializeSiteMotion(options: SiteMotionOptions) {
 // Match the alternate title color to the hero's diagonal at every viewport size.
 const heroCanvas = document.querySelector<HTMLElement>(options.canvasSelector);
 const heroTitle = document.querySelector<HTMLElement>(options.titleSelector);
+if (heroTitle) initializeTitlePop(heroTitle);
 const homeMotionPreference = window.matchMedia('(prefers-reduced-motion: reduce)');
 const alignTitleDivide = () => {
   if (!heroCanvas || !heroTitle) return;
@@ -55,6 +58,10 @@ if (heroTitle) {
   states.forEach((state, index) => {
    const letter = baseLetters[index];
    const rect = rectangles[index];
+   if (letter.classList.contains('is-detached')) {
+    Object.assign(state, {x:0,y:0,vx:0,vy:0,light:0});
+    return;
+   }
    let targetLight = 0;
    if (pointerActive && letter.textContent?.trim()) {
     const centerX = rect.left + rect.width / 2 - state.x;

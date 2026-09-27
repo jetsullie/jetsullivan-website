@@ -1,4 +1,7 @@
 ---
+import HomeGlass from "../components/common/HomeGlass.astro";
+import "../styles/gear-brand.css";
+import SiteFooter from "../components/common/SiteFooter.astro";
 import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
@@ -17,11 +20,12 @@ import PageMotion from "../components/common/PageMotion.astro";
 		<title>Gear — Jet Sullivan</title>
 	</head>
 
-	<body>
+	<body class="gear-brand">
 		<a class="skip-link" href="#gear-list">Skip to gear</a>
 		<main class="gear-page" data-motion-root data-motion-speed="0.8">
 			<SiteMenu showHomeButton />
 			<header class="gear-hero">
+				<HomeGlass tone="pink" />
 				<div class="hero-inner">
 					<div class="hero-text" data-motion-depth="scene">
 						<p class="eyebrow">Behind the work</p>
@@ -59,13 +63,7 @@ import PageMotion from "../components/common/PageMotion.astro";
 			</section>
 		</main>
 
-		<footer class="site-footer" data-motion-root>
-			<div class="footer-content" data-motion-depth="scene">
-				<p>Jet Sullivan</p>
-				<span aria-hidden="true"></span>
-				<p data-site-location="long">Austin, Texas</p>
-			</div>
-		</footer>
+		<SiteFooter />
 
 		<dialog id="gear-detail" class="gear-dialog" aria-labelledby="gear-detail-title">
 			<button class="gear-dialog-close" type="button" aria-label="Close gear details" autofocus><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></button>

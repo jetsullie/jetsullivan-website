@@ -1,4 +1,5 @@
 ---
+import SiteFooter from "../components/common/SiteFooter.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
 
@@ -566,13 +567,7 @@ const adminWindows = [
 
 		<div class="section-divider footer-divider" aria-hidden="true"></div>
 
-		<footer class="site-footer">
-			<div class="footer-content">
-				<p class="footer-name">Admin Jet Sullivan</p>
-				<span aria-hidden="true"></span>
-				<p class="footer-location" data-site-location="long">Austin, Texas</p>
-			</div>
-		</footer>
+		<SiteFooter />
 
 		<PageMotion />
 	</body>

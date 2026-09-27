@@ -78,6 +78,13 @@ const expandedMenuHeight = 108 + (brainstormActions ? 5 : visibleMenuItems.lengt
 	)
 }
 
+<script>
+ import { initializeTitlePop } from '../../scripts/title-pop';
+ // Run after page-specific title preparation; this also covers plain page titles.
+ const initializePageTitles = () => document.querySelectorAll<HTMLElement>('h1').forEach(initializeTitlePop);
+ if (document.readyState !== 'complete') document.addEventListener('DOMContentLoaded', initializePageTitles, { once: true });
+ else initializePageTitles();
+</script>
 <script is:inline src="/site-menu.js" defer></script>
 <script is:inline src="/site-location.js" defer></script>
 

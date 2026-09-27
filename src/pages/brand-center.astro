@@ -1,4 +1,5 @@
 ---
+import SiteFooter from "../components/common/SiteFooter.astro";
 import Arrow from '../components/common/Arrow.astro';
 import HomeGlass from '../components/common/HomeGlass.astro';
 import '../styles/brand-center.css';
@@ -69,7 +70,7 @@ const chapters = ['Essence','Color','Type','Material','Motion','Voice','Assets']
     <div class="closing"><p>Bold type. Quiet space. Color with purpose.<br /><strong>A little play makes it yours.</strong></p><a class="glass-button" style="--accent:#7cf5b5" href="mailto:contact@jetsullivan.com">Let’s talk <Arrow /></a></div>
    </div></section>
   </main>
-  <footer class="wrap"><a href="/">Jet Sullivan</a><span>Brand Center · Direct-access resource</span><a href="#brand-title">Back to top ↑</a></footer>
+  <SiteFooter />
   <p class="copy-status" role="status" aria-live="polite"></p>
  </body>
 </html>

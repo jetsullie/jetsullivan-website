@@ -1,0 +1,40 @@
+.credits-page h1 { font-size:18cqi; }
+.credits-list { display:grid; gap:24px; min-height:180px; }
+.credit-card {
+ --category-rgb:var(--page-rgb);
+ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,2fr); gap:clamp(28px,4vw,56px);
+ padding:clamp(24px,3.5vw,44px); transition:border-color .3s,box-shadow .3s;
+}
+.credit-card::before { content:''; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none; background:radial-gradient(ellipse at var(--glass-light-x,50%) var(--glass-light-y,30%),#ffffff30,transparent 75%); opacity:0; transition:opacity .3s; }
+.credit-card:hover,.credit-card:focus-within { border-color:rgb(var(--category-rgb)); box-shadow:inset 0 1px 0 #ffffffa0,0 0 34px rgb(var(--category-rgb)/.4),0 8px 22px #0002; }
+.credit-card:hover::before,.credit-card:focus-within::before { opacity:1; }
+.credit-heading { min-width:0; }
+.credit-marker { display:block; width:48px; height:6px; margin-bottom:22px; border-radius:999px; background:rgb(var(--category-rgb)); box-shadow:0 0 18px rgb(var(--category-rgb)/.3); }
+.credit-kicker { margin:0 0 10px; color:var(--page-accent); font-size:11px; font-weight:800; letter-spacing:1.7px; text-transform:uppercase; }
+.credit-heading h2 { margin:0; font:900 clamp(1.5rem,2.8vw,2.6rem)/1.1 var(--font-display); letter-spacing:-.045em; overflow-wrap:anywhere; }
+.film-list { display:grid; align-content:start; gap:10px; margin:0; padding:0; list-style:none; min-width:0; }
+.film-list li { min-width:0; border:1px solid #ffffff26; border-radius:14px; background:#ffffff08; }
+.film-entry { display:flex; align-items:center; justify-content:space-between; gap:20px; width:100%; min-height:64px; padding:16px 20px; border-radius:inherit; color:#fff; font-size:16px; font-weight:700; line-height:1.4; }
+.film-copy { display:grid; min-width:0; gap:6px; }
+.film-name { overflow-wrap:anywhere; }
+.film-dates { color:#ffffffb8; font-size:12px; font-weight:400; line-height:1.5; }
+.film-dates time { font-variant-numeric:tabular-nums; }
+a.film-entry { transition:background-color .2s; }
+a.film-entry:hover,a.film-entry:focus-visible { background:#ffffff14; }
+a.film-entry:hover .film-name,a.film-entry:focus-visible .film-name { text-decoration:underline; text-underline-offset:4px; }
+.outbound-arrow { display:flex; flex:0 0 22px; color:var(--page-accent); }
+.outbound-arrow svg { width:22px; height:22px; }
+.film-list .empty-films { padding:20px; color:#ffffffb8; line-height:1.6; }
+.credits-list .error-card { border-color:#fdbfbf80; color:var(--pink); }
+@media(max-width:700px) {
+ .credit-card { grid-template-columns:minmax(0,1fr); gap:24px; }
+ .credit-heading h2 { font-size:28px; }
+}
+@media(max-width:430px) {
+ .credits-list { gap:18px; }
+ .credit-card { padding:24px 20px; }
+ .film-entry { padding:14px; font-size:15px; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .credit-card,.credit-card::before,a.film-entry { transition:none; }
+}

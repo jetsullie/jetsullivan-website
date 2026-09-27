@@ -479,8 +479,8 @@ h1,h2,p {
 .hero-name .hero-letter {
   --name-blue-mix: clamp(0%, calc(var(--letter-light,0) * 160%), 100%);
   background-image: linear-gradient(var(--letter-angle,103deg),
-    color-mix(in srgb, var(--white), var(--blue) var(--name-blue-mix)) var(--letter-divide,100%),
-    color-mix(in srgb, var(--black), var(--blue) var(--name-blue-mix)) var(--letter-divide,100%));
+    color-mix(in srgb, var(--white), var(--letter-color,var(--blue)) var(--name-blue-mix)) var(--letter-divide,100%),
+    color-mix(in srgb, var(--black), var(--letter-color,var(--blue)) var(--name-blue-mix)) var(--letter-divide,100%));
 }
 .hero-name.home-ink.is-visible { animation:hero-color-reveal 1.6s ease-out both; }
 @keyframes hero-color-reveal { from { filter:saturate(.65) brightness(1.15); } to { filter:saturate(1) brightness(1); } }
@@ -501,12 +501,12 @@ h1,h2,p {
  .home-wordmark { font-size:18px; letter-spacing:-1px; }
  .home-wordmark span { font-size:6px; letter-spacing:.9px; margin-top:7px; }
  .home-header-nav { display:none; }
- .home-header .menu-control:not(.is-open),.home-header .search-bar { width:44px; min-width:44px; height:44px; min-height:44px; }
- .home-header .menu-toggle { flex-basis:42px; width:42px; height:42px; }
- .home-header .site-menu { top:54px; }
- .home-header .search-bar { right:54px; }
- .home-header .search-toggle { flex-basis:42px; }
- .home-header .search-bar.is-open { width:calc(88vw - 54px); }
+
+
+
+
+
+
  .selection-cursor svg { width:32px; height:32px; }
 }
 @media(prefers-reduced-motion:reduce) { .hero-name.home-ink.is-visible { animation:none; } }
@@ -536,3 +536,30 @@ h1,h2,p {
 [data-home-motion="near"] { translate:var(--home-bg-x) calc(var(--home-bg-y) + var(--home-scroll-near,0px)); }
 @media(max-width:650px) { .gear-action { display:contents; } .gear-action .home-gear-value { order:3; width:100%; margin-top:64px; translate:none; } .work-card { padding:20px 16px; } .work-card-label { font-size:clamp(1.1rem,5.6vw,1.5rem); } .work-card.glow-button { gap:22px 6px; } }
 @media(prefers-reduced-motion:reduce) { .hero-letter { transform:none; filter:none; } :is(.section-content,.hero-name,.hero-copy,.work-grid,.portrait,.site-footer > a,.home-wordmark,[data-home-motion],.home-gear-value) { translate:none; transform:none; } }
+
+/* Keep the shared controls full size, including while they expand. */
+.home-header .menu-control { position:fixed; top:var(--site-control-top); right:var(--site-control-right); left:auto; }
+.home-header .search-bar { position:fixed; top:var(--site-control-top); right:calc(var(--site-control-right) + 76px); left:auto; }
+.work-card.glow-button { transition:transform 260ms cubic-bezier(.22,1,.36,1),box-shadow 360ms ease,border-color 360ms ease; }
+.work-card.glow-button:hover,.work-card.glow-button:focus-visible { transform:translateY(-4px) scale(1.035); }
+.hero-name.home-ink { translate:none; }
+.hero-name button.hero-letter { appearance:none; border:0; border-radius:0; font:inherit; letter-spacing:inherit; text-align:inherit; cursor:pointer; }
+.hero-name .hero-letter { filter:brightness(calc(1 + var(--letter-light,0) * .1)) drop-shadow(0 0 calc(var(--letter-light,0) * 18px) var(--letter-color,var(--blue))); }
+.hero-name .hero-letter:hover,.hero-name .hero-letter:focus-visible { --name-blue-mix:100%; filter:drop-shadow(0 0 14px var(--letter-color,var(--blue))); }
+@media(max-width:650px) {
+ .home-header { height:64px; padding-right:76px; }
+ .home-header .search-bar { top:auto; bottom:calc(20px + env(safe-area-inset-bottom)); left:50%; right:auto; translate:-50% 0; }
+ .home-header .search-bar.is-open { left:50%; right:auto; width:calc(100vw - 36px); }
+ .home-header .search-suggestions { top:auto; bottom:calc(100% + 12px); max-height: min(440px,55dvh); }
+ .home-header:has(.search-bar.is-open) .home-header-nav { visibility:visible; }
+}
+@media(prefers-reduced-motion:reduce) {
+ .work-card.glow-button { transition:none; }
+ .work-card.glow-button:hover,.work-card.glow-button:focus-visible { transform:none; }
+}
+
+/* Match the name's blue glow without changing the location cursor's color. */
+.location .selection-cursor svg { transition:filter 180ms ease; }
+.location:hover .selection-cursor svg,
+.location:focus-within .selection-cursor svg { filter:drop-shadow(0 0 14px var(--blue)); }
+@media(prefers-reduced-motion:reduce) { .location .selection-cursor svg { transition:none; } }

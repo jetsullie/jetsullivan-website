@@ -1,4 +1,6 @@
 ---
+import HomeGlass from "../components/common/HomeGlass.astro";
+import SiteFooter from "../components/common/SiteFooter.astro";
 import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
@@ -46,6 +48,7 @@ const backgroundWindows = [
 	<body class="brand-system">
 		<BrandPageTheme />
 		<main class="about-page" data-motion-root>
+			<HomeGlass tone="mint" />
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 
 			<div class="background-windows" data-motion-bounds>
@@ -123,13 +126,7 @@ const backgroundWindows = [
 
 		<div class="section-divider footer-divider" aria-hidden="true"></div>
 
-		<footer class="site-footer">
-			<div class="footer-content">
-				<p class="footer-name">Jet Sullivan</p>
-				<span aria-hidden="true"></span>
-				<p class="footer-location" data-site-location="long">Austin, Texas</p>
-			</div>
-		</footer>
+		<SiteFooter />
 
 		<PageMotion />
 	</body>

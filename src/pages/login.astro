@@ -1,4 +1,6 @@
 ---
+import HomeGlass from "../components/common/HomeGlass.astro";
+import SiteFooter from "../components/common/SiteFooter.astro";
 import Arrow from "../components/common/Arrow.astro";
 import SiteMenu from "../components/common/SiteMenu.astro";
 import PageMotion from "../components/common/PageMotion.astro";
@@ -26,6 +28,7 @@ const backgroundWindows = Array.from({ length: 22 }, (_, index) => ({
 	<body class="brand-system">
 		<BrandPageTheme />
 		<main class="login-page" data-motion-root data-motion-speed="1.2">
+			<HomeGlass tone="pink" />
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
 			<div class="blue-panel" data-motion-depth="counter" aria-hidden="true"></div>
 
@@ -85,13 +88,7 @@ const backgroundWindows = Array.from({ length: 22 }, (_, index) => ({
 
 		<div class="section-divider" aria-hidden="true"></div>
 
-		<footer class="site-footer">
-			<div class="footer-content">
-				<p class="footer-name">Admin Jet Sullivan</p>
-				<span aria-hidden="true"></span>
-				<p class="footer-location" data-site-location="long">Austin, Texas</p>
-			</div>
-		</footer>
+		<SiteFooter />
 
 		<PageMotion />
 	</body>
