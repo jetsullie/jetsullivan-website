@@ -1,6 +1,6 @@
 import '../styles/title-pop.css';
 
-/** Add the same one-shot letter fall to a page title without changing its colors. */
+/** Add a repeatable letter fall and glowing return to a page title without changing its colors. */
 export function initializeTitlePop(heading: HTMLElement) {
  if (heading.dataset.titlePopReady) return;
  heading.dataset.titlePopReady = 'true';
@@ -39,8 +39,33 @@ export function initializeTitlePop(heading: HTMLElement) {
     if (!event.repeat) letter.click();
    });
   }
+  let returnAnimation: Animation | null = null;
   letter.addEventListener('click', () => {
-   if (letter.classList.contains('is-detached')) return;
+   returnAnimation?.cancel();
+   returnAnimation = null;
+   letter.classList.remove('is-restoring');
+   if (letter.classList.contains('is-detached')) {
+    letter.classList.remove('is-detached');
+    letter.classList.add('is-restoring');
+    letter.setAttribute('aria-label', `Pop letter ${letter.textContent}`);
+    const restoredStyle = getComputedStyle(letter);
+    const glowColor = (heading.matches('.hero-name') && restoredStyle.getPropertyValue('--letter-color').trim())
+     || restoredStyle.getPropertyValue('--page-accent').trim() || restoredStyle.color;
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const frames = reduced ? [{opacity:0}, {opacity:1}] : [
+     {opacity:0, filter:`brightness(1.35) drop-shadow(0 0 2px ${glowColor})`},
+     {opacity:1, filter:`brightness(1.2) drop-shadow(0 0 18px ${glowColor})`, offset:.45},
+     {opacity:1, filter:restoredStyle.filter},
+    ];
+    const animation = letter.animate(frames, {duration:reduced ? 140 : 420, easing:'cubic-bezier(.22,1,.36,1)'});
+    returnAnimation = animation;
+    animation.onfinish = () => {
+     if (returnAnimation !== animation) return;
+     letter.classList.remove('is-restoring');
+     returnAnimation = null;
+    };
+    return;
+   }
    const rect = letter.getBoundingClientRect();
    const style = getComputedStyle(letter);
    const falling = document.createElement('span');
@@ -58,8 +83,7 @@ export function initializeTitlePop(heading: HTMLElement) {
     filter:homeColor ? `drop-shadow(0 0 12px ${homeColor})` : style.filter,
    });
    letter.classList.add('is-detached');
-   if (letter instanceof HTMLButtonElement) letter.disabled = true;
-   else { letter.removeAttribute('role'); letter.removeAttribute('tabindex'); letter.removeAttribute('aria-label'); }
+   letter.setAttribute('aria-label', `Restore letter ${letter.textContent}`);
    letter.style.setProperty('--letter-light', '0');
    letter.style.setProperty('--letter-x', '0px');
    letter.style.setProperty('--letter-y', '0px');
@@ -76,8 +100,10 @@ export function initializeTitlePop(heading: HTMLElement) {
     return {offset:i / 30, transform:`translate(${vx*t}px,${vy*t + .5*gravity*t*t}px) rotate(${spin*t}deg) scale(${1 + Math.sin(Math.min(1,i/6)*Math.PI)*.12})`};
    });
    const animation = falling.animate(frames, {duration:reduced ? 180 : duration*1000, easing:'linear', fill:'forwards'});
-   animation.onfinish = () => falling.remove();
-   animation.oncancel = () => falling.remove();
+   // Each popped copy finishes independently, even if its socket is restored.
+   const removeFalling = () => falling.remove();
+   animation.onfinish = removeFalling;
+   animation.oncancel = removeFalling;
   });
  });
 }

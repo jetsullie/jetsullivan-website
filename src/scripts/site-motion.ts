@@ -58,7 +58,7 @@ if (heroTitle) {
   states.forEach((state, index) => {
    const letter = baseLetters[index];
    const rect = rectangles[index];
-   if (letter.classList.contains('is-detached')) {
+   if (letter.classList.contains('is-detached') || letter.classList.contains('is-restoring')) {
     Object.assign(state, {x:0,y:0,vx:0,vy:0,light:0});
     return;
    }

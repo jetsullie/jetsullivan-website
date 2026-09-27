@@ -1,11 +1,14 @@
 .title-pop-letter { display:inline-block; }
 [data-pop-letter] { cursor:pointer; }
 [data-pop-letter]:focus-visible { outline:2px solid currentColor; outline-offset:4px; border-radius:4px; }
-/* Inert holes must override each page's existing letter paint and motion. */
+/* Empty sockets stay still, but remain clickable and keyboard accessible. */
 h1 [data-pop-letter].is-detached {
  background:none !important; -webkit-text-fill-color:transparent !important;
  -webkit-text-stroke:1.5px #858585; color:transparent !important;
  filter:none !important; transform:none !important; text-shadow:none !important;
- pointer-events:none; cursor:default; opacity:1;
+ cursor:pointer; opacity:1;
 }
 .falling-letter { position:fixed; z-index:150; box-sizing:border-box; pointer-events:none; user-select:none; white-space:pre; transform-origin:center; }
+
+h1 [data-pop-letter].is-detached:focus-visible { outline-color:#858585; }
+h1 [data-pop-letter].is-restoring { transform:none !important; }
