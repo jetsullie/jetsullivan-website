@@ -1,3 +1,5 @@
+import { initializePostBubbles, preparePostPreview } from './post-bubbles';
+initializePostBubbles();
 import { createArrow } from "./arrow";
 	import { setupPostDialog } from "./post-dialog";
 
@@ -199,8 +201,7 @@ import { createArrow } from "./arrow";
 		if (description.textContent) copy.append(description);
 
 		const destination = safeWebUrl(entry.link);
-		let previewLink: HTMLAnchorElement | null = null;
-		if (destination) {
+		if (isDetail && destination) {
 			const link = document.createElement("a");
 			link.href = destination.href;
 			link.className = "entry-link";
@@ -215,21 +216,12 @@ import { createArrow } from "./arrow";
 				);
 			}
 			if (isDetail) copy.append(link);
-			else previewLink = link;
 		}
 
 		card.append(copy);
 
 		if (!isDetail) {
-			const actions = document.createElement("div");
-			const hint = document.createElement("span");
 			const openButton = document.createElement("button");
-			actions.className = "entry-card-actions";
-			hint.className = "entry-open-hint";
-			hint.textContent = "View full post";
-			if (previewLink) actions.append(previewLink);
-			actions.append(hint);
-			copy.append(actions);
 			openButton.type = "button";
 			openButton.className = "entry-open";
 			openButton.setAttribute("aria-haspopup", "dialog");
@@ -254,6 +246,7 @@ import { createArrow } from "./arrow";
 				postDialog.open(detail, openButton, titleId, descriptionId);
 			});
 			card.append(openButton);
+			preparePostPreview(card);
 		}
 
 		return card;

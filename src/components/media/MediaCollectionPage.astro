@@ -32,6 +32,18 @@ const {
 	accentSolid,
 } = Astro.props;
 
+const sectionThemes: Record<string, { accent: string; rgb: string; ink: string }> = {
+	featured: { accent: "#efda4a", rgb: "239 218 74", ink: "#75650b" },
+	interviews: { accent: "#93e9f9", rgb: "147 233 249", ink: "#28788b" },
+	"behind-the-scenes": { accent: "#ffb05c", rgb: "255 176 92", ink: "#99480a" },
+	press: { accent: "#ffffff", rgb: "255 255 255", ink: "#444444" },
+};
+const theme = sectionThemes[section] ?? {
+	accent: accentSolid || "#93e9f9",
+	rgb: "147 233 249",
+	ink: "#28788b",
+};
+
 const windows = Array.from({ length: 20 }, (_, index) => ({
 	x: (index * 17 + 3) % 94,
 	y: (index * 29 + 8) % 88,
@@ -58,7 +70,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		<main
 			class="collection-page"
 			data-motion-root
-			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--accent-solid:${accentSolid};`}
+			style={`--accent-top:${accentTop};--accent:${accent};--accent-bottom:${accentBottom};--accent-solid:${accentSolid};--page-accent:${theme.accent};--page-rgb:${theme.rgb};--page-ink:${theme.ink};`}
 		>
 			<HomeGlass />
 			<div class="top-frame" data-motion-depth="counter" aria-hidden="true"></div>
@@ -110,7 +122,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				</p>
 
 				<div
-					class="entry-grid"
+					class="entry-grid post-bubbles"
 					data-media-collection
 					data-section={section}
 					data-cta-label={ctaLabel}
@@ -128,7 +140,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 			accentTop={accentTop}
 			accent={accent}
 			accentBottom={accentBottom}
-			accentSolid={accentSolid}
+			accentSolid={theme.accent}
 		/>
 
 		<div class="section-divider footer-divider" aria-hidden="true"></div>
@@ -140,6 +152,8 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 </html>
 
 <script>
+ import { initializePostBubbles, preparePostPreview } from "../../scripts/post-bubbles";
+ initializePostBubbles();
 	import { createArrow } from "../../scripts/arrow";
 	import { setupPostDialog } from "../../scripts/post-dialog";
 
@@ -415,8 +429,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 		if (description.textContent) copy.append(description);
 
 		const destination = safeWebUrl(entry.link ?? entry.url);
-		let previewLink: HTMLAnchorElement | null = null;
-		if (destination) {
+		if (isDetail && destination) {
 			const link = document.createElement("a");
 			link.href = destination.href;
 			link.className = "entry-link";
@@ -431,21 +444,12 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				);
 			}
 			if (isDetail) copy.append(link);
-			else previewLink = link;
 		}
 
 		card.append(copy);
 
 		if (!isDetail) {
-			const actions = document.createElement("div");
-			const hint = document.createElement("span");
 			const openButton = document.createElement("button");
-			actions.className = "entry-card-actions";
-			hint.className = "entry-open-hint";
-			hint.textContent = "View full post";
-			if (previewLink) actions.append(previewLink);
-			actions.append(hint);
-			copy.append(actions);
 			openButton.type = "button";
 			openButton.className = "entry-open";
 			openButton.setAttribute("aria-haspopup", "dialog");
@@ -470,6 +474,7 @@ const windows = Array.from({ length: 20 }, (_, index) => ({
 				postDialog.open(detail, openButton, titleId, descriptionId);
 			});
 			card.append(openButton);
+			preparePostPreview(card);
 		}
 
 		return card;
