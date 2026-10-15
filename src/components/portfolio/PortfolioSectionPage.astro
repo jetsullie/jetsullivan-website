@@ -13,10 +13,11 @@ interface Props {
  heading: string;
  description: string;
  status: string;
+ backstageHref?: string;
  headingCardHref?: string;
  headingCardLabel?: string;
 }
-const {section,title,eyebrow,heading,description,status,headingCardHref,headingCardLabel} = Astro.props;
+const {section,title,eyebrow,heading,description,status,backstageHref,headingCardHref,headingCardLabel} = Astro.props;
 const themes = {
  acting: { color:'#FDBFBF', rgb:'253 191 191', ink:'#914b60', tone:'pink' },
  film: { color:'#EFDA4A', rgb:'239 218 74', ink:'#75650b', tone:'blue' },
@@ -46,11 +47,12 @@ const theme = themes[section];
      <p class="eyebrow">{eyebrow}</p>
      <h1 id="page-heading" tabindex="-1" aria-label={heading}><span class="hero-name-layer hero-name-base" aria-hidden="true">{Array.from(heading.toUpperCase()).map((letter,index)=><span class="hero-letter" data-letter-index={index}>{letter}</span>)}</span></h1>
     </div>
-    <div class="portfolio-intro">
-     <p class="introduction">{description}</p>
-     {headingCardHref && headingCardLabel && <a class="heading-card" href={headingCardHref}><span>{headingCardLabel}</span><Arrow /></a>}
-    </div>
-    <div class="collection-heading"><p class="eyebrow">Selected work</p><span>{title} / Jet Sullivan</span></div>
+    {(backstageHref || headingCardHref) && <div class="portfolio-intro">
+     <div class="heading-actions">
+     {backstageHref && <a class="heading-card" href={backstageHref} target="_blank" rel="noopener noreferrer"><span>Backstage</span><Arrow /><span class="sr-only"> (opens in a new tab)</span></a>}
+     {headingCardHref && headingCardLabel && <a class="heading-card heading-card-credits" href={headingCardHref}><span>{headingCardLabel}</span></a>}
+     </div>
+    </div>}
     <p class="sr-only" data-entry-status aria-live="polite">Loading {title.toLowerCase()} posts…</p>
     <div class="entry-grid post-bubbles" data-portfolio-entries data-section={section} data-empty-message={status} aria-busy="true">
      <article class="info-window status-card"><p>Loading {title.toLowerCase()} posts…</p></article>

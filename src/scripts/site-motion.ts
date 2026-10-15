@@ -5,6 +5,7 @@ type SiteMotionOptions = {
  titleSelector: string;
  sectionSelector: string;
  stationarySelector: string;
+ interactiveSelector?: string;
 };
 
 /** The homepage and Socials share the same split-title physics and scene motion. */
@@ -43,6 +44,10 @@ if (heroCanvas && heroTitle) {
 if (heroTitle) {
  const baseLetters = Array.from(heroTitle.querySelectorAll<HTMLElement>('.hero-name-base .hero-letter'));
  const letterLayers = baseLetters.map(letter => Array.from(heroTitle.querySelectorAll<HTMLElement>(`.hero-letter[data-letter-index="${letter.dataset.letterIndex}"]`)));
+ const interactiveControls = options.interactiveSelector
+  ? Array.from(document.querySelectorAll<HTMLElement>(options.interactiveSelector)) : [];
+ baseLetters.push(...interactiveControls);
+ letterLayers.push(...interactiveControls.map(control => [control]));
  const states = baseLetters.map(() => ({ x: 0, y: 0, vx: 0, vy: 0, rotation: 0, light: 0 }));
  let pointerX = 0;
  let pointerY = 0;
@@ -97,16 +102,18 @@ if (heroTitle) {
   else titleFrame = 0;
  };
  const startTitlePhysics = () => { if (!titleFrame && !homeMotionPreference.matches) { previousTitleTime = performance.now(); titleFrame = requestAnimationFrame(renderTitlePhysics); } };
- heroTitle.addEventListener('pointermove', event => {
+ for (const target of [heroTitle, ...interactiveControls]) {
+ target.addEventListener('pointermove', event => {
   pointerX = event.clientX;
   pointerY = event.clientY;
   pointerActive = event.pointerType === 'mouse';
   startTitlePhysics();
  });
- heroTitle.addEventListener('pointerleave', () => {
+ target.addEventListener('pointerleave', () => {
   pointerActive = false;
   startTitlePhysics();
  });
+ }
  homeMotionPreference.addEventListener('change', () => {
   cancelAnimationFrame(titleFrame);
   titleFrame = 0;

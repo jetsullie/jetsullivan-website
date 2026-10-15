@@ -1,5 +1,10 @@
 import { createArrow } from "./arrow";
 import { initializeSiteMotion } from './site-motion';
+import { initializePostBubbles } from './post-bubbles';
+import '../styles/bubble-controls.css';
+
+initializePostBubbles({ gridSelector: '.work-grid', cardSelector: '.work-card' });
+initializePostBubbles({ gridSelector: '.section-layout', cardSelector: '.section-tab' });
 	const searchBar = document.querySelector<HTMLFormElement>(".search-bar");
 	const searchToggle =
 		document.querySelector<HTMLButtonElement>(".search-toggle");
@@ -909,6 +914,23 @@ document.querySelectorAll<HTMLElement>('.glow-button').forEach(button => {
   const rect = button.getBoundingClientRect();
   button.style.setProperty('--glass-light-x', `${(event.clientX - rect.left) / rect.width * 100}%`);
   button.style.setProperty('--glass-light-y', `${(event.clientY - rect.top) / rect.height * 100}%`);
+ });
+});
+
+// Brand Center accent colors; each letter remembers its own previous choice.
+const titleGlowColors = ['#93e9f9', '#fdbfbf', '#efda4a', '#7cf5b5'];
+document.querySelectorAll<HTMLElement>('.hero-name button.hero-letter').forEach(letter => {
+ let previousColor = '';
+ const chooseGlow = () => {
+  if (letter.classList.contains('is-detached')) return;
+  const choices = titleGlowColors.filter(color => color !== previousColor);
+  previousColor = choices[Math.floor(Math.random() * choices.length)];
+  letter.style.setProperty('--letter-color', previousColor);
+ };
+ chooseGlow();
+ letter.addEventListener('pointerenter', chooseGlow);
+ letter.addEventListener('focus', () => {
+  if (letter.matches(':focus-visible') && !letter.matches(':hover')) chooseGlow();
  });
 });
 

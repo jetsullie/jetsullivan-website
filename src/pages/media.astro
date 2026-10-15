@@ -1,4 +1,6 @@
 ---
+import "../styles/post-bubbles.css";
+import "../styles/media-pills.css";
 import HomeGlass from "../components/common/HomeGlass.astro";
 import SiteFooter from "../components/common/SiteFooter.astro";
 import Arrow from "../components/common/Arrow.astro";
@@ -48,16 +50,13 @@ const windows = [
 
 			<SiteMenu showHomeButton />
 
-			<section class="content" data-motion-depth="scene" aria-labelledby="media-heading">
+			<section class="content" aria-labelledby="media-heading">
 				<p class="eyebrow">Watch · Listen · Explore</p>
 				<h1 id="media-heading">Media</h1>
-				<nav class="public-media" aria-label="Media collections">
-					<a
-						class="media-tab placeholder tab-featured"
-						href="/media/featured/"
-					>
-						<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-						<span class="media-icon" aria-hidden="true">
+				<nav class="entry-grid post-bubbles media-pill-grid" aria-label="Media collections">
+					<article class="entry-card is-compact tab-featured">
+      <div class="entry-surface">
+       <span class="attachment-preview media-pill-icon" aria-hidden="true">
 							<svg viewBox="0 0 96 96" focusable="false">
 								<path
 									class="icon-fill"
@@ -65,15 +64,13 @@ const windows = [
 								/>
 							</svg>
 						</span>
-						<strong>Featured</strong>
-						<small>Explore featured work</small>
-					</a>
-					<a
-						class="media-tab placeholder tab-interviews"
-						href="/media/interviews/"
-					>
-						<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-						<span class="media-icon" aria-hidden="true">
+       <div class="entry-copy"><h2>Featured</h2><p>Explore featured work</p></div>
+       <a class="entry-open" href="/media/featured/" aria-label="Explore Featured"></a>
+      </div>
+     </article>
+					<article class="entry-card is-compact tab-interviews">
+      <div class="entry-surface">
+       <span class="attachment-preview media-pill-icon" aria-hidden="true">
 							<svg viewBox="0 0 96 96" focusable="false">
 								<circle class="icon-fill" cx="48" cy="31" r="15" />
 								<path
@@ -82,37 +79,34 @@ const windows = [
 								/>
 							</svg>
 						</span>
-						<strong>Interviews</strong>
-						<small>Watch interviews</small>
-					</a>
-					<a
-						class="media-tab placeholder tab-behind-scenes"
-						href="/media/behind-the-scenes/"
-					>
-						<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-						<span class="media-icon" aria-hidden="true">
+       <div class="entry-copy"><h2>Interviews</h2><p>Watch interviews</p></div>
+       <a class="entry-open" href="/media/interviews/" aria-label="Explore Interviews"></a>
+      </div>
+     </article>
+					<article class="entry-card is-compact tab-behind-scenes">
+      <div class="entry-surface">
+       <span class="attachment-preview media-pill-icon" aria-hidden="true">
 							<svg viewBox="0 0 96 96" focusable="false">
 								<path d="M17 33h16l6-9h18l6 9h16v42H17Z" />
 								<circle cx="48" cy="54" r="13" />
 							</svg>
 						</span>
-						<strong>Behind the Scenes</strong>
-						<small>See the process</small>
-					</a>
-					<a
-						class="media-tab placeholder tab-press"
-						href="/media/press/"
-					>
-						<span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>
-						<span class="media-icon" aria-hidden="true">
+       <div class="entry-copy"><h2>Behind the Scenes</h2><p>See the process</p></div>
+       <a class="entry-open" href="/media/behind-the-scenes/" aria-label="Explore Behind the Scenes"></a>
+      </div>
+     </article>
+					<article class="entry-card is-compact tab-press">
+      <div class="entry-surface">
+       <span class="attachment-preview media-pill-icon" aria-hidden="true">
 							<svg viewBox="0 0 96 96" focusable="false">
 								<rect x="17" y="18" width="62" height="60" rx="5" />
 								<path d="M28 34h40M28 48h40M28 62h30" />
 							</svg>
 						</span>
-						<strong>Press</strong>
-						<small>Read the latest</small>
-					</a>
+       <div class="entry-copy"><h2>Press</h2><p>Read the latest</p></div>
+       <a class="entry-open" href="/media/press/" aria-label="Explore Press"></a>
+      </div>
+     </article>
 				</nav>
 			</section>
 		</main>
@@ -124,6 +118,14 @@ const windows = [
 		<PageMotion />
 	</body>
 </html>
+
+<script>
+ import { initializePostBubbles, preparePostPreview } from '../scripts/post-bubbles';
+ document.querySelectorAll<HTMLElement>('.media-pill-grid > .entry-card').forEach(preparePostPreview);
+ initializePostBubbles();
+</script>
+
+
 
 <style>
 	:root {

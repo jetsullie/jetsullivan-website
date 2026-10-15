@@ -304,7 +304,7 @@ import { createArrow } from "./arrow";
 		});
 
 import { initializeSiteMotion } from './site-motion';
-initializeSiteMotion({canvasSelector:'.portfolio-page',titleSelector:'#page-heading',sectionSelector:'.portfolio-page,.social-header,.site-footer',stationarySelector:'.social-header,.site-footer'});
+initializeSiteMotion({canvasSelector:'.portfolio-page',titleSelector:'#page-heading',sectionSelector:'.portfolio-page,.social-header,.site-footer',stationarySelector:'.social-header,.site-footer',interactiveSelector:'.heading-card'});
 // Delegation also lights cards added after the collection request finishes.
 document.addEventListener('pointermove', event => {
  const card = (event.target as Element).closest<HTMLElement>('.entry-card,.heading-card');

@@ -38,10 +38,13 @@ export function preparePostPreview(card: HTMLElement) {
  if (description) fullExcerpts.set(description, description.textContent || '');
  card.querySelectorAll('.entry-card-actions,.entry-source').forEach(element => element.remove());
  date?.remove();
- const surface = document.createElement('div');
- surface.className = 'entry-surface';
- surface.append(...Array.from(card.childNodes));
- card.append(surface);
+ let surface = card.querySelector<HTMLElement>(':scope > .entry-surface');
+ if (!surface) {
+  surface = document.createElement('div');
+  surface.className = 'entry-surface';
+  surface.append(...Array.from(card.childNodes));
+  card.append(surface);
+ }
  if (date) { date.className = 'entry-date'; card.append(date); }
 }
 
@@ -79,8 +82,12 @@ function fitPostExcerpt(card: HTMLElement) {
  measure.remove();
 }
 
-export function initializePostBubbles() {
- document.querySelectorAll<HTMLElement>('.post-bubbles').forEach(grid => {
+export function initializePostBubbles({
+ gridSelector = '.post-bubbles',
+ cardSelector = ':scope > .entry-card:not(.status-card)',
+ surfaceSelector = '.entry-surface',
+} = {}) {
+ document.querySelectorAll<HTMLElement>(gridSelector).forEach(grid => {
   if (grid.dataset.bubblesReady) return;
   grid.dataset.bubblesReady = 'true';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -103,16 +110,18 @@ export function initializePostBubbles() {
    frame = 0;
    if (paused()) return;
    const step = Math.min(2, (now - previous) / (1000 / 60)); previous = now; clock += step / 60;
+   const bounds = grid.getBoundingClientRect();
    if (needsLayout) {
     for (const s of states) {
-     s.left = s.element.offsetLeft; s.top = s.element.offsetTop;
-     s.width = s.element.offsetWidth; s.height = s.element.offsetHeight;
+     const rect = s.element.getBoundingClientRect();
+     s.left = rect.left - bounds.left - s.x; s.top = rect.top - bounds.top - s.y;
+     s.width = rect.width; s.height = rect.height;
     }
     needsLayout = false;
    }
-   const bounds = grid.getBoundingClientRect();
    const limit = 90;
-   const active = grid.querySelector('.entry-card:hover') || (document.activeElement?.matches(':focus-visible') ? grid.querySelector('.entry-card:has(:focus-visible)') : null);
+   const active = states.find(s => s.element.matches(':hover'))?.element
+    || states.find(s => s.element.matches(':focus-visible,:has(:focus-visible)'))?.element;
    for (const s of states) {
     // Keep keyboard targets steady; mouse interaction follows the title's spring.
     s.held = s.element === active;
@@ -147,7 +156,8 @@ export function initializePostBubbles() {
   }
   const refresh = () => {
    for (const s of states) observer.unobserve(s.element);
-   states = Array.from(grid.querySelectorAll<HTMLElement>(':scope > .entry-card:not(.status-card)'), (element, i) => {
+   states = Array.from(grid.querySelectorAll<HTMLElement>(cardSelector), (element, i) => {
+    element.dataset.bubbleCard = '';
     observer.observe(element);
     element.addEventListener('pointerleave', () => {
      ['--thumb-x','--thumb-y','--thumb-skew-x','--thumb-skew-y'].forEach(name => element.style.removeProperty(name));
@@ -166,13 +176,13 @@ export function initializePostBubbles() {
    pointer = event.pointerType === 'mouse' ? {x:event.clientX,y:event.clientY} : null;
   }, {passive:true});
   grid.addEventListener('pointermove', event => {
-   const card = (event.target as Element).closest<HTMLElement>('.entry-card');
+   const card = (event.target as Element).closest<HTMLElement>('[data-bubble-card]');
    if (!card) return;
    const rect = card.getBoundingClientRect();
    card.style.setProperty('--glass-light-x', `${event.clientX - rect.left}px`);
    card.style.setProperty('--glass-light-y', `${event.clientY - rect.top}px`);
    if (reduced.matches || event.pointerType !== 'mouse') return;
-   const surface = card.querySelector('.entry-surface')?.getBoundingClientRect();
+   const surface = (card.querySelector(surfaceSelector) || card).getBoundingClientRect();
    if (!surface) return;
    const x = Math.max(-1,Math.min(1,(event.clientX - surface.left) / surface.width * 2 - 1));
    const y = Math.max(-1,Math.min(1,(event.clientY - surface.top) / surface.height * 2 - 1));
@@ -186,7 +196,7 @@ export function initializePostBubbles() {
    if (document.body.classList.contains('post-dialog-open')) return;
    const focused = document.activeElement;
    if (!(focused instanceof HTMLElement)) return;
-   const card = focused.closest('.entry-card');
+   const card = focused.closest('[data-bubble-card]');
    if (card && grid.contains(card) && !card.contains(event.target as Node)) focused.blur();
   });
   document.documentElement.addEventListener('pointerleave', () => { pointer = null; });
@@ -209,10 +219,10 @@ export function initializePostBubbles() {
 
 if (typeof document !== 'undefined') {
  const blurActiveBubble = (event: Event) => {
-  const card = (event.target as Element | null)?.closest('.entry-card');
+  const card = (event.target as Element | null)?.closest('[data-bubble-card]');
   if (!card) {
    const currentActive = document.activeElement;
-   if (currentActive instanceof HTMLElement && currentActive.closest('.post-bubbles .entry-card')) {
+   if (currentActive instanceof HTMLElement && currentActive.closest('[data-bubble-card]')) {
     currentActive.blur();
    }
   }

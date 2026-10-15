@@ -54,6 +54,30 @@ const socialLinks = [
 		icon: "horizontal-video",
 		accent: "255 0 0",
 	},
+	{
+		name: "Pinterest",
+		type: "Profile",
+		href: "https://pin.it/7A64X2gjw",
+		className: "pinterest",
+		icon: "pin",
+		accent: "230 0 35",
+	},
+	{
+		name: "X",
+		type: "@jetsullie",
+		href: "https://x.com/jetsullie",
+		className: "x",
+		icon: "x-mark",
+		accent: "255 255 255",
+	},
+	{
+		name: "Backstage",
+		type: "Jet Sullivan",
+		href: "https://www.backstage.com/u/jet-sullivan/",
+		className: "backstage",
+		icon: "film-frame",
+		accent: "0 169 224",
+	},
 ];
 ---
 
@@ -95,6 +119,8 @@ const socialLinks = [
           <rect x="8" y="26" width="80" height="45" rx="9" />
           <path class="icon-cutout" d="M42 35 60 48.5 42 62Z" />
          </>}
+         {link.icon === 'pin' && <path d="M30 10h36v10h-5v25l12 12v7H52v18l-4 8-4-8V64H23v-7l12-12V20h-5Z" />}
+         {link.icon === 'x-mark' && <path d="M15 14h19l18 24 21-24h8L56 44l28 38H65L44 54 20 82h-8l28-33Zm12 6 41 56h7L34 20Z" />}
          {link.icon === 'film-frame' && <path fill-rule="evenodd" d="M15 22h66a7 7 0 0 1 7 7v38a7 7 0 0 1-7 7H15a7 7 0 0 1-8-8V29a7 7 0 0 1 8-7Zm9 10h48v32H24Zm-11-3h6v7h-6Zm0 15h6v7h-6Zm0 15h6v7h-6Zm64-30h6v7h-6Zm0 15h6v7h-6Zm0 15h6v7h-6Z" />}
          {link.icon === 'briefcase' && <>
           <path fill-rule="evenodd" d="M21 34h15v-7a7 7 0 0 1 7-7h10a7 7 0 0 1 7 7v7h15a7 7 0 0 1 7 7v35a7 7 0 0 1-7 7H21a7 7 0 0 1-7-7V41a7 7 0 0 1 7-7Zm21 0h12v-7a2 2 0 0 0-2-2h-8a2 2 0 0 0-2 2Z" />

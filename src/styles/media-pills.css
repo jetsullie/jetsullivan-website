@@ -1,0 +1,14 @@
+
+ :root body .media-pill-grid .entry-card { --page-accent:rgb(var(--tab-accent)); --page-rgb:var(--tab-accent); }
+ :root body .media-pill-grid .entry-surface .media-pill-icon { display:grid; place-items:center; color:rgb(var(--tab-accent)); }
+ :root body .post-bubbles.media-pill-grid .entry-surface .media-pill-icon svg {
+  width:96px; height:96px; max-width:40%; margin:auto; fill:none; stroke:currentColor;
+  stroke-width:5; stroke-linecap:round; stroke-linejoin:round;
+ }
+ :root body .media-pill-grid .media-pill-icon .icon-fill { fill:currentColor; stroke:none; }
+ :root body .media-pill-grid .entry-open { display:block; text-decoration:none; background:transparent; }
+
+:root body .media-pill-grid .tab-featured { --tab-accent:239 218 74; }
+:root body .media-pill-grid .tab-interviews { --tab-accent:147 233 249; }
+:root body .media-pill-grid .tab-behind-scenes { --tab-accent:255 176 92; }
+:root body .media-pill-grid .tab-press { --tab-accent:255 255 255; }

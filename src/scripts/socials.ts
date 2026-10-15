@@ -1,4 +1,8 @@
 import { initializeSiteMotion } from './site-motion';
+import { initializePostBubbles } from './post-bubbles';
+import '../styles/bubble-controls.css';
+
+initializePostBubbles({ gridSelector: '.social-grid', cardSelector: '.social-tab' });
 
 // Match the homepage's pointer lighting and weighted glass layers.
 document.querySelectorAll<HTMLElement>('.social-tab').forEach(card => {

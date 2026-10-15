@@ -1,0 +1,34 @@
+/* Navigation cards keep their dimensions and grow subtly on hover. */
+:root body :is(.work-grid,.social-grid) {
+ position:relative; align-items:center; justify-items:center; grid-auto-rows:230px;
+ translate:none;
+}
+:root body :is(.work-card.glow-button,.social-tab,.section-tab.glow-button) {
+ --bubble-grow:0px;
+ width:calc(100% + var(--bubble-grow)); height:200px; min-height:0;
+ border-radius:56px; transform:none;
+ translate:var(--bubble-x,0px) var(--bubble-y,0px);
+ transition:transform 220ms ease,box-shadow 220ms ease,border-color 220ms ease;
+}
+:root body :is(.work-card.glow-button,.social-tab,.section-tab.glow-button):is(:hover,:focus-visible) {
+ z-index:5; transform:scale(1.015);
+}
+:root body .section-tab.glow-button { height:130px; max-width:440px; }
+:root body :is(.header-contact.glow-button,.contact-cta.glow-button) { transition:transform 220ms ease,box-shadow 220ms ease,border-color 220ms ease; }
+:root body :is(.header-contact.glow-button,.contact-cta.glow-button):is(:hover,:focus-visible) { transform:scale(1.015); }
+:root body :is(.work-card-icon,.section-button-icon) {
+ transform:translate3d(var(--thumb-x,0px),var(--thumb-y,0px),0) skew(var(--thumb-skew-x,0deg),var(--thumb-skew-y,0deg));
+ transition:transform 220ms cubic-bezier(.22,1,.36,1);
+}
+:root body .social-icon { transform:none; transition:none; }
+@media(max-width:650px) {
+ :root body :is(.work-card.glow-button,.social-tab,.section-tab.glow-button) { --bubble-grow:0px; border-radius:40px; }
+}
+@media(hover:none), (prefers-reduced-motion:reduce) {
+ :root body :is(.work-grid,.social-grid) { grid-auto-rows:auto; }
+}
+@media(prefers-reduced-motion:reduce) {
+ :root body :is(.work-card.glow-button,.social-tab,.section-tab.glow-button,.header-contact.glow-button,.contact-cta.glow-button):is(:hover,:focus-visible) { transform:none; }
+ :root body :is(.work-card.glow-button,.social-tab,.section-tab.glow-button) { --bubble-grow:0px; translate:none; transition:none; }
+ :root body :is(.work-card-icon,.social-icon,.section-button-icon) { transform:none; transition:none; }
+}

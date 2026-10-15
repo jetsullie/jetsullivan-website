@@ -1,0 +1,1 @@
+import{t as e}from"./title-pop.BP58_J5_.js";var t=()=>document.querySelectorAll(`h1`).forEach(e);document.readyState===`complete`?t():document.addEventListener(`DOMContentLoaded`,t,{once:!0});

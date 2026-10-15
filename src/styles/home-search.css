@@ -306,6 +306,21 @@
 /* Preserve the shared glass controls and separately floating search results. */
 .home-header .search-bar.is-open .search-input { flex:1; width:0; }
 .home-header .search-close,.home-header .search-bar.is-open .search-close { flex:0 0 62px; transform:none; }
-.home-header .search-suggestions { left:0; width:100%; max-height:min(440px,65dvh); overflow-y:auto; padding:8px 0; }
+/* Keep the scrollport edges outside the results' shadows and focus rings. */
+.home-header .search-suggestions {
+ --search-shadow-gutter:32px;
+ top:calc(100% - 20px);
+ left:calc(-1 * var(--search-shadow-gutter));
+ width:calc(100% + 2 * var(--search-shadow-gutter));
+ max-height:min(504px,65dvh);
+ overflow-y:auto;
+ padding:32px var(--search-shadow-gutter);
+ scroll-padding-block:32px;
+ pointer-events:none;
+}
+.home-header .search-suggestions > * { pointer-events:auto; }
 .home-header:has(.search-bar.is-open) .home-header-nav { visibility:hidden; }
-@media(max-width:650px) { .home-header .search-input { font-size:16px; } }
+@media(max-width:650px) {
+ .home-header .search-input { font-size:16px; }
+ .home-header .search-suggestions { --search-shadow-gutter:16px; top:auto; bottom:calc(100% - 12px); }
+}
