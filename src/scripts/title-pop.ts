@@ -87,7 +87,8 @@ export function initializeTitlePop(heading: HTMLElement) {
    letter.style.setProperty('--letter-light', '0');
    letter.style.setProperty('--letter-x', '0px');
    letter.style.setProperty('--letter-y', '0px');
-   document.body.append(falling);
+   // Dialog letters must stay in the top layer to remain visible during their fall.
+   (heading.closest('dialog') || document.body).append(falling);
    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
    const gravity = 1400;
    const vy = -300;

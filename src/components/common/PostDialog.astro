@@ -5,6 +5,7 @@ interface Props {
 	accent: string;
 	accentBottom: string;
 	accentSolid?: string;
+	minimal?: boolean;
 }
 
 const {
@@ -12,17 +13,18 @@ const {
 	accent,
 	accentBottom,
 	accentSolid = accentBottom,
+	minimal = false,
 } = Astro.props;
 ---
 
 <dialog
-	class="post-dialog"
+	class:list={["post-dialog", { "post-dialog-minimal": minimal }]}
 	data-post-dialog
 	aria-label="Expanded post"
 	style={`--post-accent-top:${accentTop};--post-accent:${accent};--post-accent-bottom:${accentBottom};--post-accent-solid:${accentSolid};`}
 >
 	<div class="post-dialog-panel" data-post-dialog-panel>
-  <div class="post-dialog-toolbar"><span>Jet Sullivan <span aria-hidden="true">/</span> In detail</span>
+  <div class="post-dialog-toolbar">{!minimal && <span>Jet Sullivan <span aria-hidden="true">/</span> In detail</span>}
 		<button
 			class="post-dialog-close"
 			type="button"
@@ -354,5 +356,58 @@ const {
   .post-dialog .post-dialog-content { padding:20px; }
   .post-dialog .post-detail:has(> .entry-image, > .entry-attachment) { grid-template-columns:minmax(0,1fr); }
   .post-dialog .post-detail :is(.entry-image,.entry-attachment) :is(img,video) { max-height:32dvh; }
+ }
+ /* Portfolio details use a quiet header and a centered, interactive title. */
+ .post-dialog-minimal .post-dialog-toolbar { justify-content:flex-end; border:0; padding:10px 14px 0; background:transparent; backdrop-filter:none; pointer-events:none; }
+ .post-dialog-minimal .post-dialog-close,
+ .post-dialog-minimal .post-dialog-close:hover {
+  pointer-events:auto; width:44px; height:44px; border:0; border-radius:0;
+  outline:0; background:transparent; box-shadow:none; transform:none;
+ }
+ .post-dialog-minimal .post-dialog-close:hover { color:var(--post-accent-solid); }
+ .post-dialog-minimal .post-dialog-close:focus-visible { outline:2px solid var(--post-accent-solid); outline-offset:0; }
+ .post-dialog-minimal .post-dialog-content { padding-top:8px; }
+ .post-dialog-minimal .post-detail-heading { order:-2; grid-column:1/-1; width:100%; text-align:center; }
+ .post-dialog-minimal .post-detail-heading time { margin:8px 0 0; text-align:center; }
+ .post-dialog-minimal .post-detail .post-detail-title {
+  width:100%; padding:10px 12px; text-align:center;
+  font:900 clamp(1.5rem,3.6vw,2.5rem)/1.2 'Arial Black',Arial,sans-serif;
+  letter-spacing:-.045em; text-transform:uppercase; text-wrap:balance; overflow-wrap:normal; word-break:normal;
+ }
+ .post-dialog-minimal .post-title-word { display:inline-block; white-space:nowrap; }
+ .post-dialog-minimal .post-detail-title .hero-letter {
+  color:var(--post-accent-solid);
+  background-image:linear-gradient(110deg,var(--post-accent-solid),color-mix(in srgb,var(--post-accent-solid) 75%,white));
+  filter:brightness(calc(1 + var(--letter-light,0) * .18)) drop-shadow(0 0 calc(var(--letter-light,0) * 14px) color-mix(in srgb,var(--post-accent-solid) 55%,transparent));
+ }
+ .post-dialog-minimal .post-detail-title .hero-letter:focus-visible { outline:2px solid var(--post-accent-solid); outline-offset:3px; }
+ .post-dialog-minimal .post-detail .entry-copy { order:1; }
+ .post-dialog-minimal .post-detail :is(.entry-image,.entry-attachment) { order:0; }
+ .post-dialog-minimal .post-detail > .project-button {
+  order:2; grid-column:1/-1; justify-self:center; align-self:center; margin:8px auto 0;
+  display:inline-flex; align-items:center; text-decoration:none; max-width:100%; text-align:center;
+  position:relative; isolation:isolate; justify-content:center; gap:14px;
+  padding:16px 24px; border:1px solid #ffffffb3; border-radius:999px;
+  background:linear-gradient(135deg,#ffffff70,#ffffff00),var(--post-accent-solid);
+  color:#252525; font:800 14px/1.4 'Myriad Pro',Arial,sans-serif;
+  box-shadow:inset 0 1px 0 #fff,0 5px 16px #0002;
+  transition:transform 220ms ease,box-shadow 220ms ease,border-color 220ms ease;
+ }
+ .post-dialog-minimal .project-button::before {
+  content:''; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none;
+  background:radial-gradient(ellipse at var(--glass-light-x,50%) var(--glass-light-y,30%),#ffffffb3,transparent 80%);
+  opacity:0; transition:opacity 220ms ease;
+ }
+ .post-dialog-minimal .post-detail > .project-button:is(:hover,:focus-visible) {
+  background:#fff; color:#252525;
+  transform:scale(1.015); border-color:var(--post-accent-solid);
+  box-shadow:inset 0 1px 0 #fff,0 0 24px color-mix(in srgb,var(--post-accent-solid) 55%,transparent),0 8px 22px #0002;
+ }
+ .post-dialog-minimal .project-button:is(:hover,:focus-visible)::before { opacity:1; }
+ .post-dialog-minimal .project-button svg { width:24px; height:24px; flex:none; }
+ @media(prefers-reduced-motion:reduce) {
+  .post-dialog-minimal .post-detail-title .hero-letter { transform:none; filter:none; }
+  .post-dialog-minimal .post-detail > .project-button:is(:hover,:focus-visible) { transform:none; }
+  .post-dialog-minimal .project-button,.post-dialog-minimal .project-button::before { transition:none; }
  }
 </style>

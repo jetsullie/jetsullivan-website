@@ -2,7 +2,7 @@
 [data-pop-letter] { cursor:pointer; }
 [data-pop-letter]:focus-visible { outline:2px solid currentColor; outline-offset:4px; border-radius:4px; }
 /* Empty sockets stay still, but remain clickable and keyboard accessible. */
-h1 [data-pop-letter].is-detached {
+:is(h1,.post-detail-title) [data-pop-letter].is-detached {
  background:none !important; -webkit-text-fill-color:transparent !important;
  -webkit-text-stroke:1.5px #858585; color:transparent !important;
  filter:none !important; transform:none !important; text-shadow:none !important;
@@ -10,5 +10,5 @@ h1 [data-pop-letter].is-detached {
 }
 .falling-letter { position:fixed; z-index:150; box-sizing:border-box; pointer-events:none; user-select:none; white-space:pre; transform-origin:center; }
 
-h1 [data-pop-letter].is-detached:focus-visible { outline-color:#858585; }
-h1 [data-pop-letter].is-restoring { transform:none !important; }
+:is(h1,.post-detail-title) [data-pop-letter].is-detached:focus-visible { outline-color:#858585; }
+:is(h1,.post-detail-title) [data-pop-letter].is-restoring { transform:none !important; }

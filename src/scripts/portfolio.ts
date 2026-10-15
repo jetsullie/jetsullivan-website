@@ -198,13 +198,47 @@ import { createArrow } from "./arrow";
 		}
 
 		copy.append(title);
+		if (isDetail) {
+			title.className = 'post-detail-title';
+			title.setAttribute('aria-label', title.textContent || 'Untitled');
+			const layer = document.createElement('span');
+			layer.className = 'hero-name-base';
+			let letterIndex = 0;
+			(title.textContent || '').split(/(\s+)/).forEach(token => {
+				if (/^\s+$/.test(token)) { layer.append(token); return; }
+				if (!token) return;
+				const word = document.createElement('span');
+				word.className = 'post-title-word';
+				Array.from(token).forEach(character => {
+					const letter = document.createElement('span');
+					letter.className = 'hero-letter';
+					letter.dataset.letterIndex = String(letterIndex++);
+					letter.textContent = character;
+					word.append(letter);
+				});
+				layer.append(word);
+			});
+			title.replaceChildren(layer);
+			const heading = document.createElement('header');
+			heading.className = 'post-detail-heading';
+			heading.append(title);
+			const date = copy.querySelector('time');
+			if (date) heading.append(date);
+			card.prepend(heading);
+		}
 		if (description.textContent) copy.append(description);
+		card.append(copy);
 
 		const destination = safeWebUrl(entry.link);
 		if (isDetail && destination) {
 			const link = document.createElement("a");
 			link.href = destination.href;
-			link.className = "entry-link";
+			link.className = "entry-link project-button";
+			link.addEventListener('pointermove', event => {
+				const rect = link.getBoundingClientRect();
+				link.style.setProperty('--glass-light-x', `${(event.clientX - rect.left) / rect.width * 100}%`);
+				link.style.setProperty('--glass-light-y', `${(event.clientY - rect.top) / rect.height * 100}%`);
+			});
 			link.textContent = "Open linked project";
 			link.append(" ", createArrow());
 			if (destination.origin !== window.location.origin) {
@@ -215,10 +249,8 @@ import { createArrow } from "./arrow";
 					"Open linked project — opens in a new tab",
 				);
 			}
-			if (isDetail) copy.append(link);
+			card.append(link);
 		}
-
-		card.append(copy);
 
 		if (!isDetail) {
 			const openButton = document.createElement("button");
@@ -244,6 +276,11 @@ import { createArrow } from "./arrow";
 					detailDescription.id = descriptionId;
 				}
 				postDialog.open(detail, openButton, titleId, descriptionId);
+				if (detail.isConnected) {
+					const motion = new AbortController();
+					detail.closest('dialog')?.addEventListener('close', () => motion.abort(), { once:true });
+					initializeSiteMotion({ canvasSelector:':not(*)', titleSelector:`#${titleId}`, sectionSelector:':not(*)', stationarySelector:':not(*)', signal:motion.signal });
+				}
 			});
 			card.append(openButton);
 			preparePostPreview(card);

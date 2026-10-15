@@ -6,6 +6,7 @@ type SiteMotionOptions = {
  sectionSelector: string;
  stationarySelector: string;
  interactiveSelector?: string;
+ signal?: AbortSignal;
 };
 
 /** The homepage and Socials share the same split-title physics and scene motion. */
@@ -56,6 +57,7 @@ if (heroTitle) {
  let previousTitleTime = 0;
 
  const renderTitlePhysics = (time: number) => {
+  if (options.signal?.aborted || !heroTitle.isConnected) { titleFrame = 0; return; }
   const step = Math.min(2, Math.max(.25, (time - previousTitleTime) / 16.67));
   previousTitleTime = time;
   let moving = false;
@@ -127,7 +129,7 @@ if (heroTitle) {
    }
   });
   alignTitleDivide();
- });
+ }, { signal: options.signal });
 }
 
 // Layer pointer parallax with a damped scroll offset so every section has weight.
