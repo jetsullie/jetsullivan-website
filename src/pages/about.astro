@@ -107,19 +107,8 @@ const backgroundWindows = [
 				<p class="eyebrow">Filmmaker · Actor · Storyteller</p>
 				<h1 id="about-heading">About Me</h1>
 
-				<div class="story-window">
-					<div id="about-biography" class="story-copy biography-content">
-						<p>
-							I am a Moody Honors student at The University of Texas, majoring
-							in Radio-Television-Film. I am an actor, video editor,
-							videographer, photographer, and director. I've worked on
-							large-scale productions to smaller, independent projects. I
-							discovered my passion for filmmaking through YouTube at the age
-							of 11, and have since dedicated myself to honing my craft,
-							ultimately guiding me to UT Austin to further follow my love for
-							storytelling and the art of filmmaking.
-						</p>
-					</div>
+				<div class="story-window" hidden>
+					<div id="about-biography" class="story-copy biography-content"></div>
 				</div>
 			</section>
 		</main>
@@ -161,9 +150,13 @@ const backgroundWindows = [
 						{ linksOpenInNewTab: true },
 					);
 				}
+				const biographyWindow = biographyElement.closest<HTMLElement>('.story-window');
+				if (biographyWindow && biographyElement.childElementCount > 0) {
+					biographyWindow.hidden = false;
+				}
 			})
 			.catch(() => {
-				// Keep the built-in biography when Cloudflare storage is unavailable.
+				// Leave the biography hidden when admin content is unavailable.
 			});
 	}
 
